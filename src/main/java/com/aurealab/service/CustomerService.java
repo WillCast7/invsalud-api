@@ -1,9 +1,6 @@
 package com.aurealab.service;
 
 import com.aurealab.dto.APIResponseDTO;
-import com.aurealab.model.sap.entity.CustomerDataViewEntity;
-
-import com.aurealab.model.sap.entity.CustomerTableEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;

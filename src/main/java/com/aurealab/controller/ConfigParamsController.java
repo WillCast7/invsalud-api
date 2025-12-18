@@ -2,8 +2,6 @@ package com.aurealab.controller;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
-import com.aurealab.dto.DepartmentDTO;
-import com.aurealab.model.sap.entity.CustomerDataViewEntity;
 import com.aurealab.service.ConfigParamService;
 import com.aurealab.service.CustomerService;
 import com.aurealab.util.constants;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

@@ -1,11 +1,10 @@
 package com.aurealab.model.emarket.repository;
 
-import com.aurealab.model.emarket.entity.DepartmentEntity;
+import com.aurealab.model.aurea.entity.DepartmentEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
-import java.util.Set;
 
 public interface DepartmentRepository extends CrudRepository<DepartmentEntity, Long> {
     @Query(value="SELECT ID, Nombre, Codigo from E_market_Departamentos_Colombia " +

@@ -21,7 +21,6 @@ public class ConfigParamServiceImpl implements ConfigParamService {
     @Autowired
     ConfigParamsRepository configParamsRepository;
 
-    @Transactional("aureaTrxManager")
     public Set<ConfigParamDTO> getConfigParamsByParent(String parent){
         try{
             if(parent == null){

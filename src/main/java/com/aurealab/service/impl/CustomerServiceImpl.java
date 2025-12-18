@@ -2,15 +2,7 @@ package com.aurealab.service.impl;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.PageableResponseDTO;
-import com.aurealab.model.sap.entity.CustomerDataViewEntity;
-import com.aurealab.model.sap.entity.CustomerTableEntity;
-import com.aurealab.model.sap.repository.CustomerDataViewRepository;
-import com.aurealab.model.sap.repository.CustomerRepository;
 import com.aurealab.service.CustomerService;
-import com.aurealab.util.constants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

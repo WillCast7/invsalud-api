@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Data
-@Table(name = "roles") // Correcto
+@Table(name = "roles", schema = "public") // Correcto
 public class RoleEntity {
     @Id
     @Column(name = "id")

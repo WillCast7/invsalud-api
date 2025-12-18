@@ -9,7 +9,7 @@ import java.util.Set;
 
 public interface MenuRepository extends JpaRepository<MenuItemEntity, Long> {
 
-    @Query(value="select  menus.* from menu_roles menuroles " +
+    @Query(value="select menus.* from menuroles " +
             "inner join menus menus " +
             "on menus.id = menuroles.menu_id " +
             "inner join roles roles " +

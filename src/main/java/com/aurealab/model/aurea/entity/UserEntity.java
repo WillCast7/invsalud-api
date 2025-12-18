@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @Data
-@Table(name = "users")
+@Table(name = "users", schema = "public")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "company_id")
     private CompaniesEntity company;
 
     @Column(unique = true)
@@ -44,15 +44,6 @@ public class UserEntity {
 
     @Column(name = "is_enable")
     private boolean isEnable = true;
-
-    @Column(name = "account_not_expired")
-    private boolean accountNotExpired;
-
-    @Column(name = "account_not_locked")
-    private boolean accountNotLocked;
-
-    @Column(name = "credential_not_expired")
-    private boolean credentialNotExpired;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

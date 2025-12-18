@@ -14,14 +14,16 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @Data
-@Table(name = "persons")
+@Table(name = "persons", schema = "public")
 public class PersonEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String dni;
+    private String dni_type;
+
+    private String dni_number;
 
     private String names;
 

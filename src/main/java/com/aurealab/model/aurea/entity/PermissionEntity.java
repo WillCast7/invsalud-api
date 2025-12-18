@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Data
-@Table(name = "permissions") // Correcto
+@Table(name = "permissions", schema = "public") // Correcto
 public class PermissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

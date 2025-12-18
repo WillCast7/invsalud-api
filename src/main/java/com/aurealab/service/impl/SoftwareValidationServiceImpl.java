@@ -18,7 +18,6 @@ public class SoftwareValidationServiceImpl implements SoftwareValidationService 
     @Autowired
     SoftwareValidationRepository softwareValidationRepository;
 
-    @Transactional("aureaTrxManager")
     public ResponseEntity<APIResponseDTO<Set<SoftwareValidationEntity>>> getSoftwareValidation(){
 
         Set<SoftwareValidationEntity> listSoftwareValidation = softwareValidationRepository.findAll();

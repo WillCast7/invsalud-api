@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 @Builder
 @Data
-    @Table(name = "payments")
+    @Table(name = "payments", schema = "public")
     public class PaymentEntity {
 
         @Id

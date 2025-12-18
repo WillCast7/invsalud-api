@@ -1,4 +1,4 @@
-package com.aurealab.model.emarket.entity;
+package com.aurealab.model.aurea.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Data
-@Table(name = "E_market_Ciudades_Colombia")
+@Table(name = "E_market_Ciudades_Colombia", schema = "public")
 public class CityEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.aurealab.model.emarket.entity;
+package com.aurealab.model.aurea.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,14 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
 @Data
-@Table(name = "E_market_Departamentos_Colombia")
+@Table(name = "E_market_Departamentos_Colombia", schema = "public")
 public class DepartmentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

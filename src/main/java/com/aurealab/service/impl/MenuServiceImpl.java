@@ -15,7 +15,6 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     MenuRepository menuRepository;
 
-    @Transactional("aureaTrxManager")
     public Set<MenuItemEntity> getMenuByRoleName(String role){
         return menuRepository.findByRoleName(role);
     }

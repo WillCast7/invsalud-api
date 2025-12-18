@@ -65,21 +65,13 @@ public class UserDetailServiceImpl {
     /**
      * Proceso de inicio de sesión del usuario.
      */
-    @Transactional("aureaTrxManager")
     public ResponseEntity<APIResponseDTO<AuthResponse>> loginUser(LoginRequest userLogin) {
 
-        System.out.println("password");
-        System.out.println(userLogin.password());
-        // Validar credenciales
-        System.out.println("password encoded");
         String passwordEncode = passwordEncoder.encode(userLogin.password());
-        System.out.println(passwordEncode);
 
         UserEntity userEntity = validateCredentials(userLogin.username());
-
-        System.out.println("userEntity");
-        System.out.println(userEntity);
-
+        System.out.println("pass ");
+        System.out.println(passwordEncode);
         if (!passwordEncoder.matches(userLogin.password(), userEntity.getPassword())) {
             throw new BaseException(constants.errors.loginError, constants.descriptions.loginError) {};
         }
@@ -98,7 +90,7 @@ public class UserDetailServiceImpl {
 
             optionalMenu.stream().forEach(menuItemEntity -> menuList.add(setMenuEntityToDTO(menuItemEntity)));
             String accessToken = jwtUtils.createToken(
-                    new UsernamePasswordAuthenticationToken(userLogin.username(), userLogin.password(), userDetails.getAuthorities())
+                new UsernamePasswordAuthenticationToken(userLogin.username(), userLogin.password(), userDetails.getAuthorities())
             );
 
 
@@ -116,24 +108,15 @@ public class UserDetailServiceImpl {
     /**
      * Valida las credenciales del usuario en la base de datos.
      */
-    @Transactional("aureaTrxManager")
     public UserEntity validateCredentials(String username) {
-        try {
+            System.out.println("username: " + username);
             return userRepository.findByUserNameOrEmail(username, username)
                     .orElseThrow(() -> new BaseException(
                             constants.errors.invalidUser,
                             constants.descriptions.loginError,
-                            HttpStatus.UNAUTHORIZED) {});
-        } catch (BaseException e) {
-            log.warn("Credenciales inválidas para el usuario: {}", username);
-            throw e;
-        } catch (Exception e) {
-            log.error("Error al validar las credenciales del usuario", e);
-            throw new BaseException(constants.errors.loginError, constants.descriptions.loginError, e) {};
-        }
+                            HttpStatus.UNAUTHORIZED) {}
+                    );
     }
-
-
 
     public MenuDTO setMenuEntityToDTO(MenuItemEntity menuParam) {
         if (menuParam == null) {

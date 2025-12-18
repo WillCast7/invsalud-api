@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now().toString(),
                 ex.toString()
         );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, ex.getHttpStatus()    );
     }
 
     /**
