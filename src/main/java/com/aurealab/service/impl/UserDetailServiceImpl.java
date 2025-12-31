@@ -70,11 +70,12 @@ public class UserDetailServiceImpl {
         String passwordEncode = passwordEncoder.encode(userLogin.password());
 
         UserEntity userEntity = validateCredentials(userLogin.username());
-        System.out.println("pass ");
-        System.out.println(passwordEncode);
         if (!passwordEncoder.matches(userLogin.password(), userEntity.getPassword())) {
             throw new BaseException(constants.errors.loginError, constants.descriptions.loginError) {};
         }
+
+        System.out.println("userEntity");
+        System.out.println(userEntity);
 
         try {
 
@@ -94,7 +95,8 @@ public class UserDetailServiceImpl {
             );
 
 
-            AuthResponse authResponse = new AuthResponse(userLogin.username(), accessToken, menuList);
+            AuthResponse authResponse = new AuthResponse(userLogin.username(), userEntity.getPerson().getNames()
+                    , accessToken, menuList);
 
 
             return ResponseEntity.ok(APIResponseDTO.success(authResponse, constants.success.loginSuccess)); // Enviar cookie en la respuesta
@@ -129,6 +131,7 @@ public class UserDetailServiceImpl {
                 .route(menuParam.getRoute())
                 .icon(menuParam.getIcon())
                 .father(menuParam.getFather())
+                .nameFather(menuParam.getNameFather())
                 .orderMenu(menuParam.getOrderMenu())
                 .build();
     }

@@ -20,8 +20,6 @@ public class authController {
 
     @PostMapping
     ResponseEntity<APIResponseDTO<AuthResponse>> login(@RequestBody @Valid LoginRequest userRequest){
-        System.out.println("controller - userRequest");
-        System.out.println(userRequest);
         return this.userDetailService.loginUser(userRequest);
     }
 

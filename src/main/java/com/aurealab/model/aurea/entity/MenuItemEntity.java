@@ -22,6 +22,9 @@ public class MenuItemEntity {
 
     private String father;
 
+    @Column(name = "name_father")
+    private String nameFather;
+
     private String route;
 
     @Column(name = "menu_order")
