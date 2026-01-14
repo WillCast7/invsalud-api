@@ -1,12 +1,12 @@
 package com.aurealab.service.impl;
 
+import com.aurealab.config.databases.multitenancy.TenantContext;
 import com.aurealab.dto.*;
 import com.aurealab.model.aurea.entity.UserEntity;
 import com.aurealab.model.aurea.repository.UserRepository;
 import com.aurealab.model.aurea.entity.MenuItemEntity;
 import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.repository.RoleRepository;
-import com.aurealab.util.DecryptPass;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
@@ -14,9 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,9 +49,11 @@ public class UserDetailServiceImpl {
      */
     public UserDetails loadUserDetails(String roleName, RoleEntity role, String username) throws UsernameNotFoundException {
         log.info("Cargando detalles del usuario con rol: {}", roleName);
+        log.info(role.getRole());
+        System.out.println("📌 Consultando en tenant: " + TenantContext.getCurrentTenant());
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        role.getPerrmissionList()
+        role.getPermissionList()
                 .forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getName())));
 
         authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRole())));
@@ -65,6 +65,7 @@ public class UserDetailServiceImpl {
     /**
      * Proceso de inicio de sesión del usuario.
      */
+    @Transactional(readOnly = true)
     public ResponseEntity<APIResponseDTO<AuthResponse>> loginUser(LoginRequest userLogin) {
 
         String passwordEncode = passwordEncoder.encode(userLogin.password());
@@ -73,9 +74,6 @@ public class UserDetailServiceImpl {
         if (!passwordEncoder.matches(userLogin.password(), userEntity.getPassword())) {
             throw new BaseException(constants.errors.loginError, constants.descriptions.loginError) {};
         }
-
-        System.out.println("userEntity");
-        System.out.println(userEntity);
 
         try {
 

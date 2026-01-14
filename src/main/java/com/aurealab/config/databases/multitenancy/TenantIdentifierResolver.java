@@ -13,7 +13,9 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
     @Override
     public String resolveCurrentTenantIdentifier() {
         String tenant = TenantContext.getCurrentTenant();
-        return StringUtils.hasText(tenant) ? tenant : DEFAULT_TENANT;
+        String resolved = tenant != null ? tenant : "public";
+        System.out.println("🔧 TenantIdentifierResolver: " + resolved);
+        return resolved;
     }
 
     @Override

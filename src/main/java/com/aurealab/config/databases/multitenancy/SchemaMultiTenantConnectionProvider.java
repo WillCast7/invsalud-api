@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Proveedor de conexiones que cambia el schema según el tenant.
@@ -33,27 +34,27 @@ public class SchemaMultiTenantConnectionProvider implements MultiTenantConnectio
     @Override
     public Connection getConnection(String tenantIdentifier) throws SQLException {
         final Connection connection = getAnyConnection();
-        try {
-            // Opción 1: Usando setSchema (JDBC 4.1+)
-            connection.setSchema(tenantIdentifier);
 
-            // Opción 2: Usando SQL directo (más compatible con PostgreSQL)
-            // connection.createStatement().execute("SET search_path TO " + tenantIdentifier);
-
+        try (Statement statement = connection.createStatement()) {
+            String sql = "SET search_path TO " + tenantIdentifier + ", public";
+            System.out.println("🔧 Ejecutando SQL: " + sql);
+            statement.execute(sql);
+            System.out.println("✅ search_path cambiado exitosamente");
         } catch (SQLException e) {
-            throw new SQLException("No se pudo cambiar al schema: " + tenantIdentifier, e);
+            System.err.println("❌ ERROR al cambiar search_path: " + e.getMessage());
+            connection.close();
+            throw e;
         }
+
         return connection;
     }
 
     @Override
     public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
-        try {
-            // Resetear al schema por defecto
-            connection.setSchema("public");
-            // O con SQL: connection.createStatement().execute("SET search_path TO public");
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("SET search_path TO public"); // Reset preventivo
         } catch (SQLException e) {
-            // Log del error pero continuar con el cierre
+            // Log error
         }
         connection.close();
     }

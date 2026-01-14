@@ -29,8 +29,6 @@ public class HibernateConfig {
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-
-        // Ajusta el paquete donde están tus @Entity
         em.setPackagesToScan("com.aurealab.model");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -38,25 +36,38 @@ public class HibernateConfig {
 
         Map<String, Object> properties = new HashMap<>(jpaProperties.getProperties());
 
-        // CONFIGURACIÓN CLAVE PARA MULTITENANCY
+        // CONFIGURACIÓN MULTITENANCY
         properties.put(AvailableSettings.MULTI_TENANT_CONNECTION_PROVIDER, connectionProvider);
         properties.put(AvailableSettings.MULTI_TENANT_IDENTIFIER_RESOLVER, tenantResolver);
+        properties.put("hibernate.multi_tenant_strategy", "SCHEMA");
 
-        // IMPORTANTE: Hibernate 6 maneja esto diferente a la versión 5
-        properties.put("hibernate.multiTenancy", "SCHEMA");
+        // ✅ CRÍTICO: Deshabilitar caché de conexiones
+        properties.put(AvailableSettings.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT, false);
 
-        // dialecto
+        // ✅ CRÍTICO: Forzar nueva conexión en cada operación
+        properties.put("hibernate.connection.provider_disables_autocommit", false);
+
+        // Debug
+        properties.put(AvailableSettings.SHOW_SQL, true);
+        properties.put(AvailableSettings.FORMAT_SQL, true);
+        properties.put(AvailableSettings.USE_SQL_COMMENTS, true);
+
+        // Dialecto
         properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+
+        System.out.println("🔧 EntityManagerFactory configurado con multitenancy SCHEMA");
+        System.out.println("🔧 Connection Provider: " + connectionProvider.getClass().getName());
+        System.out.println("🔧 Tenant Resolver: " + tenantResolver.getClass().getName());
 
         em.setJpaPropertyMap(properties);
         return em;
     }
 
     @Bean
-    public JpaTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+    public JpaTransactionManager transactionManager(
+            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory.getObject());
         return transactionManager;
     }
 }
-

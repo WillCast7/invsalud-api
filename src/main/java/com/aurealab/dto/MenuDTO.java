@@ -1,11 +1,6 @@
 package com.aurealab.dto;
 
 import lombok.*;
-import org.springframework.data.domain.Pageable;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  * Clase que representa una respuesta genérica para la API.

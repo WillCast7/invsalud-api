@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 @Builder
 @Data
-@Table(name = "subscriptions", schema = "public")
+@Table(name = "subscriptions")
 public class SubscriptionsEntity {
 
     @Id

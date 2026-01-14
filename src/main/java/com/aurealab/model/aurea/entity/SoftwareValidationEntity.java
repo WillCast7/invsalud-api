@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Builder
 @Data
-@Table(name = "5365", schema = "public")
+@Table(name = "5365")
 public class SoftwareValidationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

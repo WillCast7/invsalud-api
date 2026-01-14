@@ -1,12 +1,7 @@
 package com.aurealab.service.impl;
 
-import com.aurealab.dto.APIResponseDTO;
-import com.aurealab.dto.PageableResponseDTO;
 import com.aurealab.service.CustomerService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {

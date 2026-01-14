@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Data
-@Table(name = "configparams", schema = "public")
+@Table(name = "configparams")
 public class ConfigParamsEntity {
 
     @Id

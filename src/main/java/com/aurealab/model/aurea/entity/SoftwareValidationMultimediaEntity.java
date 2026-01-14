@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Data
-@Table(name = "softwarevalidation_multimedia", schema = "public")
+@Table(name = "softwarevalidation_multimedia")
 public class SoftwareValidationMultimediaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

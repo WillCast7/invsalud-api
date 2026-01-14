@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Data
-@Table(name = "roles", schema = "public") // Correcto
+@Table(name = "roles")
 public class RoleEntity {
     @Id
     @Column(name = "id")
@@ -38,5 +38,5 @@ public class RoleEntity {
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    private Set<PermissionEntity> perrmissionList = new HashSet<>();
+    private Set<PermissionEntity> permissionList = new HashSet<>();
 }

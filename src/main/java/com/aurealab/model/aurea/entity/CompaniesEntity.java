@@ -14,7 +14,7 @@ import java.util.Date;
 @Entity
 @Builder
 @Data
-@Table(name = "companies", schema = "public")
+@Table(name = "companies")
 public class CompaniesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
