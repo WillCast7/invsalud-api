@@ -11,4 +11,6 @@ public class ConfigParamDTO {
     private Long id;
     private String name;
     private String shortname;
+    private String parent;
+    private boolean isActive;
 }

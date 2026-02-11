@@ -9,6 +9,9 @@ public class constants {
         public static final String responseUpdateGood = "Datos actualizados correctamente";
         public static final String dontFoundByID = "No encontro ningun dato con ese ID";
         public static final String switchDTOToEntityError = "Error al convertir DTO a Entity: el objeto es nulo.";
+        public static final String asd = "No hay sesión activa para realizar esta acción";
+        public static final String cashSessionExist = "Ya hay una caja abierta para el dia de hoy";
+        public static final String cashSessionDontExist = "No hay una caja abierta realizar esta acción";
     }
     public static class success{
         public static final String savedSuccess = "Creado exitosamente ";
@@ -47,7 +50,37 @@ public class constants {
         public static final String configParams = "Error leyendo los parametros de configuracion";
     }
 
-    public static class uitlLogs{
+    public static class roles{
+        public static final String advisor = "asesor";
+    }
+
+    public static class configParam{
+        public static final String documentType = "documentType";
+        public static final String incomeTransaction = "INCOME";
+        public static final String expenseTransaction = "EXPENSE";
+        public static final String statusTransactionPending = "PENDING";
+        public static final String statusTransactionPartial = "PARTIAL";
+        public static final String statusTransactionPaid = "PAID";
+        public static final String statusOpen = "OPEN";
+        public static final String statusClose = "CLOSED";
+        public static final String thirdPartyRoleCustomer = "cliente";
+    }
+
+    public static class utilLogs{
         public static final String separator = " ----------------------------------------------------------------- ";
+    }
+
+    public static class statuses {
+        public static final String completed = "Completada";
+        public static final String started = "Iniciada";
+        public static final String cancelled = "Cancelada";
+        public static final String suspended = "Suspendida";
+        public static final String extended = "Extendida";
+    }
+
+    //TODO usar los codigos y manejar mensajes en el front
+    public static class codeStatus{
+        public static final String succeded = "AL00001";
+
     }
 }

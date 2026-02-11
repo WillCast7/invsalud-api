@@ -13,20 +13,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "charge_products")
-public class ChargeProductEntity {
+@Table(name = "cashmovement_products")
+public class CashMovementProductsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "charge_id")
-    private ChargeEntity charge;
+    @JoinColumn(name = "cashmovement_id")
+    private CashMovementEntity cashMovement;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private ProductEntity productEntity;
+    private String product;
 
     private Integer quantity;
 
@@ -36,5 +34,8 @@ public class ChargeProductEntity {
     // El subtotal se puede calcular en el getter para asegurar consistencia
     public BigDecimal getSubtotal() {
         return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
+    public CashMovementProductsEntity(Long id){
+        this.id = id;
     }
 }

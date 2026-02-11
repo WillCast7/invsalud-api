@@ -1,5 +1,6 @@
 package com.aurealab.config.filter;
 
+import com.aurealab.config.CustomUserDetails;
 import com.aurealab.util.JwtUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
@@ -22,7 +23,7 @@ import java.util.Collection;
 //This ensures token validation for every single request.
 public class JwtTokenValidator extends OncePerRequestFilter {
 
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
     public JwtTokenValidator(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
@@ -43,19 +44,32 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if(jwtToken != null){
+        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
             jwtToken = jwtToken.substring(7);
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-            String userName = jwtUtils.stractUserName(decodedJWT);
-            String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
-            Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
 
+            // 1. Validamos el token
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+
+            // 2. Extraemos la información incluyendo el ID
+            String userName = jwtUtils.extractUsername(decodedJWT);
+            Long userId = jwtUtils.extractUserId(decodedJWT);
+            String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
+
+            Collection<? extends GrantedAuthority> authorities =
+                    AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+
+            // 3. RECONSTRUIMOS EL CustomUserDetails
+            // El password se pasa vacío "" por seguridad ya que el token ya fue validado
+            CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", authorities);
+
+            // 4. Seteamos la autenticación usando el objeto userDetails como Principal
             SecurityContext context = SecurityContextHolder.createEmptyContext();
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userName, null, authorities);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

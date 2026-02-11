@@ -1,28 +1,26 @@
 package com.aurealab.model.aurea.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
-@Data
+@Getter
+@Setter
 @Table(name = "configparams")
 public class ConfigParamsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
     private String shortname;
-
     private String parent;
+    private String definition;
+    private int order;
+    @Column(name = "is_active")
+    private boolean isActive;
 
-    private int status;
 }

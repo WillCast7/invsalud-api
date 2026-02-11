@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -19,6 +20,7 @@ public class CashSessionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "opened_at")
     private OffsetDateTime openedAt = OffsetDateTime.now();
 
@@ -31,12 +33,21 @@ public class CashSessionEntity {
     @Column(name = "closing_amount", precision = 19, scale = 4)
     private BigDecimal closingAmount;
 
+    @Column(name = "business_date")
+    private LocalDate businessDate = LocalDate.now();
+
     @Column(name = "opened_by_system_user_id")
     private Long openedBySystemUserId;
 
     @Column(name = "closed_by_system_user_id")
     private Long closedBySystemUserId;
 
+    private String observations;
+
     @Column(length = 20)
     private String status = "OPEN"; // OPEN, CLOSED
+
+    public CashSessionEntity(Long id){
+        this.id = id;
+    }
 }

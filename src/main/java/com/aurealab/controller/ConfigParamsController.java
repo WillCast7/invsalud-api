@@ -43,4 +43,6 @@ public class ConfigParamsController {
         //response.put("customerDataView", customerDataView);
         return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess ));
     }
+
+
 }

@@ -36,7 +36,7 @@ public class CompaniesEntity {
 
     private String country;
 
-    private String state;
+    private String type;
 
     private String city;
 

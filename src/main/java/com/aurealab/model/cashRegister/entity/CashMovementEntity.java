@@ -29,21 +29,27 @@ public class CashMovementEntity {
     private ChargeEntity charge;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thirdparty_id", nullable = false)
-    private ThirdPartyEntity thirdParty;
+    @JoinColumn(name = "customer_id", nullable = false)
+    private ThirdPartyEntity customer;
 
     private String type;
 
-    @Column(precision = 19, scale = 4)
-    private BigDecimal amount;
+    @Column(precision = 19, scale = 4, name = "received_amount")
+    private BigDecimal receivedAmount;
+
+    @Column(precision = 19, scale = 4, name = "expected_amount")
+    private BigDecimal expectedAmount;
 
     private String concept;
 
-    @Column(name = "payment_method")
-    private String paymentMethod;
+    private String product;
 
-    @Column(name = "reference_number")
-    private String referenceNumber;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_method_id", nullable = false)
+    private PaymentMethodEntity paymentMethod;
+
+    @Column(name = "advisor_id")
+    private int advisor;
 
     @Column(name = "is_void")
     private boolean isVoid = false;

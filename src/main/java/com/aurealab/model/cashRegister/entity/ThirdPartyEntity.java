@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "thirdparties")
+@Table(name = "third_parties")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,11 +21,14 @@ public class ThirdPartyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "dni_type", nullable = false, length = 10)
-    private String dniType;
+    @Column(name = "document_type", nullable = false, length = 10)
+    private String documentType;
 
-    @Column(name = "dni_number", nullable = false, unique = true, length = 20)
-    private String dniNumber;
+    @Column(name = "document_number", nullable = false, unique = true, length = 20)
+    private String documentNumber;
+
+    @Column(name = "phone_number", nullable = false, length = 20)
+    private String phoneNumber;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -41,9 +44,13 @@ public class ThirdPartyEntity {
 
     @ManyToMany
     @JoinTable(
-            name = "person_roles",
+            name = "thirdparty_roles",
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<ThirdPartyRoleEntity> roleEntities = new HashSet<>();
+    private Set<TPRoleEntity> roles = new HashSet<>();
+
+    public ThirdPartyEntity(Long id) {
+        this.id = id;
+    }
 }

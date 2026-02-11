@@ -1,5 +1,6 @@
 package com.aurealab.service.impl;
 
+import com.aurealab.config.CustomUserDetails;
 import com.aurealab.config.databases.multitenancy.TenantContext;
 import com.aurealab.dto.*;
 import com.aurealab.model.aurea.entity.UserEntity;
@@ -47,7 +48,7 @@ public class UserDetailServiceImpl {
     /**
      * Carga los detalles del usuario incluyendo roles, permisos y menú.
      */
-    public UserDetails loadUserDetails(String roleName, RoleEntity role, String username) throws UsernameNotFoundException {
+    public UserDetails loadUserDetails(Long id, String roleName, RoleEntity role, String username) throws UsernameNotFoundException {
         log.info("Cargando detalles del usuario con rol: {}", roleName);
         log.info(role.getRole());
         System.out.println("📌 Consultando en tenant: " + TenantContext.getCurrentTenant());
@@ -59,7 +60,7 @@ public class UserDetailServiceImpl {
         authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRole())));
 
         log.info("Detalles del usuario cargados correctamente");
-        return new User(username, "password", authorityList);
+        return new CustomUserDetails(id, username, "password", authorityList);
     }
 
     /**
@@ -78,7 +79,7 @@ public class UserDetailServiceImpl {
         try {
 
             // Cargar detalles del usuario
-            UserDetails userDetails = loadUserDetails(userEntity.getRole().getRoleName(), userEntity.getRole(), userLogin.username());
+            UserDetails userDetails = loadUserDetails(userEntity.getId(), userEntity.getRole().getRoleName(), userEntity.getRole(), userLogin.username());
             System.out.println(userEntity.getRole().getRoleName());
             Set<MenuItemEntity> optionalMenu = menuServiceImpl.getMenuByRoleName(userEntity.getRole().getRoleName());
             if (optionalMenu.isEmpty()){
@@ -88,8 +89,9 @@ public class UserDetailServiceImpl {
             Set<MenuDTO> menuList = new HashSet();
 
             optionalMenu.stream().forEach(menuItemEntity -> menuList.add(setMenuEntityToDTO(menuItemEntity)));
+            // 2. CRÍTICO: Pasamos 'userDetails' (que es CustomUserDetails) en lugar de solo el string
             String accessToken = jwtUtils.createToken(
-                new UsernamePasswordAuthenticationToken(userLogin.username(), userLogin.password(), userDetails.getAuthorities())
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())
             );
 
 
@@ -133,4 +135,6 @@ public class UserDetailServiceImpl {
                 .orderMenu(menuParam.getOrderMenu())
                 .build();
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.aurealab.util;
 
 
+import com.aurealab.config.CustomUserDetails;
 import com.aurealab.util.exceptions.TokenException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -41,10 +43,14 @@ public class JwtUtils {
             // Algoritmo de firma
             Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
-            // Obtén el username desde el principal
+            // Obtén el username e id desde el principal
             String username;
-            if (authentication.getPrincipal() instanceof UserDetails) {
-                username = ((UserDetails) authentication.getPrincipal()).getUsername();
+            Long userId = null;
+
+            if (authentication.getPrincipal() instanceof CustomUserDetails) {
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+                username = userDetails.getUsername();
+                userId = userDetails.getId(); // Extraemos el ID
             } else {
                 username = authentication.getPrincipal().toString();
             }
@@ -60,6 +66,7 @@ public class JwtUtils {
             String jwtToken = JWT.create()
                     .withIssuer(this.userGenerator)
                     .withSubject(username)
+                    .withClaim("userId", userId) // <--- AGREGAMOS EL ID AL JWT
                     .withClaim("authorities", authorities) // Añade las autoridades
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + 10800000)) // 3 horas de expiración
@@ -86,22 +93,20 @@ public class JwtUtils {
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(this.userGenerator)
                     .build();
-            System.out.println("token");
-            System.out.println(token);
 
-            DecodedJWT decodedJWT = verifier.verify(token);
-            System.out.println("decodedJWT");
-            System.out.println(decodedJWT);
-            return decodedJWT;
-
-        }catch (JWTVerificationException exception){
-            log.error("Error decodificando: ", exception);
-            throw new TokenException(constants.errors.tokenValidationError, exception);
+            return verifier.verify(token);
+        } catch (JWTVerificationException exception){
+            log.error("Error decodificando el token: ", exception);
+            throw new TokenException("Token inválido o expirado", exception);
         }
     }
 
-    public String stractUserName(DecodedJWT decodedJWT){
+    public String extractUsername(DecodedJWT decodedJWT){
         return decodedJWT.getSubject();
+    }
+
+    public Long extractUserId(DecodedJWT decodedJWT) {
+        return decodedJWT.getClaim("userId").asLong();
     }
 
     public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName){
@@ -110,5 +115,13 @@ public class JwtUtils {
 
     public Map<String, Claim> getAllClaims(DecodedJWT decodedJWT){
         return decodedJWT.getClaims();
+    }
+
+    public Long getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
+            return user.getId();
+        }
+        return null;
     }
 }

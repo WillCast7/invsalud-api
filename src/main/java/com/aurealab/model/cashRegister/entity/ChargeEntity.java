@@ -21,16 +21,20 @@ public class ChargeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id", nullable = false)
-    private ThirdPartyEntity person;
+    @JoinColumn(name = "thirdparty_id", nullable = false)
+    private ThirdPartyEntity thirdParty;
 
-    @Column(precision = 19, scale = 4)
+    @Column(precision = 19, scale = 4, name = "total_amount")
     private BigDecimal totalAmount;
 
     private String status = "PENDING";
 
     private String description;
 
-    @OneToMany(mappedBy = "charge", cascade = CascadeType.ALL)
-    private List<ChargeProductEntity> items;
+    @Column(name = "created_by_system_user_id", nullable = false)
+    private Long createdBySystemUserId;
+
+    public ChargeEntity(Long id){
+        this.id = id;
+    }
 }

@@ -1,4 +1,4 @@
-package com.aurealab.mapper;
+package com.aurealab.mapper.CashRegister;
 
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.model.cashRegister.entity.CashSessionEntity;
@@ -15,10 +15,12 @@ public class CashSessionMapper {
                 entity.getId(),
                 entity.getOpenedAt(),
                 entity.getClosedAt(),
+                entity.getBusinessDate(),
                 entity.getOpeningAmount(),
                 entity.getClosingAmount(),
                 entity.getOpenedBySystemUserId(),
                 entity.getClosedBySystemUserId(),
+                entity.getObservations(),
                 entity.getStatus()
         );
     }
@@ -33,8 +35,10 @@ public class CashSessionMapper {
         entity.setClosedAt(dto.closedAt());
         entity.setOpeningAmount(dto.openingAmount());
         entity.setClosingAmount(dto.closingAmount());
+        entity.setBusinessDate(dto.businessDate());
         entity.setOpenedBySystemUserId(dto.openedBySystemUserId());
         entity.setClosedBySystemUserId(dto.closedBySystemUserId());
+        entity.setObservations(dto.observations());
         entity.setStatus(dto.status());
 
         return entity;

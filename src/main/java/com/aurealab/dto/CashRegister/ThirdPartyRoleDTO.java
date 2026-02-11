@@ -2,6 +2,8 @@ package com.aurealab.dto.CashRegister;
 
 public record ThirdPartyRoleDTO(
         Long id,
-        String roleName
+        String roleName,
+        boolean isActive
 ) {
 }
+

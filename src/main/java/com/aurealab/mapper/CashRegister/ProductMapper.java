@@ -1,4 +1,4 @@
-package com.aurealab.mapper;
+package com.aurealab.mapper.CashRegister;
 
 import com.aurealab.dto.CashRegister.ProductDTO;
 import com.aurealab.model.cashRegister.entity.ProductEntity;
