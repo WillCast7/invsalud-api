@@ -3,6 +3,7 @@ package com.aurealab.service.impl;
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.RoleDTO;
 import com.aurealab.dto.UserDTO;
+import com.aurealab.mapper.UserMapper;
 import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.entity.UserEntity;
 import com.aurealab.model.aurea.repository.UserRepository;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Value("${security.users.defaultpass}")
     private String defaultPass;
 
@@ -42,10 +44,9 @@ public class UserServiceImpl implements UserService {
             users = userRepository.findAll(pageable);
             if (users.hasContent()) {
                 List<UserDTO> dtoList = new ArrayList<>();
-                UserMapper userMapper = new UserMapper();
 
                 for (UserEntity user : users) {
-                    dtoList.add(userMapper.setEntityToDTO(user));
+                    dtoList.add(UserMapper.toDto(user));
                 }
                 response = APIResponseDTO.withPageable(dtoList, constants.messages.consultGood, users.getPageable());
             } else {
@@ -57,101 +58,19 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    public class UserMapper {
-        //Convert entity to dto
-        public UserDTO setEntityToDTO(UserEntity userParam) {
-            if (userParam == null) {
-                return null;
-            }
-
-
-            return UserDTO.builder()
-                    .userId(userParam.getId())
-                    .userName(userParam.getUserName())
-                    .email(userParam.getEmail())
-                    .build();
+    public APIResponseDTO<UserDTO> getUserResponse(Long id) {
+        UserDTO user = getSimplyUserById(id);
+        if(user.equals(null)){
+            throw new RuntimeException(constants.messages.noData);
         }
 
-        // RolesEntity to RoleDTO conversion
-        public RoleDTO setRoleToDTO(RoleEntity role) {
-            if (role == null) {
-                return null;
-            }
-
-            return RoleDTO.builder()
-                    .rolId(role.getRolId())
-                    .rolDescription(role.getRolDescription())
-                    .role(role.getRole())
-                    .status(role.isStatus())
-                    .roleName(role.getRoleName())
-                    .build();
-        }
-
-
-        //Convert DTO to Entity
-        public UserEntity setDTOToEntity(UserDTO userParam) {
-            if (userParam == null) {
-                return null;
-            }
-
-            RoleEntity dtRole = setRoleToEntity(userParam.getRole());
-
-            UserEntity uaerEntity = new UserEntity();
-            uaerEntity.setId(userParam.getUserId());
-            uaerEntity.setUserName(userParam.getUserName());
-
-            UserEntity userEntity = new UserEntity();
-            userEntity.setId(userParam.getUserId());
-            userEntity.setUserName(userParam.getUserName());
-
-            userEntity.setEmail(userParam.getEmail());
-
-            return userEntity;
-        }
-
-        // RoleDTO to RoleEntity conversion
-        public RoleEntity setRoleToEntity(RoleDTO role) {
-            if (role == null) {
-                return null;
-            }
-
-            RoleEntity roleEntity = new RoleEntity();
-            roleEntity.setRolId(role.getRolId());
-            roleEntity.setRole(role.getRole());
-            roleEntity.setRoleName(role.getRoleName());
-            roleEntity.setStatus(role.isStatus());
-            return roleEntity;
-        }
-
-    }
-
-    public APIResponseDTO<UserDTO> getUser(Long id) {
-        APIResponseDTO<UserDTO> response;
-        Optional<UserEntity> userOptional = userRepository.findById(id);
-
-        UserDTO userDTO = null;
-        if (userOptional.isPresent()) {
-            UserMapper userMapper = new UserMapper();
-            userDTO = userMapper.setEntityToDTO(userOptional.get());
-            response = APIResponseDTO.success(userDTO, constants.messages.consultGood);
-        } else {
-            response = APIResponseDTO.failure(constants.messages.dontFoundByID, constants.messages.dontFoundByID);
-        }
-
-        return response;
+        return APIResponseDTO.success(user, constants.messages.consultGood);
     }
 
     public APIResponseDTO<String> saveUser(UserDTO user) {
         APIResponseDTO<String> response;
-        UserEntity userEntity;
-
         try {
-            UserMapper userMapper = new UserMapper();
-            userEntity = userMapper.setDTOToEntity(user);
-            userRepository.save(userEntity);
-
-            log.info("Usuario guardado: {}", userEntity.getUserName());
-
+            userRepository.save(UserMapper.toEntity(user));
             response = APIResponseDTO.success(constants.success.savedSuccess, constants.success.savedSuccess);
 
         } catch (DataIntegrityViolationException e) {
@@ -176,4 +95,16 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    public UserDTO getSimplyUserById(Long id){
+        Optional<UserEntity> userOptional = userRepository.findById(id);
+
+        if (userOptional.isPresent()){
+            System.out.println("Esta presente");
+            System.out.println(userOptional.get().getPerson().getNames());
+            return com.aurealab.mapper.UserMapper.toDtoSimplyResponse(userOptional.get());
+        } else {
+            System.out.println("No esta presente");
+            return null;
+        }
+    }
 }

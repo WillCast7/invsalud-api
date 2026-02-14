@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 public class UserDTO {
 
-    private Long userId;
+    private Long id;
 
     @NotBlank(message = "El correo no puede estar vacío.")
     @Email(message = "El correo electrónico debe ser válido.")
@@ -27,5 +27,7 @@ public class UserDTO {
     private PersonDTO person;
 
     private RoleDTO role;
+
+    private CompanyDTO company;
 
 }

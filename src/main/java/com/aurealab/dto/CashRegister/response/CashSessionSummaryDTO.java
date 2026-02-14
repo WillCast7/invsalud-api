@@ -5,5 +5,7 @@ import java.math.BigDecimal;
 public record CashSessionSummaryDTO(
     BigDecimal totalIncome,
     BigDecimal totalExpense,
-    BigDecimal netBalance
+    BigDecimal netBalance,
+    BigDecimal netCashBalance
+
 ){}

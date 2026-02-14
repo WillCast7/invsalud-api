@@ -17,8 +17,10 @@ public interface CashMovementService {
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue);
     ResponseEntity<APIResponseDTO<Object>> getIncomeFormParams();
     ResponseEntity<APIResponseDTO<Object>> getExpenseFormParams();
-    public CashMovementResponseDTO saveMovement(CashMovementRequestDTO movement, Long chargeId, Long customerId, String type);
+    public CashMovementResponseDTO saveMovement(CashMovementRequestDTO movement, Long chargeId, Long customerId, String type, String expense);
     public ResponseEntity<APIResponseDTO<String>> saveIncomeTransaction(ThirdPartyDTO thirdParty, CashMovementRequestDTO transaction);
     public ResponseEntity<APIResponseDTO<String>> saveExpenseTransaction(ThirdPartyDTO thirdParty, CashMovementRequestDTO transaction);
     public ResponseEntity<APIResponseDTO<CashSessionSummaryDTO>> calculateTotalAmount(Long id);
+    public Set<CashMovementResponseDTO> findAllByCashSessionId(Long id);
+    public CashSessionSummaryDTO getSummaries(Long id);
 }

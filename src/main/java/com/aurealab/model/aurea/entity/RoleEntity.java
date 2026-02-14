@@ -1,25 +1,23 @@
 package com.aurealab.model.aurea.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "roles")
 @Entity
 @Builder
-@Data
-@Table(name = "roles")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoleEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rolId;
+    private Long id;
 
     @Column(name = "role")
     private String role;
@@ -39,4 +37,8 @@ public class RoleEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<PermissionEntity> permissionList = new HashSet<>();
+
+    public RoleEntity(Long id){
+        this.id = id;
+    }
 }

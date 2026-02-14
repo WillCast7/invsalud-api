@@ -70,6 +70,9 @@ public class CashMovementServiceImpl implements CashMovementService {
     @Autowired
     ProductService productService;
 
+    @Autowired
+    DocumentSequenceServiceImpl documentSequenceService;
+
     private String tenancy = "conduvalle";
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
 
@@ -78,8 +81,6 @@ public class CashMovementServiceImpl implements CashMovementService {
                 cashSessionService.findOpenedSession()
             );
 
-        System.out.println("sessions");
-        System.out.println(sessions);
 
         if (sessions.todaySession() == null){
             return ResponseEntity.ok(APIResponseDTO.success(sessions, constants.messages.noData));
@@ -200,7 +201,8 @@ public class CashMovementServiceImpl implements CashMovementService {
                     income,
                     chargeSaved.id(),
                     chargeSaved.thirdParty().id(),
-                    constants.configParam.incomeTransaction
+                    constants.configParam.incomeTransaction,
+                    constants.configParam.incomePrefix
             );
 
         } catch (Exception e) {
@@ -222,7 +224,9 @@ public class CashMovementServiceImpl implements CashMovementService {
                 transaction,
                 chargeSaved.id(),
                 chargeSaved.thirdParty().id(),
-                constants.configParam.expenseTransaction
+                constants.configParam.expenseTransaction,
+                constants.configParam.expensePrefix
+
         );
 
         return ResponseEntity.ok(APIResponseDTO.success(constants.messages.responseSaveUserGood, constants.success.savedSuccess));
@@ -230,7 +234,6 @@ public class CashMovementServiceImpl implements CashMovementService {
     }
 
     public ResponseEntity<APIResponseDTO<CashSessionSummaryDTO>> calculateTotalAmount(Long id){
-
         try{
             return ResponseEntity.ok(APIResponseDTO.success(getSummaries(id), constants.success.findedSuccess));
         } catch (RuntimeException e) {
@@ -259,9 +262,13 @@ public class CashMovementServiceImpl implements CashMovementService {
         });
     }
 
-    public CashMovementResponseDTO saveMovement(CashMovementRequestDTO movement, Long chargeId, Long customerId, String type){
+    public CashMovementResponseDTO saveMovement(CashMovementRequestDTO movement, Long chargeId, Long customerId, String type, String prefix){
 
         CashMovementEntity cashMovementEntity = CashMovementMapper.toEntity(movement, chargeId, customerId, type);
+        String referenceNumber = documentSequenceService.getNextInvoiceNumber(prefix);
+
+        cashMovementEntity.setReferenceNumber(referenceNumber);
+
         cashMovementEntity.setCreatedBySystemUserId(jwtUtils.getCurrentUserId());
 
         CashMovementResponseDTO response = tenantService.executeInTenant(tenancy, () -> {
@@ -279,7 +286,8 @@ public class CashMovementServiceImpl implements CashMovementService {
             return new CashSessionSummaryDTO(
                     projection.getTotalIncome(),
                     projection.getTotalExpense(),
-                    projection.getNetBalance()
+                    projection.getNetBalance(),
+                    projection.getNetCashBalance()
             );
         });
     }

@@ -26,7 +26,8 @@ public class CashMovementMapper {
                 entity.getAdvisor(),
                 entity.isVoid(),
                 entity.getCreatedAt(),
-                entity.getCreatedBySystemUserId()
+                entity.getCreatedBySystemUserId(),
+                entity.getReferenceNumber()
         );
     }
 
@@ -49,7 +50,8 @@ public class CashMovementMapper {
                 entity.getAdvisor(),
                 entity.isVoid(),
                 entity.getCreatedAt(),
-                entity.getCreatedBySystemUserId()
+                entity.getCreatedBySystemUserId(),
+                entity.getReferenceNumber()
         );
     }
 
@@ -75,9 +77,7 @@ public class CashMovementMapper {
         entity.setPaymentMethod(new PaymentMethodEntity(dto.paymentMethodId()));
         entity.setAdvisor(dto.advisorId());
         entity.setVoid(false);
-
-        System.out.println("entity - ");
-        System.out.println(entity);
+        entity.setReferenceNumber(dto.referenceNumber());
 
         return entity;
     }

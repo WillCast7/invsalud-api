@@ -59,4 +59,7 @@ public class CashMovementEntity {
 
     @Column(name = "created_by_system_user_id")
     private Long createdBySystemUserId;
+
+    @Column(name = "reference_number")
+    private String referenceNumber;
 }

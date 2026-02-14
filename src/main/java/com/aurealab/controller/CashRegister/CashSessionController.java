@@ -4,8 +4,10 @@ import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.LoginRequest;
 import com.aurealab.service.CashRegister.CashSessionService;
+import com.aurealab.service.CashRegister.PdfReportService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +27,6 @@ public class CashSessionController {
     public ResponseEntity<APIResponseDTO<CashSessionDTO>> finalizeCashSession(@RequestBody CashSessionDTO cashSessionDTO){
         return cashSessionService.finalizeCashSession(cashSessionDTO);
     }
+
 
 }

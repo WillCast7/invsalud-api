@@ -2,15 +2,15 @@ package com.aurealab.dto;
 
 import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+import java.util.Set;
+
+
 @Builder
-public class RoleDTO {
-    private Long rolId;
-    private String role;
-    private String rolDescription;
-    private String roleName;
-    private boolean status;
-}
+public record RoleDTO(
+    Long id,
+    String role,
+    String rolDescription,
+    String roleName,
+    boolean status,
+    Set<PermisionDTO> permisionList
+){}

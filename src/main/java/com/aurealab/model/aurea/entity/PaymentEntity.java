@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +23,7 @@ import java.util.Date;
 
         @ManyToOne
         @JoinColumn(name = "company_id", nullable = false) // Clave foránea
-        private CompaniesEntity company;
+        private CompanyEntity company;
 
         private BigDecimal amount;
 

@@ -16,14 +16,15 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 @Table(name = "users")
-public class UserEntity {
+public class
+UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
-    private CompaniesEntity company;
+    private CompanyEntity company;
 
     @Column(unique = true)
     private String email;

@@ -6,4 +6,5 @@ public interface CashSessionSummaryProjection {
     BigDecimal getTotalIncome();
     BigDecimal getTotalExpense();
     BigDecimal getNetBalance();
+    BigDecimal getNetCashBalance();
 }

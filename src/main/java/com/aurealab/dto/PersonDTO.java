@@ -13,10 +13,12 @@ import java.time.LocalDate;
 @Builder
 public class PersonDTO {
 
-    private Long personId;
+    private Long id;
+
+    private String dniType;
 
     @NotBlank(message = "El numero de identificacion no puede estar vacío.")
-    private String dni;
+    private String dniNumber;
 
     @NotBlank(message = "falta llenar los nombres no puede estar vacío.")
     private String names;

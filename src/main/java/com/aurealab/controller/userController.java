@@ -26,7 +26,7 @@ public class userController {
 
     @GetMapping(value = "/{id}" ,produces = "application/json")
     public APIResponseDTO<UserDTO> getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+        return userService.getUserResponse(id);
     }
 
     @PostMapping(produces = "application/json")

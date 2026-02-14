@@ -58,12 +58,16 @@ public class constants {
         public static final String documentType = "documentType";
         public static final String incomeTransaction = "INCOME";
         public static final String expenseTransaction = "EXPENSE";
+        public static final String expenseTransactionVar = "Salida";
+        public static final String incomeTransactionVar = "Venta";
         public static final String statusTransactionPending = "PENDING";
         public static final String statusTransactionPartial = "PARTIAL";
         public static final String statusTransactionPaid = "PAID";
         public static final String statusOpen = "OPEN";
         public static final String statusClose = "CLOSED";
         public static final String thirdPartyRoleCustomer = "cliente";
+        public static final String incomePrefix = "FE";
+        public static final String expensePrefix = "FS";
     }
 
     public static class utilLogs{

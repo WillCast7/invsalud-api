@@ -22,6 +22,7 @@ public record CashMovementResponseDTO(
         int advisor,
         boolean isVoid,
         OffsetDateTime createdAt,
-        Long createdBySystemUserId
+        Long createdBySystemUserId,
+        String referenceNumber
 ){
 }

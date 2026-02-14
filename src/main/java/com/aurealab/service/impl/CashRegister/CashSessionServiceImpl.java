@@ -17,8 +17,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,7 +34,6 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     private String tenancy = "conduvalle";
 
-
     public ResponseEntity<APIResponseDTO<Set<CashSessionDTO>>> getAllSessions(){
         return ResponseEntity.ok(APIResponseDTO.success(findAll(), constants.messages.consultGood));
     }
@@ -51,6 +48,15 @@ public class CashSessionServiceImpl implements CashSessionService {
     public Page<CashSessionDTO> findAll(Pageable pageable) {
         return cashSessionRepository.findAll(pageable)
                 .map(CashSessionMapper::toDto);
+    }
+
+    public CashSessionDTO findById(Long id) {
+        CashSessionEntity cashSessionEntity =
+        tenantService.executeInTenant(tenancy, () -> {
+            return cashSessionRepository.findById(id).get();
+        });
+
+        return CashSessionMapper.toDto(cashSessionEntity);
     }
 
     public CashSessionDTO findTodaySession() {
@@ -116,7 +122,6 @@ public class CashSessionServiceImpl implements CashSessionService {
     }
 
     public CashSessionDTO findAndUpdate(CashSessionDTO cashSessionDTO){
-        System.out.println("y esta weona?");
 
         return tenantService.executeInTenant(tenancy, () -> {
             CashSessionEntity cashSessionFinded = cashSessionRepository.findById(cashSessionDTO.id()).get();
@@ -127,4 +132,5 @@ public class CashSessionServiceImpl implements CashSessionService {
             return createCashSession(cashSessionFinded);
         });
     }
+
 }

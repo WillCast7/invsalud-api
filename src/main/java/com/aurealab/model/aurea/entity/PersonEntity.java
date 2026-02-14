@@ -21,9 +21,11 @@ public class PersonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String dni_type;
+    @Column(name = "dni_type")
+    private String dniType;
 
-    private String dni_number;
+    @Column(name = "dni_number")
+    private String dniNumber;
 
     private String names;
 
