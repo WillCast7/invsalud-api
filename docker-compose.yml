@@ -5,3 +5,10 @@ services:
       - "9090:9090"
     env_file:
       - .env
+    networks:
+      - kayros-shared-net
+
+  networks:
+    kayros-shared-net:
+      external: true
+      name: kayros-network
