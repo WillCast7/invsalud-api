@@ -18,8 +18,8 @@ public class WebConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList( // Origen específico permitido
                 "http://localhost:4200",         // Para pruebas locales
-                "http://willcast.com",         // Tu dominio final
-                "https://willcast.com",        // Si usas SSL/HTTPS
+                "http://willcast.cloud",         // Tu dominio final
+                "https://willcast.cloud",        // Si usas SSL/HTTPS
                 "http://76.13.30.238"           // La IP de tu VPS de Hostinger
         ));
         config.addAllowedHeader("*");
