@@ -8,7 +8,7 @@ services:
     networks:
       - kayros-shared-net
 
-  networks:
-    kayros-shared-net:
-      external: true
-      name: kayros-network
+networks:
+  kayros-shared-net:
+    external: true
+    name: kayros-network
