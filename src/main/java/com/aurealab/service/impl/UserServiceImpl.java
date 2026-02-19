@@ -107,4 +107,15 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
+
+    public UserDTO getUserById(Long id){
+        Optional<UserEntity> userOptional = userRepository.findById(id);
+
+        if (userOptional.isPresent()){
+            return com.aurealab.mapper.UserMapper.toDtoResponse(userOptional.get());
+        } else {
+            System.out.println("No esta presente");
+            return null;
+        }
+    }
 }

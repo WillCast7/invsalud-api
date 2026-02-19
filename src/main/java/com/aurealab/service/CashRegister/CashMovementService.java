@@ -23,4 +23,5 @@ public interface CashMovementService {
     public ResponseEntity<APIResponseDTO<CashSessionSummaryDTO>> calculateTotalAmount(Long id);
     public Set<CashMovementResponseDTO> findAllByCashSessionId(Long id);
     public CashSessionSummaryDTO getSummaries(Long id);
+    public CashMovementResponseDTO findById(Long id);
 }

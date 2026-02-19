@@ -23,6 +23,21 @@ public class UserMapper {
         );
     }
 
+    /* ===================== Entity -> DTO ===================== */
+    public static UserDTO toDtoResponse(UserEntity entity) {
+        if (entity == null) return null;
+
+        return new UserDTO(
+                entity.getId(),
+                entity.getEmail(),
+                entity.getUserName(),
+                null,
+                PersonMapper.toDto(entity.getPerson()),
+                null,
+                CompanyMapper.toDto(entity.getCompany())
+        );
+    }
+
     public static UserDTO toDtoSimplyResponse(UserEntity entity) {
         if (entity == null) return null;
 

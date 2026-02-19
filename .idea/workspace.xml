@@ -4,7 +4,54 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="" />
+    <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/CashRegister/PdfReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/CashRegister/PdfReportController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/ChargeDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/ChargeDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/response/CashMovementResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/response/CashMovementResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CompanyDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CompanyDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CashRegister/CashMovementMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CashRegister/CashMovementMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CashRegister/ChargeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CashRegister/ChargeMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CompanyMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CompanyMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/CompanyEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/CompanyEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/entity/CashMovementEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/entity/CashMovementEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/entity/ChargeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/entity/ChargeEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/repository/ChargeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/repository/ChargeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/CashMovementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/CashMovementService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/ChargeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/ChargeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/PdfReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/PdfReportService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/PdfReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/pdf/PdfReportServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/WebConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/config/WebConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/controller/CashRegister/PdfReportController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/controller/CashRegister/PdfReportController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO$ChargeDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO$ChargeDTOBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/response/CashMovementResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/response/CashMovementResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CompanyDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CompanyDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CashRegister/CashMovementMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CashRegister/CashMovementMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CashRegister/ChargeMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CashRegister/ChargeMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CompanyMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CompanyMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/UserMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity$CompanyEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity$CompanyEntityBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashMovementEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashMovementEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ChargeEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ChargeEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/repository/ChargeRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/repository/ChargeRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/CashRegister/CashMovementService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/CashRegister/CashMovementService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/CashRegister/ChargeService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/CashRegister/ChargeService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/CashRegister/PdfReportService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/CashRegister/PdfReportService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/PdfReportServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,7 +97,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/media/willcast/Datos/proyectos/kairos/api&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/israe/Desktop/proyectos/kairos/api&quot;
   }
 }</component>
   <component name="RecentsManager">

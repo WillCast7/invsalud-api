@@ -10,4 +10,5 @@ public interface UserService {
     public APIResponseDTO<UserDTO> getUserResponse(Long id);
     public UserDTO getSimplyUserById(Long id);
     public APIResponseDTO<String> saveUser(UserDTO user);
+    public UserDTO getUserById(Long id);
 }

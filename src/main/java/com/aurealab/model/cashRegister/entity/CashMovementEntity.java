@@ -26,11 +26,11 @@ public class CashMovementEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "charge_id")
-    private ChargeEntity charge;
+    private ChargeEntity charge; //cuenta  del usuario
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private ThirdPartyEntity customer;
+    private ThirdPartyEntity customer; //cliente, a quien sale esta factura
 
     private String type;
 
@@ -62,4 +62,6 @@ public class CashMovementEntity {
 
     @Column(name = "reference_number")
     private String referenceNumber;
+
+    private String observations;
 }

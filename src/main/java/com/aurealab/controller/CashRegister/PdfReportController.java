@@ -20,4 +20,9 @@ public class PdfReportController {
     public ResponseEntity<InputStreamResource> downloadReport(@PathVariable Long id){
         return pdfReportService.downloadReport(id);
     }
+
+    @GetMapping(value = "/invoice/{id}")
+    public ResponseEntity<InputStreamResource> downloadInvoice(@PathVariable Long id){
+        return pdfReportService.downloadInvoice(id);
+    }
 }

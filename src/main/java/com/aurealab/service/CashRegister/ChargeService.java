@@ -11,7 +11,7 @@ import java.util.List;
 public interface ChargeService {
     public ChargeDTO findById(Long id);
     public List<ChargeDTO> findAll();
-    public ChargeDTO saveIncome(ThirdPartyDTO thirdParty, BigDecimal totalAmount);
+    public ChargeDTO saveIncome(ThirdPartyDTO thirdParty, BigDecimal expectedAmount, BigDecimal receivedAmount);
     public ChargeDTO saveExpense(ThirdPartyDTO thirdPartyId, BigDecimal totalAmount);
     public ResponseEntity<APIResponseDTO<ChargeDTO>> findByCustomerId(Long id);
 

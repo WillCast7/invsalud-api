@@ -16,6 +16,7 @@ public class CompanyMapper {
 
         return new CompanyDTO(
                 entity.getId(),
+                entity.getNit(),
                 entity.getName(),
                 entity.getLegalName(),
                 entity.getTaxId(),
@@ -39,6 +40,7 @@ public class CompanyMapper {
 
         CompanyEntity entity = new CompanyEntity();
         entity.setId(dto.id());
+        entity.setNit(dto.nit());
         entity.setName(dto.name());
         entity.setLegalName(dto.legalName());
         entity.setTaxId(dto.taxId());

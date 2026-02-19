@@ -27,7 +27,8 @@ public class CashMovementMapper {
                 entity.isVoid(),
                 entity.getCreatedAt(),
                 entity.getCreatedBySystemUserId(),
-                entity.getReferenceNumber()
+                entity.getReferenceNumber(),
+                entity.getObservations()
         );
     }
 
@@ -51,7 +52,8 @@ public class CashMovementMapper {
                 entity.isVoid(),
                 entity.getCreatedAt(),
                 entity.getCreatedBySystemUserId(),
-                entity.getReferenceNumber()
+                entity.getReferenceNumber(),
+                entity.getObservations()
         );
     }
 
@@ -78,6 +80,7 @@ public class CashMovementMapper {
         entity.setAdvisor(dto.advisorId());
         entity.setVoid(false);
         entity.setReferenceNumber(dto.referenceNumber());
+        entity.setObservations(dto.observations());
 
         return entity;
     }

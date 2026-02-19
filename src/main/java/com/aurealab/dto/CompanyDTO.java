@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record CompanyDTO(
     Long id,
+    String nit,
     String name,
     String legalName,
     String taxId,

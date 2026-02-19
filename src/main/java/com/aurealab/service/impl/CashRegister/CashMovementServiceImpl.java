@@ -195,7 +195,7 @@ public class CashMovementServiceImpl implements CashMovementService {
             }
             ThirdPartyDTO customerSaved = thirdPartyService.saveThirdParty(customer);
 
-            ChargeDTO chargeSaved = chargeService.saveIncome(customerSaved, income.receivedAmount());
+            ChargeDTO chargeSaved = chargeService.saveIncome(customerSaved, income.expectedAmount(), income.receivedAmount());
 
             saveMovement(
                     income,
@@ -289,6 +289,13 @@ public class CashMovementServiceImpl implements CashMovementService {
                     projection.getNetBalance(),
                     projection.getNetCashBalance()
             );
+        });
+    }
+
+    public CashMovementResponseDTO findById(Long id){
+        return tenantService.executeInTenant(tenancy, () -> {
+            return CashMovementMapper.toDto(cashMovementRepository.findById(id).get());
+
         });
     }
 }

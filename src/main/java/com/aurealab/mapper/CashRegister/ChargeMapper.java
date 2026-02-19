@@ -5,6 +5,7 @@ import com.aurealab.model.cashRegister.entity.ChargeEntity;
 import com.aurealab.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class ChargeMapper {
                 entity.getId(),
                 entity.getThirdParty() != null ? ThirdPartyMapper.toDto(entity.getThirdParty()) : null,
                 entity.getTotalAmount(),
+                entity.getPaidAmount(),
+                entity.getBalance(),
                 entity.getStatus(),
                 entity.getDescription(),
                 entity.getCreatedBySystemUserId()
@@ -40,6 +43,8 @@ public class ChargeMapper {
                 entity.getId(),
                 null,
                 entity.getTotalAmount(),
+                entity.getPaidAmount(),
+                entity.getBalance(),
                 entity.getStatus(),
                 entity.getDescription(),
                 entity.getCreatedBySystemUserId()
@@ -57,9 +62,11 @@ public class ChargeMapper {
         entity.setId(dto.id());
         entity.setThirdParty(ThirdPartyMapper.toEntity(dto.thirdParty()));
         entity.setTotalAmount(dto.totalAmount());
+        entity.setBalance(dto.balance());
+        entity.setPaidAmount(dto.paidAmount());
         entity.setStatus(dto.status());
         entity.setDescription(dto.description());
-        entity.setCreatedBySystemUserId(dto.setCreatedBySystemUserId());
+        entity.setCreatedBySystemUserId(dto.createdBySystemUserId());
 
         return entity;
     }

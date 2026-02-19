@@ -10,8 +10,10 @@ public record ChargeDTO(
         Long id,
         ThirdPartyDTO thirdParty,
         BigDecimal totalAmount,
+        BigDecimal paidAmount,
+        BigDecimal balance,
         String status,
         String description,
-        Long setCreatedBySystemUserId
+        Long createdBySystemUserId
 ) {
 }

@@ -27,6 +27,12 @@ public class ChargeEntity {
     @Column(precision = 19, scale = 4, name = "total_amount")
     private BigDecimal totalAmount;
 
+    @Column(precision = 19, scale = 4, name = "paid_amount")
+    private BigDecimal paidAmount;
+
+    @Column(precision = 19, scale = 4, name = "balance")
+    private BigDecimal balance;
+
     private String status = "PENDING";
 
     private String description;

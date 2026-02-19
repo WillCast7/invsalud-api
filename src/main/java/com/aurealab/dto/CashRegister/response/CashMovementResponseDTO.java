@@ -23,6 +23,7 @@ public record CashMovementResponseDTO(
         boolean isVoid,
         OffsetDateTime createdAt,
         Long createdBySystemUserId,
-        String referenceNumber
+        String referenceNumber,
+        String observations
 ){
 }
