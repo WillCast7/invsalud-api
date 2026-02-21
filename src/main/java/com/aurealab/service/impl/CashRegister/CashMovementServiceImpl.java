@@ -268,7 +268,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         return tenantService.executeInTenant(tenancy, () -> {
             Page<CashMovementEntity> entities = cashMovementRepository.findAll(spec, pageable);
-            return entities.map(CashMovementMapper::toDtoList);
+            return entities.map(CashMovementMapper::toDtoTable);
         });
     }
 
