@@ -2,11 +2,18 @@ package com.aurealab.service.impl.CashRegister;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyDTO;
+import com.aurealab.dto.CashRegister.request.ThirdPartyRequestDTO;
+import com.aurealab.dto.ConfigParamDTO;
+import com.aurealab.dto.CustomerTableDTO;
 import com.aurealab.mapper.CashRegister.ThirdPartyMapper;
 import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRepository;
+import com.aurealab.service.CashRegister.ThirdPartyRoleService;
 import com.aurealab.service.CashRegister.ThirdPartyService;
+import com.aurealab.service.ConfigParamService;
+import com.aurealab.service.CustomerService;
 import com.aurealab.service.impl.shared.TenantService;
+import com.aurealab.util.JwtUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,18 +31,27 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     @Autowired
     TenantService tenantService;
 
+    @Autowired
+    ConfigParamService configParamsService;
+
+    @Autowired
+    JwtUtils jwtUtils;
+
+    @Autowired
+    ThirdPartyRoleService thirdPartyRoleService;
+
     private final String tenancy = "conduvalle";
 
-    public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomers(String documentNumber){
+    public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomersByDocumentNumber(String documentNumber){
+        System.out.println("documentNumber");
+        System.out.println(documentNumber);
 
         return ResponseEntity.ok(APIResponseDTO.success(findByDniNumberContaining(documentNumber), constants.success.findedSuccess));
     }
 
     public Set<ThirdPartyDTO> findByDniNumberContaining(String documentNumber){
         Set<ThirdPartyDTO> response = new HashSet<>();
-        Set<ThirdPartyEntity> thirdPartyEntities = tenantService.executeInTenant(tenancy, () -> {
-            return thirdPartyRepository.findByDniNumberContaining(documentNumber);
-        });
+        Set<ThirdPartyEntity> thirdPartyEntities = tenantService.executeInTenant(tenancy, () -> thirdPartyRepository.findByDniNumberContaining(documentNumber));
 
         thirdPartyEntities.forEach(thirdPartyEntity -> response.add(ThirdPartyMapper.toDto(thirdPartyEntity)));
 
@@ -63,6 +79,23 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
         return response;
     }
 
+    public ResponseEntity<APIResponseDTO<ThirdPartyDTO>> saveCustomer(ThirdPartyRequestDTO thirdPartyDTO){
+
+        System.out.println("thirdPartyDTO.rolesIds()");
+        System.out.println(thirdPartyRoleService.findAllEntitiesByIds(thirdPartyDTO.rolesIds()));
+        ThirdPartyDTO thirdParty = ThirdPartyDTO.builder()
+                .documentType(thirdPartyDTO.documentType())
+                .documentNumber(thirdPartyDTO.documentNumber())
+                .fullName(thirdPartyDTO.fullName())
+                .email(thirdPartyDTO.email())
+                .address(thirdPartyDTO.address())
+                .phoneNumber(thirdPartyDTO.phoneNumber())
+                .createdBySystemUserId(jwtUtils.getCurrentUserId())
+                .roles(thirdPartyRoleService.findAllEntitiesByIds(thirdPartyDTO.rolesIds()))
+                .build();
+        return ResponseEntity.ok(APIResponseDTO.success(saveThirdParty(thirdParty), constants.success.savedSuccess));
+    }
+
     public ThirdPartyDTO saveThirdParty(ThirdPartyDTO thirdParty){
         System.out.println("save");
         return tenantService.executeInTenant(tenancy, () -> {
@@ -83,4 +116,5 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                         )
         );
     }
+
 }

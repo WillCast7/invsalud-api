@@ -2,7 +2,11 @@ package com.aurealab.mapper.CashRegister;
 
 import com.aurealab.dto.CashRegister.request.CashMovementRequestDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
+import com.aurealab.dto.tables.CashMovementTableDTO;
 import com.aurealab.model.cashRegister.entity.*;
+import com.aurealab.util.constants;
+
+import java.util.Objects;
 
 
 public class CashMovementMapper {
@@ -54,6 +58,26 @@ public class CashMovementMapper {
                 entity.getCreatedBySystemUserId(),
                 entity.getReferenceNumber(),
                 entity.getObservations()
+        );
+    }
+    /* ===================== Entity -> TableDTO ===================== */
+    public static CashMovementTableDTO toDtoTable(CashMovementEntity entity) {
+        System.out.println("Entra al tdoList");
+        if (entity == null) return null;
+        return new CashMovementTableDTO(
+                entity.getId(),
+                ThirdPartyMapper.toDtoList(entity.getCustomer()).fullName() ,
+                Objects.equals(entity.getType(), constants.configParam.incomeTransaction) ?
+                constants.configParam.incomeTransactionVar : constants.configParam.expenseTransactionVar,
+                entity.getExpectedAmount(),
+                entity.getReceivedAmount(),
+                entity.getConcept(),
+                entity.getProduct(),
+                PaymentMethodMapper.toDto(entity.getPaymentMethod()).name(),
+                entity.isVoid(),
+                entity.getReferenceNumber(),
+                Objects.equals(entity.getType(), constants.configParam.incomeTransaction) ?
+                        constants.colors.success : constants.colors.danger
         );
     }
 

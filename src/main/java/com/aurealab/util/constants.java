@@ -70,6 +70,19 @@ public class constants {
         public static final String expensePrefix = "FS";
     }
 
+    public static class colors{
+        public static final String primary = "primary";
+        public static final String secondary = "secondary";
+        public static final String success = "success";
+        public static final String danger = "danger";
+        public static final String warning = "warning";
+        public static final String info = "info";
+        public static final String light = "light";
+        public static final String dark = "dark";
+
+    }
+
+
     public static class utilLogs{
         public static final String separator = " ----------------------------------------------------------------- ";
     }

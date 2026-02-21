@@ -1,7 +1,9 @@
 package com.aurealab.service.impl.CashRegister;
 
+import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyRoleDTO;
 import com.aurealab.mapper.CashRegister.ThirdPartyRoleMapper;
+import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.cashRegister.entity.TPRoleEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRoleRepository;
 import com.aurealab.service.CashRegister.ThirdPartyRoleService;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -34,4 +37,31 @@ public class ThirdPartyRoleServiceImpl implements ThirdPartyRoleService{
         return roleDTOS;
 
     }
+
+    public Set<ThirdPartyRoleDTO> findAllEntitiesByIds(List<Long> ids) {
+        return tenantService.executeInTenant(tenancy, () -> {
+            Set<ThirdPartyRoleDTO> thirdPartyRole = new HashSet<>();
+
+            List<TPRoleEntity> tpRoleEntities = thirdPartyRoleRepository.findAllById(ids);
+
+            tpRoleEntities.forEach(tpRoleEntity ->
+                    thirdPartyRole.add(ThirdPartyRoleMapper.toDto(tpRoleEntity))
+            );
+            return thirdPartyRole;
+        });
+    }
+
+    public Set<ThirdPartyRoleDTO> findAll() {
+        return tenantService.executeInTenant(tenancy, () -> {
+            Set<ThirdPartyRoleDTO> thirdPartyRole = new HashSet<>();
+
+            List<TPRoleEntity> tpRoleEntities = thirdPartyRoleRepository.findAll();
+
+            tpRoleEntities.forEach(tpRoleEntity ->
+                    thirdPartyRole.add(ThirdPartyRoleMapper.toDto(tpRoleEntity))
+            );
+            return thirdPartyRole;
+        });
+    }
+
 }

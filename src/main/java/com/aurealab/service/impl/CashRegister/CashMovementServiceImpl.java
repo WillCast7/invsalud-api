@@ -7,6 +7,7 @@ import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionsResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
+import com.aurealab.dto.tables.CashMovementTableDTO;
 import com.aurealab.mapper.CashRegister.CashMovementMapper;
 import com.aurealab.mapper.CashRegister.PaymentMethodMapper;
 import com.aurealab.model.aurea.interfaz.CashSessionSummaryProjection;
@@ -253,6 +254,15 @@ public class CashMovementServiceImpl implements CashMovementService {
     }
 
     public Page<CashMovementResponseDTO> findAllByCashSessionId(Long id, String searchValue, Pageable pageable){
+
+        Specification<CashMovementEntity> spec = CashMovementSpecs.searchBySessionAndTerm(id, searchValue);
+
+        return tenantService.executeInTenant(tenancy, () -> {
+            Page<CashMovementEntity> entities = cashMovementRepository.findAll(spec, pageable);
+            return entities.map(CashMovementMapper::toDtoList);
+        });
+    }
+    public Page<CashMovementTableDTO> findAllTableByCashSessionId(Long id, String searchValue, Pageable pageable){
 
         Specification<CashMovementEntity> spec = CashMovementSpecs.searchBySessionAndTerm(id, searchValue);
 

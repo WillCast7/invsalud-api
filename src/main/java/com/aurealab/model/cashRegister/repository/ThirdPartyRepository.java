@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Long> {
 
-    @Query("SELECT DISTINCT tp " +
+    @Query("SELECT tp " +
             "FROM ThirdPartyEntity tp " +
             "JOIN FETCH tp.roles r " +
             "WHERE tp.documentNumber like CONCAT('%', :documentNumber, '%')")
