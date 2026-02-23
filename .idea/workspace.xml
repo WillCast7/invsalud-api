@@ -6,35 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/mapper/CashRegister/CashMovementMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashRegisterServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/ConfigParamServiceImpl$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/ConfigParamServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/SoftwareValidationServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$codeStatus.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$configParam.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$descriptions.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$errors.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$messages.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$roles.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$statuses.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$success.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$utilLogs.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/DataPersistenceException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/GlobalExceptionHandler$ErrorResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/GlobalExceptionHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/TokenException.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
