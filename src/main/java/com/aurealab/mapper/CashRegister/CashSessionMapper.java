@@ -21,7 +21,8 @@ public class CashSessionMapper {
                 entity.getOpenedBySystemUserId(),
                 entity.getClosedBySystemUserId(),
                 entity.getObservations(),
-                entity.getStatus()
+                entity.getStatus(),
+                entity.getCreatedByUserName()
         );
     }
 
@@ -40,6 +41,7 @@ public class CashSessionMapper {
         entity.setClosedBySystemUserId(dto.closedBySystemUserId());
         entity.setObservations(dto.observations());
         entity.setStatus(dto.status());
+        entity.setCreatedByUserName(dto.createdByUserName());
 
         return entity;
     }

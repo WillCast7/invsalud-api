@@ -2,10 +2,12 @@ package com.aurealab.service.impl.CashRegister;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
+import com.aurealab.dto.UserDTO;
 import com.aurealab.mapper.CashRegister.CashSessionMapper;
 import com.aurealab.model.cashRegister.entity.CashSessionEntity;
 import com.aurealab.model.cashRegister.repository.CashSessionRepository;
 import com.aurealab.service.CashRegister.CashSessionService;
+import com.aurealab.service.UserService;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.JwtUtils;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,9 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    UserService userService;
 
     private String tenancy = "conduvalle";
 
@@ -85,7 +90,7 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     public ResponseEntity<APIResponseDTO<CashSessionDTO>> initializeCashSession(CashSessionDTO cashSessionDTO){
         Long idLogged = jwtUtils.getCurrentUserId();
-
+        UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
         if(findTodaySession()!= null){
             throw new RuntimeException(constants.messages.cashSessionExist);
         }
@@ -97,6 +102,7 @@ public class CashSessionServiceImpl implements CashSessionService {
         CashSessionEntity cashSessionEntity = new CashSessionEntity();
         cashSessionEntity.setOpeningAmount(cashSessionDTO.openingAmount());
         cashSessionEntity.setOpenedBySystemUserId(idLogged);
+        cashSessionEntity.setCreatedByUserName(userDTO.getPerson().getNames() + " " + userDTO.getPerson().getSurNames());
         cashSessionEntity.setStatus(constants.configParam.statusOpen);
 
         CashSessionDTO result = createCashSession(cashSessionEntity);

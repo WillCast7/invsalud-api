@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CashRegisterService{
     public ResponseEntity<APIResponseDTO<List<CashSessionEntity>>> getAllSessions();
+    public ResponseEntity<APIResponseDTO<String>> GetAllCashSessions(int page, int size, String searchValue);
 }

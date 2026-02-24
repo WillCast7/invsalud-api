@@ -37,7 +37,7 @@ public class ChargeServiceImpl implements ChargeService {
     }
 
     public ResponseEntity<APIResponseDTO<ChargeDTO>> findByCustomerId(Long thirdPartyId){
-        return ResponseEntity.ok(APIResponseDTO.success(findByThirdPartyId(thirdPartyId), constants.success.findedSuccess));
+        return ResponseEntity.ok(APIResponseDTO.success(findPendingChargeByThirdParty(thirdPartyId), constants.success.findedSuccess));
     }
 
     public ChargeDTO findByThirdPartyId(Long thirdPartyId){

@@ -9,6 +9,7 @@ import com.aurealab.service.CashRegister.CashSessionService;
 import com.aurealab.service.CashRegister.PdfReportService;
 import com.aurealab.service.UserService;
 import com.aurealab.util.JwtUtils;
+import com.aurealab.util.NumberToText;
 import com.aurealab.util.constants;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
@@ -27,6 +28,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -55,13 +57,14 @@ public class PdfReportServiceImpl implements PdfReportService {
         CashSessionDTO session = cashSessionService.findById(sessionId);
         Set<CashMovementResponseDTO> movements = cashMovementService.findAllByCashSessionId(sessionId);
         CashSessionSummaryDTO summary = cashMovementService.getSummaries(sessionId);
-// Este es un ejemplo de un PNG minimalista en Base64
-        String logoBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
 
-// Convertirlo a byte[]
-        byte[] logoQuemado = java.util.Base64.getDecoder().decode(logoBase64);
+        // Este es un ejemplo de un PNG minimalista en Base64
+        UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
+
+        byte[] logo = java.util.Base64.getDecoder().decode(userDTO.getCompany().logoUrl());
+
         // 2. Generar el PDF
-        ByteArrayInputStream bis = generateCashSessionReport(session, movements, summary, logoQuemado);
+        ByteArrayInputStream bis = generateCashSessionReport(session, movements, summary, logo);
 
         // 3. Configurar headers de respuesta
         HttpHeaders headers = new HttpHeaders();
@@ -307,7 +310,8 @@ public class PdfReportServiceImpl implements PdfReportService {
             boxCell.setPadding(0);
             PdfPTable boxInner = new PdfPTable(1);
             boxInner.setWidthPercentage(100);
-            PdfPCell labelBox = new PdfPCell(new Phrase("RECIBO DE CAJA", labelFont));
+            PdfPCell labelBox = new PdfPCell(new Phrase(Objects.equals(move.type(), constants.configParam.incomeTransaction) ?
+                    constants.configParam.incomeTransactionPdf : constants.configParam.expenseTransactionPdf, labelFont));
             labelBox.setBackgroundColor(new Color(180, 180, 180));
             labelBox.setHorizontalAlignment(Element.ALIGN_CENTER);
             labelBox.setBorder(Rectangle.NO_BORDER);
@@ -370,7 +374,7 @@ public class PdfReportServiceImpl implements PdfReportService {
             totalsTable.setWidths(new float[]{4f, 1f, 1f});
 
             // Celda de observación (licencia...)
-            PdfPCell obsCell = new PdfPCell(new Phrase(formatCurrency(move.observations()),
+            PdfPCell obsCell = new PdfPCell(new Phrase(formatCurrency(new NumberToText().convertir(move.receivedAmount())) + " PESOS M/CTE",
                     FontFactory.getFont(FontFactory.HELVETICA, 7)));
             obsCell.setBackgroundColor(lightGray);
             totalsTable.addCell(obsCell);

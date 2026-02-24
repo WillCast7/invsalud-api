@@ -37,33 +37,34 @@ public interface CashMovementRepository extends JpaRepository<CashMovementEntity
     BigDecimal getSummary(@Param("sessionId") Long sessionId);
 
     @Query("""
-        SELECT 
-            COALESCE(SUM(CASE WHEN cm.type = 'INCOME' THEN cm.receivedAmount ELSE 0 END), 0) AS totalIncome,
-            COALESCE(SUM(CASE WHEN cm.type = 'EXPENSE' THEN cm.receivedAmount ELSE 0 END), 0) AS totalExpense,
-            COALESCE(SUM(
-                CASE 
-                    WHEN cm.type = 'INCOME' THEN cm.receivedAmount 
-                    WHEN cm.type = 'EXPENSE' THEN -cm.receivedAmount 
-                    ELSE 0 
-                END
-            ), 0) AS netBalance,
-            
-            COALESCE(SUM(
-                CASE 
-                    WHEN cm.paymentMethod.id = 1 THEN
-                        CASE 
-                            WHEN cm.type = 'INCOME' THEN cm.receivedAmount 
-                            WHEN cm.type = 'EXPENSE' THEN -cm.receivedAmount 
-                            ELSE 0 
-                        END
-                    ELSE 0 
-                END
-            ), 0) AS netCashBalance
-            
-        FROM CashMovementEntity cm
-        WHERE cm.cashSession.id = :sessionId
-        AND cm.isVoid = false
-        """)
+    SELECT 
+        COALESCE(SUM(CASE WHEN cm.type = 'INCOME' THEN cm.receivedAmount ELSE 0 END), 0) AS totalIncome,
+        COALESCE(SUM(CASE WHEN cm.type = 'EXPENSE' THEN cm.receivedAmount ELSE 0 END), 0) AS totalExpense,
+        
+        COALESCE(SUM(
+            CASE 
+                WHEN cm.type = 'INCOME' THEN cm.receivedAmount 
+                WHEN cm.type = 'EXPENSE' THEN -cm.receivedAmount 
+                ELSE 0 
+            END
+        ), 0) AS netBalance,
+        
+        COALESCE(SUM(
+            CASE 
+                WHEN cm.paymentMethod.id = 1 THEN
+                    CASE 
+                        WHEN cm.type = 'INCOME' THEN cm.receivedAmount 
+                        WHEN cm.type = 'EXPENSE' THEN -cm.receivedAmount 
+                        ELSE 0 
+                    END
+                ELSE 0 
+            END
+        ), 0) AS netCashBalance
+        
+    FROM CashMovementEntity cm
+    WHERE cm.cashSession.id = :sessionId
+    AND cm.isVoid = false
+    """)
     CashSessionSummaryProjection getSessionSummary(@Param("sessionId") Long sessionId);
 
     Set<CashMovementEntity> findAllByCashSessionId(@Param("sessionId") Long sessionId);

@@ -14,6 +14,7 @@ public record CashSessionDTO(
             Long openedBySystemUserId,
             Long closedBySystemUserId,
             String observations,
-            String status
+            String status,
+            String createdByUserName
             ) {
 }

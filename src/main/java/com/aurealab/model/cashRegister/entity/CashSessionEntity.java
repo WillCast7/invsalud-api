@@ -47,6 +47,9 @@ public class CashSessionEntity {
     @Column(length = 20)
     private String status = "OPEN"; // OPEN, CLOSED
 
+    @Column(name = "created_by_user_name") // Nuevo campo
+    private String createdByUserName;
+
     public CashSessionEntity(Long id){
         this.id = id;
     }

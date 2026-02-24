@@ -4,10 +4,7 @@ package com.aurealab.controller.CashRegister;
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.request.SaveTransactionDTO;
-import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
-import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
-import com.aurealab.dto.CashRegister.response.CashSessionsResponseDTO;
-import com.aurealab.dto.CashRegister.response.TransactionListSessionResponseDTO;
+import com.aurealab.dto.CashRegister.response.*;
 import com.aurealab.service.CashRegister.CashMovementService;
 import com.aurealab.service.CashRegister.CashRegisterService;
 import jakarta.validation.Valid;
@@ -28,14 +25,27 @@ public class DailyRegisterController {
     @Autowired
     CashMovementService cashMovementService;
 
-    @GetMapping
+    @GetMapping(produces = "application/json", value = "/cashiers")
+    ResponseEntity<APIResponseDTO<String>>  getDailyCashiers(@RequestParam(defaultValue = "1") int page,
+                                                                                  @RequestParam(defaultValue = "10") int size,
+                                                                                  @RequestParam(defaultValue = "") String searchValue){
+        return cashRegisterService.GetAllCashSessions(page, size, searchValue);
+    }
+
+    @GetMapping(produces = "application/json", value = "/transactions")
     ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>>  getDailyTransactions(@RequestParam(defaultValue = "1") int page,
                                                                                   @RequestParam(defaultValue = "10") int size,
                                                                                   @RequestParam(defaultValue = "") String searchValue){
         return cashMovementService.getAllDayTransactions(page, size, searchValue);
     }
 
-    @GetMapping(produces = "application/json", value = "/income")
+    @GetMapping(produces = "application/json", value = "/transaction/{id}")
+    ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>>  getTransactionsById(@PathVariable Long id){
+        return cashMovementService.getCashSessionDetailsById(id);
+    }
+
+
+    @GetMapping(produces = "application/json", value = "/income/params")
     ResponseEntity<APIResponseDTO<Object>>  getIncomeFormParams(){
         return cashMovementService.getIncomeFormParams();
     }
@@ -45,15 +55,13 @@ public class DailyRegisterController {
         return cashMovementService.saveIncomeTransaction(forms.customer(), forms.transaction());
     }
 
-    @GetMapping(produces = "application/json", value = "/expense")
+    @GetMapping(produces = "application/json", value = "/expense/params")
     ResponseEntity<APIResponseDTO<Object>>  getExpenseFormParams(){
         return cashMovementService.getExpenseFormParams();
     }
 
     @PostMapping(produces = "application/json", value = "/expense")
     ResponseEntity<APIResponseDTO<String>>  saveExpense(@RequestBody @Valid SaveTransactionDTO forms){
-        System.out.println("forms");
-        System.out.println(forms);
         return cashMovementService.saveExpenseTransaction(forms.customer(), forms.transaction());
     }
 

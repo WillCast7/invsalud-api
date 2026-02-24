@@ -3,11 +3,8 @@ package com.aurealab.service.CashRegister;
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.request.CashMovementRequestDTO;
-import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
+import com.aurealab.dto.CashRegister.response.*;
 import com.aurealab.dto.CashRegister.ThirdPartyDTO;
-import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
-import com.aurealab.dto.CashRegister.response.CashSessionsResponseDTO;
-import com.aurealab.dto.CashRegister.response.TransactionListSessionResponseDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -24,4 +21,6 @@ public interface CashMovementService {
     public Set<CashMovementResponseDTO> findAllByCashSessionId(Long id);
     public CashSessionSummaryDTO getSummaries(Long id);
     public CashMovementResponseDTO findById(Long id);
+    public ResponseEntity<APIResponseDTO<CashMovementResponseDTO>> findCashMovementById(Long id);
+    public ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>> getCashSessionDetailsById(Long id);
 }

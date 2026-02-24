@@ -4,6 +4,7 @@ import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.*;
 import com.aurealab.dto.CashRegister.request.CashMovementRequestDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
+import com.aurealab.dto.CashRegister.response.CashSessionDetailsResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionsResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
@@ -12,6 +13,7 @@ import com.aurealab.mapper.CashRegister.CashMovementMapper;
 import com.aurealab.mapper.CashRegister.PaymentMethodMapper;
 import com.aurealab.model.aurea.interfaz.CashSessionSummaryProjection;
 import com.aurealab.model.cashRegister.entity.CashMovementEntity;
+import com.aurealab.model.cashRegister.entity.CashSessionEntity;
 import com.aurealab.model.cashRegister.entity.PaymentMethodEntity;
 import com.aurealab.model.cashRegister.repository.CashMovementRepository;
 import com.aurealab.model.cashRegister.repository.PaymentMethodRepository;
@@ -22,6 +24,7 @@ import com.aurealab.service.ConfigParamService;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -74,6 +78,7 @@ public class CashMovementServiceImpl implements CashMovementService {
     @Autowired
     DocumentSequenceServiceImpl documentSequenceService;
 
+
     private String tenancy = "conduvalle";
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
 
@@ -89,11 +94,22 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<CashMovementResponseDTO> cashMovementPage = findAllByCashSessionId(sessions.todaySession().id(), searchValue, pageable);
+        Page<CashMovementTableDTO> cashMovementPage = findAllTableByCashSessionId(sessions.todaySession().id(), searchValue, pageable);
         
         return ResponseEntity.ok(
                 APIResponseDTO.withPageable(sessions, constants.messages.consultGood, cashMovementPage)
         );
+    }
+
+    public ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>> getCashSessionDetailsById(Long id){
+
+        CashSessionDetailsResponseDTO response = CashSessionDetailsResponseDTO.builder()
+                .cashMovements(findAllByCashSessionId(id))
+                .cashSession(cashSessionService.findById(id))
+                .cashSessionSummary(getSummaries(id))
+                .build();
+
+        return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess));
     }
 
     public ResponseEntity<APIResponseDTO<Object>> getIncomeFormParams(){
@@ -262,6 +278,7 @@ public class CashMovementServiceImpl implements CashMovementService {
             return entities.map(CashMovementMapper::toDtoList);
         });
     }
+
     public Page<CashMovementTableDTO> findAllTableByCashSessionId(Long id, String searchValue, Pageable pageable){
 
         Specification<CashMovementEntity> spec = CashMovementSpecs.searchBySessionAndTerm(id, searchValue);
@@ -289,17 +306,53 @@ public class CashMovementServiceImpl implements CashMovementService {
         return response;
     }
 
-    public CashSessionSummaryDTO getSummaries(Long id){
-        return tenantService.executeInTenant(tenancy, () -> {
-            CashSessionSummaryProjection projection = cashMovementRepository.getSessionSummary(id);
-
-            return new CashSessionSummaryDTO(
-                    projection.getTotalIncome(),
-                    projection.getTotalExpense(),
-                    projection.getNetBalance(),
-                    projection.getNetCashBalance()
-            );
+    public CashSessionSummaryDTO getSummaries(Long sessionId){
+        // 1. Buscamos el resumen en los movimientos
+        CashSessionSummaryProjection summary = tenantService.executeInTenant(tenancy, () -> {
+            return cashMovementRepository.getSessionSummary(sessionId);
         });
+
+        // 2. Buscamos la sesión para asegurar el monto inicial
+        CashSessionDTO session = cashSessionService.findById(sessionId);
+        if(session == null ){
+            throw new ResourceNotFoundException("Sesión no encontrada");
+        }
+
+        // Aseguramos que el monto inicial nunca sea nulo (si es null, usamos 0)
+        BigDecimal initial = session.openingAmount() != null ? session.openingAmount() : BigDecimal.ZERO;
+
+        // 3. Si no hay movimientos, enviamos todo en 0 y los balances con el monto inicial
+        if (summary == null || summary.getTotalIncome() == null) {
+            return CashSessionSummaryDTO.builder()
+                    .initialAmount(initial)
+                    .totalIncome(BigDecimal.ZERO)
+                    .totalExpense(BigDecimal.ZERO)
+                    .netBalance(initial)
+                    .netCashBalance(initial)
+                    .build();
+        }
+
+        System.out.println("summary");
+        System.out.println(summary);
+
+        // 4. Blindamos las variables de la proyección para que nunca pasen nulas al .add()
+        BigDecimal netBalance = summary.getNetBalance() != null ? summary.getNetBalance() : BigDecimal.ZERO;
+        BigDecimal netCashBalance = summary.getNetCashBalance() != null ? summary.getNetCashBalance() : BigDecimal.ZERO;
+        BigDecimal totalIncome = summary.getTotalIncome() != null ? summary.getTotalIncome() : BigDecimal.ZERO;
+        BigDecimal totalExpense = summary.getTotalExpense() != null ? summary.getTotalExpense() : BigDecimal.ZERO;
+
+        // 5. Retornamos con la suma segura
+        return CashSessionSummaryDTO.builder()
+                .initialAmount(initial)
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .netBalance(initial.add(netBalance)) // ¡Aquí ya no explotará!
+                .netCashBalance(initial.add(netCashBalance))
+                .build();
+    }
+
+    public ResponseEntity<APIResponseDTO<CashMovementResponseDTO>> findCashMovementById(Long id){
+        return ResponseEntity.ok(APIResponseDTO.success(findById(id), constants.success.findedSuccess));
     }
 
     public CashMovementResponseDTO findById(Long id){
@@ -308,4 +361,5 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         });
     }
+
 }

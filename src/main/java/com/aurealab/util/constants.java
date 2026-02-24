@@ -57,6 +57,8 @@ public class constants {
     public static class configParam{
         public static final String documentType = "documentType";
         public static final String incomeTransaction = "INCOME";
+        public static final String incomeTransactionPdf = "RECIBO DE CAJA";
+        public static final String expenseTransactionPdf = "COMPROBANTE DE EGRESO";
         public static final String expenseTransaction = "EXPENSE";
         public static final String expenseTransactionVar = "Salida";
         public static final String incomeTransactionVar = "Venta";
