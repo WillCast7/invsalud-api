@@ -40,8 +40,10 @@ public class DailyRegisterController {
     }
 
     @GetMapping(produces = "application/json", value = "/transaction/{id}")
-    ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>>  getTransactionsById(@PathVariable Long id){
-        return cashMovementService.getCashSessionDetailsById(id);
+    ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>>  getTransactionsById(@RequestParam(defaultValue = "1") int page,
+                                                                                       @RequestParam(defaultValue = "10") int size,
+                                                                                       @PathVariable Long id){
+        return cashMovementService.getCashSessionDetailsById(page, size, id);
     }
 
 

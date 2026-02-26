@@ -13,7 +13,6 @@ import com.aurealab.mapper.CashRegister.CashMovementMapper;
 import com.aurealab.mapper.CashRegister.PaymentMethodMapper;
 import com.aurealab.model.aurea.interfaz.CashSessionSummaryProjection;
 import com.aurealab.model.cashRegister.entity.CashMovementEntity;
-import com.aurealab.model.cashRegister.entity.CashSessionEntity;
 import com.aurealab.model.cashRegister.entity.PaymentMethodEntity;
 import com.aurealab.model.cashRegister.repository.CashMovementRepository;
 import com.aurealab.model.cashRegister.repository.PaymentMethodRepository;
@@ -101,15 +100,18 @@ public class CashMovementServiceImpl implements CashMovementService {
         );
     }
 
-    public ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>> getCashSessionDetailsById(Long id){
+    public ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>> getCashSessionDetailsById(int page, int size, Long id){
 
         CashSessionDetailsResponseDTO response = CashSessionDetailsResponseDTO.builder()
-                .cashMovements(findAllByCashSessionId(id))
                 .cashSession(cashSessionService.findById(id))
                 .cashSessionSummary(getSummaries(id))
                 .build();
 
-        return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<CashMovementTableDTO> cashMovementPage = findAllTableByCashSessionId(id, null, pageable);
+
+        return ResponseEntity.ok(APIResponseDTO.withPageable(response, constants.success.findedSuccess, cashMovementPage));
     }
 
     public ResponseEntity<APIResponseDTO<Object>> getIncomeFormParams(){

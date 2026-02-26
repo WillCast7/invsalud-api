@@ -22,5 +22,5 @@ public interface CashMovementService {
     public CashSessionSummaryDTO getSummaries(Long id);
     public CashMovementResponseDTO findById(Long id);
     public ResponseEntity<APIResponseDTO<CashMovementResponseDTO>> findCashMovementById(Long id);
-    public ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>> getCashSessionDetailsById(Long id);
+    public ResponseEntity<APIResponseDTO<CashSessionDetailsResponseDTO>> getCashSessionDetailsById(int page, int size, Long id);
 }

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,10 +78,12 @@ public class CashSessionServiceImpl implements CashSessionService {
     }
 
     public CashSessionDTO findOpenedSession() {
+        ZoneId colombiaZone = ZoneId.of("America/Bogota");
+
         CashSessionEntity cashSessionEntity =
         tenantService.executeInTenant(tenancy, () -> {
             return cashSessionRepository.findByBusinessDateLessThanAndStatus(
-                    LocalDate.now(),
+                    LocalDate.now(colombiaZone),
                     "OPEN"
             );
         });
@@ -102,9 +105,14 @@ public class CashSessionServiceImpl implements CashSessionService {
         CashSessionEntity cashSessionEntity = new CashSessionEntity();
         cashSessionEntity.setOpeningAmount(cashSessionDTO.openingAmount());
         cashSessionEntity.setOpenedBySystemUserId(idLogged);
-        cashSessionEntity.setCreatedByUserName(userDTO.getPerson().getNames() + " " + userDTO.getPerson().getSurNames());
+        cashSessionEntity.setCreatedByUserName(
+                userDTO.getPerson().getNames()
+                        + " " +
+                userDTO.getPerson().getSurNames()
+        );
         cashSessionEntity.setStatus(constants.configParam.statusOpen);
-
+        System.out.println("shit this here");
+        System.out.println(userDTO.getPerson().getNames() + " " + userDTO.getPerson().getSurNames());
         CashSessionDTO result = createCashSession(cashSessionEntity);
 
         return ResponseEntity.ok(APIResponseDTO.success(result, constants.messages.consultGood));
@@ -112,8 +120,6 @@ public class CashSessionServiceImpl implements CashSessionService {
     }
 
     public ResponseEntity<APIResponseDTO<CashSessionDTO>> finalizeCashSession(CashSessionDTO cashSessionDTO){
-        System.out.println("cashSessionDTO");
-        System.out.println(cashSessionDTO);
 
         return ResponseEntity.ok(APIResponseDTO.success(findAndUpdate(cashSessionDTO), constants.messages.consultGood));
 

@@ -8,6 +8,5 @@ import java.util.Set;
 @Builder
 public record CashSessionDetailsResponseDTO(
     CashSessionDTO cashSession,
-    Set<CashMovementResponseDTO> cashMovements,
     CashSessionSummaryDTO cashSessionSummary){}
 
