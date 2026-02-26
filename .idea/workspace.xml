@@ -6,13 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/CashRegister/DailyRegisterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/CashRegister/DailyRegisterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/response/CashSessionDetailsResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/response/CashSessionDetailsResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/CashMovementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/CashRegister/CashMovementService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/ApiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/ApiApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

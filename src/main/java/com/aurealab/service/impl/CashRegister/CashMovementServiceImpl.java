@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -80,7 +81,8 @@ public class CashMovementServiceImpl implements CashMovementService {
 
     private String tenancy = "conduvalle";
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
-
+        System.out.println("LocalDate.now()");
+        System.out.println(LocalDate.now());
         CashSessionsResponseDTO sessions = new CashSessionsResponseDTO(
                 cashSessionService.findTodaySession(),
                 cashSessionService.findOpenedSession()
