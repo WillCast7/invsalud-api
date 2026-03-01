@@ -105,11 +105,11 @@ public class CashSessionServiceImpl implements CashSessionService {
         cashSessionEntity.setCreatedByUserName(
                 userDTO.getPerson().getNames()
                         + " " +
-                userDTO.getPerson().getSurNames()
+                userDTO.getPerson().getSurnames()
         );
         cashSessionEntity.setStatus(constants.configParam.statusOpen);
         System.out.println("shit this here");
-        System.out.println(userDTO.getPerson().getNames() + " " + userDTO.getPerson().getSurNames());
+        System.out.println(userDTO.getPerson().getNames() + " " + userDTO.getPerson().getSurnames());
         CashSessionDTO result = createCashSession(cashSessionEntity);
 
         return ResponseEntity.ok(APIResponseDTO.success(result, constants.messages.consultGood));

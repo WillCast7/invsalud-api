@@ -3,11 +3,16 @@ package com.aurealab.service.impl;
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.RoleDTO;
 import com.aurealab.dto.UserDTO;
+import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
+import com.aurealab.dto.response.UserTableResponseDTO;
+import com.aurealab.dto.response.UserWithParamsResponseDTO;
+import com.aurealab.mapper.CompanyMapper;
 import com.aurealab.mapper.UserMapper;
 import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.entity.UserEntity;
 import com.aurealab.model.aurea.repository.UserRepository;
 import com.aurealab.service.UserService;
+import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
 import com.aurealab.util.exceptions.DataPersistenceException;
@@ -18,10 +23,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -31,46 +39,52 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${security.users.defaultpass}")
-    private String defaultPass;
+    @Autowired
+    JwtUtils jwtUtils;
 
-    public APIResponseDTO<List<UserDTO>> getUsers(int itemPerPage, int activePage) {
+    @Autowired
+    ConfigParamServiceImpl configParamsService;
 
-        APIResponseDTO<List<UserDTO>> response;
-        Page<UserEntity> users;
+    public ResponseEntity<APIResponseDTO<String>> getUsers(int page, int size, String searchValue) {
 
-        final Pageable pageable = PageRequest.of(activePage, itemPerPage);
-        try {
-            users = userRepository.findAll(pageable);
-            if (users.hasContent()) {
-                List<UserDTO> dtoList = new ArrayList<>();
 
-                for (UserEntity user : users) {
-                    dtoList.add(UserMapper.toDto(user));
-                }
-                response = APIResponseDTO.withPageable(dtoList, constants.messages.consultGood, users.getPageable());
-            } else {
-                response = APIResponseDTO.failure(constants.messages.noData, "vacio");
-            }
-        } catch (Exception e) {
-            response = APIResponseDTO.failure(constants.errors.findError + " los usuarios", e.getMessage());
-        }
-        return response;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return ResponseEntity.ok(APIResponseDTO.withPageable("ok", constants.success.findedSuccess, findAllPageableUsers(pageable)));
+
+    }
+
+    public Page<UserTableResponseDTO> findAllPageableUsers(Pageable pageable){
+        Page<UserEntity> users = userRepository.findAll(pageable);
+        return users.map(UserMapper::toDtoSimplyResponse);
     }
 
     public APIResponseDTO<UserDTO> getUserResponse(Long id) {
-        UserDTO user = getSimplyUserById(id);
-        if(user.equals(null)){
-            throw new RuntimeException(constants.messages.noData);
-        }
+        return APIResponseDTO.success(getUserById(id), constants.messages.consultGood);
+    }
 
-        return APIResponseDTO.success(user, constants.messages.consultGood);
+    public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> findUserAndParamsById(Long id) {
+
+        @SuppressWarnings("unchecked")
+        UserWithParamsResponseDTO params = configParamsService.findCreatingUserParams();
+
+        return ResponseEntity.ok(APIResponseDTO.success(
+                UserWithParamsResponseDTO.builder()
+                        .user(getUserById(id))
+                        .documentTypes(params.documentTypes())
+                        .roles(params.roles())
+                        .build(), constants.success.findedSuccess));
     }
 
     public APIResponseDTO<String> saveUser(UserDTO user) {
         APIResponseDTO<String> response;
         try {
-            userRepository.save(UserMapper.toEntity(user));
+            UserEntity userEntity = UserMapper.toEntity(user);
+            userEntity.setCompany(Objects.equals(user.getCompany(), null) ?
+                    getUserEntityById(jwtUtils.getCurrentUserId()).getCompany(): userEntity.getCompany());
+            userEntity.setCreatedBy(jwtUtils.getCurrentUserId());
+
+            userRepository.save(userEntity);
+
             response = APIResponseDTO.success(constants.success.savedSuccess, constants.success.savedSuccess);
 
         } catch (DataIntegrityViolationException e) {
@@ -95,27 +109,28 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    public UserDTO getSimplyUserById(Long id){
+    public UserTableResponseDTO getSimplyUserById(Long id){
         Optional<UserEntity> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()){
-            System.out.println("Esta presente");
-            System.out.println(userOptional.get().getPerson().getNames());
-            return com.aurealab.mapper.UserMapper.toDtoSimplyResponse(userOptional.get());
+            return UserMapper.toDtoSimplyResponse(userOptional.get());
         } else {
             System.out.println("No esta presente");
             return null;
         }
     }
 
-    public UserDTO getUserById(Long id){
-        Optional<UserEntity> userOptional = userRepository.findById(id);
 
+    public UserDTO getUserById(Long id){
+        return UserMapper.toDto(getUserEntityById(id));
+    }
+
+    public UserEntity getUserEntityById(Long id){
+        Optional<UserEntity> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()){
-            return com.aurealab.mapper.UserMapper.toDtoResponse(userOptional.get());
+            return userOptional.get();
         } else {
-            System.out.println("No esta presente");
-            return null;
+            throw new RuntimeException(constants.messages.noData);
         }
     }
 }

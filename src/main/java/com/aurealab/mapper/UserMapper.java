@@ -2,9 +2,22 @@ package com.aurealab.mapper;
 
 
 import com.aurealab.dto.UserDTO;
+import com.aurealab.dto.response.UserTableResponseDTO;
 import com.aurealab.model.aurea.entity.UserEntity;
+import com.aurealab.service.UserService;
+import com.aurealab.util.JwtUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
 
 public class UserMapper {
+
+    @Autowired
+    static UserService userService;
+
+    @Autowired
+    static JwtUtils jwtUtils;
+
     private UserMapper() {
     }
 
@@ -16,10 +29,11 @@ public class UserMapper {
                 entity.getId(),
                 entity.getEmail(),
                 entity.getUserName(),
-                entity.getPassword(),
+                null,
                 PersonMapper.toDto(entity.getPerson()),
                 RoleMapper.toDto(entity.getRole()),
-                CompanyMapper.toDto(entity.getCompany())
+                CompanyMapper.toDto(entity.getCompany()),
+                entity.isEnable()
         );
     }
 
@@ -34,22 +48,25 @@ public class UserMapper {
                 null,
                 PersonMapper.toDto(entity.getPerson()),
                 null,
-                CompanyMapper.toDto(entity.getCompany())
+                CompanyMapper.toDto(entity.getCompany()),
+                entity.isEnable()
         );
     }
 
-    public static UserDTO toDtoSimplyResponse(UserEntity entity) {
+    public static UserTableResponseDTO toDtoSimplyResponse(UserEntity entity) {
         if (entity == null) return null;
 
-        return new UserDTO(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getUserName(),
-                entity.getPassword(),
-                PersonMapper.toDto(entity.getPerson()),
-                null,
-                null
-        );
+        return UserTableResponseDTO.builder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .userName(entity.getUserName())
+                .documentType(entity.getPerson().getDocumentType())
+                .documentNumber(entity.getPerson().getDocumentNumber())
+                .fullName(entity.getPerson().getNames() + " " + entity.getPerson().getSurnames())
+                .phoneNumber(entity.getPerson().getPhoneNumber())
+                .address(entity.getPerson().getAddress())
+                .birthDate(entity.getPerson().getBirthDate())
+                .build();
     }
 
     /* ===================== DTO -> Entity ===================== */
@@ -63,6 +80,7 @@ public class UserMapper {
         entity.setPerson(PersonMapper.toEntity(dto.getPerson()));
         entity.setRole(RoleMapper.toEntity(dto.getRole()));
         entity.setCompany(CompanyMapper.toEntity(dto.getCompany()));
+        entity.setPassword("$2a$10$U48O/d.mXdpH2IGU8tqCLO/z0/VrylEOQqB66mkJi1S2GqXwiAR/G");
 
         return entity;
     }

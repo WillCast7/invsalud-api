@@ -2,6 +2,8 @@ package com.aurealab.controller;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
+import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
+import com.aurealab.dto.response.UserWithParamsResponseDTO;
 import com.aurealab.service.ConfigParamService;
 import com.aurealab.service.CustomerService;
 import com.aurealab.util.constants;
@@ -27,9 +29,14 @@ public class ConfigParamsController {
     @Autowired
     CustomerService customerService;
 
-        @GetMapping(produces = "application/json", value = "/thirdParty")
-    public ResponseEntity<APIResponseDTO<Object>> getCreatingCustomerParams() {
+    @GetMapping(produces = "application/json", value = "/thirdParty")
+    public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> getCreatingCustomerParams() {
        return configParamService.getCreatingCustomerParams();
+    }
+
+    @GetMapping(produces = "application/json", value = "/user")
+    public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> getCreatinguserParams() {
+        return configParamService.getCreatingUserParams();
     }
 
 

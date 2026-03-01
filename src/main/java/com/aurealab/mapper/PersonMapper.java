@@ -13,8 +13,8 @@ public class PersonMapper {
 
         return new PersonDTO(
                 entity.getId(),
-                entity.getDniType(),
-                entity.getDniNumber(),
+                entity.getDocumentType(),
+                entity.getDocumentNumber(),
                 entity.getNames(),
                 entity.getSurnames(),
                 entity.getPhoneNumber(),
@@ -29,10 +29,10 @@ public class PersonMapper {
 
         PersonEntity entity = new PersonEntity();
         entity.setId(dto.getId());
-        entity.setDniType(dto.getDniType());
-        entity.setDniNumber(dto.getDniNumber());
+        entity.setDocumentType(dto.getDocumentType());
+        entity.setDocumentNumber(dto.getDocumentNumber());
         entity.setNames(dto.getNames());
-        entity.setSurnames(dto.getSurNames());
+        entity.setSurnames(dto.getSurnames());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setAddress(dto.getAddress());
         entity.setBirthDate(dto.getBirthDate());

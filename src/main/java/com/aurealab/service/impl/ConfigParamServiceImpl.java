@@ -2,10 +2,13 @@ package com.aurealab.service.impl;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
+import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
+import com.aurealab.dto.response.UserWithParamsResponseDTO;
 import com.aurealab.model.aurea.entity.ConfigParamsEntity;
 import com.aurealab.model.aurea.repository.ConfigParamsRepository;
 import com.aurealab.service.CashRegister.ThirdPartyRoleService;
 import com.aurealab.service.ConfigParamService;
+import com.aurealab.service.RoleService;
 import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,9 @@ public class ConfigParamServiceImpl implements ConfigParamService {
 
     @Autowired
     ThirdPartyRoleService thirdPartyRoleService;
+
+    @Autowired
+    RoleService roleService;
 
     public Set<ConfigParamDTO> getConfigParamsByParent(String parent){
         try{
@@ -56,12 +62,26 @@ public class ConfigParamServiceImpl implements ConfigParamService {
                 .build();
     }
 
-    public ResponseEntity<APIResponseDTO<Object>> getCreatingCustomerParams(){
-        Map<String, Object> response = new HashMap<>();
-        response.put("documentTypes", getConfigParamsByParent("documentType"));
-        response.put("thirdPartyTypes", thirdPartyRoleService.findAll());
+    public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> getCreatingCustomerParams(){
+        return ResponseEntity.ok(APIResponseDTO.success(findCreatingThirdPartyParams(), constants.success.findedSuccess));
+    }
 
-        return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess));
+    public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> getCreatingUserParams(){
+        return ResponseEntity.ok(APIResponseDTO.success(findCreatingUserParams(), constants.success.findedSuccess));
+    }
+
+    public UserWithParamsResponseDTO findCreatingUserParams(){
+        return UserWithParamsResponseDTO.builder()
+                .documentTypes(getConfigParamsByParent("documentType"))
+                .roles(roleService.getAllRoles())
+                .build();
+    }
+
+    public ThirdPartyWithParamsResponseDTO findCreatingThirdPartyParams(){
+        return ThirdPartyWithParamsResponseDTO.builder()
+                        .documentTypes(getConfigParamsByParent("documentType"))
+                        .roles(thirdPartyRoleService.findAll())
+                        .build();
     }
 
 }

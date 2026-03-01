@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.Set;
 
 public interface RoleRepository extends CrudRepository<RoleEntity, Long> {
 
@@ -15,4 +16,6 @@ public interface RoleRepository extends CrudRepository<RoleEntity, Long> {
 
     Optional<RoleEntity> findByRole(@Param("role") String role);
 
+    @Override
+    Set<RoleEntity> findAll();
 }

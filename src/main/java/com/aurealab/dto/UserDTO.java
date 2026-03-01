@@ -21,7 +21,6 @@ public class UserDTO {
     @Size(min = 6, message = "El nombre de usuario debe tener minimo 6 caracteres")
     private String userName;
 
-    @Size(min = 8, message = "La contraseña debe tener minimo 8 caracteres")
     private String password;
 
     private PersonDTO person;
@@ -30,4 +29,5 @@ public class UserDTO {
 
     private CompanyDTO company;
 
+    private boolean isEnable;
 }

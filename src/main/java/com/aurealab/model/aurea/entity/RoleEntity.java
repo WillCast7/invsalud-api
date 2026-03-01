@@ -23,14 +23,14 @@ public class RoleEntity {
     private String role;
 
     @Column(name = "description")
-    private String rolDescription;
+    private String roleDescription;
 
     @Column(name = "role_name")
     private String roleName;
 
     private boolean status;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "role_permission", // Correcto
             joinColumns = @JoinColumn(name = "role_id"),

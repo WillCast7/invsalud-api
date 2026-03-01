@@ -27,8 +27,8 @@ public class DailyRegisterController {
 
     @GetMapping(produces = "application/json", value = "/cashiers")
     ResponseEntity<APIResponseDTO<String>>  getDailyCashiers(@RequestParam(defaultValue = "1") int page,
-                                                                                  @RequestParam(defaultValue = "10") int size,
-                                                                                  @RequestParam(defaultValue = "") String searchValue){
+                                                              @RequestParam(defaultValue = "10") int size,
+                                                              @RequestParam(defaultValue = "") String searchValue){
         return cashRegisterService.GetAllCashSessions(page, size, searchValue);
     }
 

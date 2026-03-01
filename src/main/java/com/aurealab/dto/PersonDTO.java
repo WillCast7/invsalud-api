@@ -15,16 +15,16 @@ public class PersonDTO {
 
     private Long id;
 
-    private String dniType;
+    private String documentType;
 
     @NotBlank(message = "El numero de identificacion no puede estar vacío.")
-    private String dniNumber;
+    private String documentNumber;
 
     @NotBlank(message = "falta llenar los nombres no puede estar vacío.")
     private String names;
 
     @NotBlank(message = "falta llenar los nombres no puede estar vacío.")
-    private String surNames;
+    private String surnames;
 
     @Size(max = 10, message = "El numero telefonico debe tener 10 numeros")
     private String phoneNumber;

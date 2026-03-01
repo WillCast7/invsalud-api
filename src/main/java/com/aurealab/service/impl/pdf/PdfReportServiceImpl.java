@@ -4,6 +4,7 @@ import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
 import com.aurealab.dto.UserDTO;
+import com.aurealab.dto.response.UserTableResponseDTO;
 import com.aurealab.service.CashRegister.CashMovementService;
 import com.aurealab.service.CashRegister.CashSessionService;
 import com.aurealab.service.CashRegister.PdfReportService;
@@ -124,17 +125,14 @@ public class PdfReportServiceImpl implements PdfReportService {
 
             document.add(headerTable);
             document.add(new Paragraph(" ")); // Espacio
-            UserDTO userDTO = userService.getSimplyUserById(session.openedBySystemUserId());
-            System.out.println("servicio pdf");
-            System.out.println(userDTO.getPerson().getNames());
-            System.out.println(userDTO.getPerson().getSurNames());
+            UserTableResponseDTO userDTO = userService.getSimplyUserById(session.openedBySystemUserId());
             // --- 2. INFORMACIÓN GENERAL (Estilo Card) ---
             PdfPTable infoTable = new PdfPTable(4);
             infoTable.setWidthPercentage(100);
             addStyledCell(infoTable, "Sesión numero:", session.id().toString(), materialAccent);
             addStyledCell(infoTable, "Fecha:", session.businessDate().toString(), materialAccent);
             addStyledCell(infoTable, "Estado:", session.status().equals(constants.configParam.statusOpen) ? "Abierto":"Cerrado", materialAccent);
-            addStyledCell(infoTable, "Responsable:", userDTO.getPerson().getNames() + " " + userDTO.getPerson().getSurNames(), materialAccent);
+            addStyledCell(infoTable, "Responsable:", userDTO.getFullName(), materialAccent);
             document.add(infoTable);
             document.add(new Paragraph(" "));
 

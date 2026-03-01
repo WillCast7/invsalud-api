@@ -5,6 +5,7 @@ import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import com.aurealab.dto.CashRegister.request.ThirdPartyRequestDTO;
 import com.aurealab.dto.ConfigParamDTO;
 import com.aurealab.dto.CustomerTableDTO;
+import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.mapper.CashRegister.ThirdPartyMapper;
 import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRepository;
@@ -16,6 +17,10 @@ import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.JwtUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.aurealab.util.constants;
@@ -43,9 +48,6 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     private final String tenancy = "conduvalle";
 
     public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomersByDocumentNumber(String documentNumber){
-        System.out.println("documentNumber");
-        System.out.println(documentNumber);
-
         return ResponseEntity.ok(APIResponseDTO.success(findByDniNumberContaining(documentNumber), constants.success.findedSuccess));
     }
 
@@ -80,10 +82,8 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     public ResponseEntity<APIResponseDTO<ThirdPartyDTO>> saveCustomer(ThirdPartyRequestDTO thirdPartyDTO){
-
-        System.out.println("thirdPartyDTO.rolesIds()");
-        System.out.println(thirdPartyRoleService.findAllEntitiesByIds(thirdPartyDTO.rolesIds()));
         ThirdPartyDTO thirdParty = ThirdPartyDTO.builder()
+                .id(thirdPartyDTO.id() == null ? null :thirdPartyDTO.id() )
                 .documentType(thirdPartyDTO.documentType())
                 .documentNumber(thirdPartyDTO.documentNumber())
                 .fullName(thirdPartyDTO.fullName())
@@ -93,6 +93,8 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                 .createdBySystemUserId(jwtUtils.getCurrentUserId())
                 .roles(thirdPartyRoleService.findAllEntitiesByIds(thirdPartyDTO.rolesIds()))
                 .build();
+        System.out.println("thirdParteeeeey");
+        System.out.println(thirdParty);
         return ResponseEntity.ok(APIResponseDTO.success(saveThirdParty(thirdParty), constants.success.savedSuccess));
     }
 
@@ -107,6 +109,19 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
         });
     }
 
+    public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> findThirdPartyAndParamsById(Long id) {
+
+        @SuppressWarnings("unchecked")
+        ThirdPartyWithParamsResponseDTO params = configParamsService.findCreatingThirdPartyParams();
+
+        return ResponseEntity.ok(APIResponseDTO.success(
+                ThirdPartyWithParamsResponseDTO.builder()
+                    .thirdParty(findThirdPartyById(id))
+                    .documentTypes(params.documentTypes())
+                    .roles(params.roles())
+                    .build(), constants.success.findedSuccess));
+    }
+
     public ThirdPartyDTO findThirdPartyById(Long id) {
         return tenantService.executeInTenant(tenancy, () ->
                 thirdPartyRepository.findById(id)
@@ -115,6 +130,22 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                                 new EntityNotFoundException("ThirdParty no encontrado con id: " + id)
                         )
         );
+    }
+
+    public ResponseEntity<APIResponseDTO<String>> findAllThirdParties(int page, int size, String searchValue) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<ThirdPartyDTO> response = findAll(pageable);
+
+        return ResponseEntity.ok(
+                APIResponseDTO.withPageable("ok", constants.messages.consultGood, response)
+        );
+    }
+
+    public Page<ThirdPartyDTO> findAll(Pageable pageable) {
+        return tenantService.executeInTenant(tenancy, () -> {
+            Page<ThirdPartyEntity> thirdPartyEntities = thirdPartyRepository.findAll(pageable);
+            return thirdPartyEntities.map(ThirdPartyMapper::toDto);
+        });
     }
 
 }

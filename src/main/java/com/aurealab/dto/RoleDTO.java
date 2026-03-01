@@ -9,7 +9,7 @@ import java.util.Set;
 public record RoleDTO(
     Long id,
     String role,
-    String rolDescription,
+    String roleDescription,
     String roleName,
     boolean status,
     Set<PermisionDTO> permisionList
