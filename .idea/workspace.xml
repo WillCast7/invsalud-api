@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/userController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/userController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +140,7 @@
       <updated>1764719130118</updated>
       <workItem from="1772379600962" duration="19000" />
       <workItem from="1772387002382" duration="9227000" />
-      <workItem from="1772476069684" duration="2682000" />
+      <workItem from="1772476069684" duration="4299000" />
     </task>
     <servers />
   </component>

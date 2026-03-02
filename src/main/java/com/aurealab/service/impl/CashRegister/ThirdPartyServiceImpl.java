@@ -93,8 +93,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                 .createdBySystemUserId(jwtUtils.getCurrentUserId())
                 .roles(thirdPartyRoleService.findAllEntitiesByIds(thirdPartyDTO.rolesIds()))
                 .build();
-        System.out.println("thirdParteeeeey");
-        System.out.println(thirdParty);
+
         return ResponseEntity.ok(APIResponseDTO.success(saveThirdParty(thirdParty), constants.success.savedSuccess));
     }
 
