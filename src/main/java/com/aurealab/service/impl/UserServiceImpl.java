@@ -75,6 +75,13 @@ public class UserServiceImpl implements UserService {
                         .build(), constants.success.findedSuccess));
     }
 
+    public ResponseEntity<APIResponseDTO<UserDTO>> getMyAccount() {
+
+        return ResponseEntity.ok(APIResponseDTO.success(
+                getUserById(jwtUtils.getCurrentUserId()),
+                constants.success.findedSuccess));
+    }
+
     public APIResponseDTO<String> saveUser(UserDTO user) {
         APIResponseDTO<String> response;
         try {

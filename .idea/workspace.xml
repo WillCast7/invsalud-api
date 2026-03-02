@@ -6,77 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/APIResponseDTO$APIResponseDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/APIResponseDTO$APIResponseDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/APIResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/APIResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO$ChargeDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO$ChargeDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ChargeDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ThirdPartyDTO$ThirdPartyDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ThirdPartyDTO$ThirdPartyDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ThirdPartyDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/ThirdPartyDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/request/ChargeRequestDTO$ChargeRequestDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/request/ChargeRequestDTO$ChargeRequestDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/request/ChargeRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/request/ChargeRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/response/CashSessionSummaryDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CashRegister/response/CashSessionSummaryDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CityDTO$CityDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CityDTO$CityDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CityDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CityDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/ConfigParamDTO$ConfigParamDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/ConfigParamDTO$ConfigParamDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/ConfigParamDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/ConfigParamDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CustomerTableDTO$CustomerTableDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CustomerTableDTO$CustomerTableDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CustomerTableDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/CustomerTableDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/DepartmentDTO$DepartmentDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/DepartmentDTO$DepartmentDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/DepartmentDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/DepartmentDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/MenuDTO$MenuDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/MenuDTO$MenuDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/MenuDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/MenuDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/PageableResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/PageableResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/PersonDTO$PersonDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/PersonDTO$PersonDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/PersonDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/PersonDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/RoleDTO$RoleDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/RoleDTO$RoleDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/RoleDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/RoleDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/UserDTO$UserDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/UserDTO$UserDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/dto/UserDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/dto/UserDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CityEntity$CityEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CityEntity$CityEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CityEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CityEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity$CompanyEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity$CompanyEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/ConfigParamsEntity$ConfigParamsEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/ConfigParamsEntity$ConfigParamsEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/ConfigParamsEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/ConfigParamsEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/DepartmentEntity$DepartmentEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/DepartmentEntity$DepartmentEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/DepartmentEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/DepartmentEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/MenuItemEntity$MenuItemEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/MenuItemEntity$MenuItemEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/MenuItemEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/MenuItemEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PaymentEntity$PaymentEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PaymentEntity$PaymentEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PaymentEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PaymentEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PermissionEntity$PermissionEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PermissionEntity$PermissionEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PermissionEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PermissionEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PersonEntity$PersonEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PersonEntity$PersonEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PersonEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/PersonEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/RoleEntity$RoleEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/RoleEntity$RoleEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/RoleEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/RoleEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationDataEntity$SoftwareValidationDataEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationDataEntity$SoftwareValidationDataEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationDataEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationDataEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationEntity$SoftwareValidationEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationEntity$SoftwareValidationEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationMultimediaEntity$SoftwareValidationMultimediaEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationMultimediaEntity$SoftwareValidationMultimediaEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationMultimediaEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SoftwareValidationMultimediaEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SubscriptionsEntity$SubscriptionsEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SubscriptionsEntity$SubscriptionsEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SubscriptionsEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/SubscriptionsEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/UserEntity$UserEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/UserEntity$UserEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/UserEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/UserEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashMovementEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashMovementEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashMovementProductsEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashMovementProductsEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashSessionEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashSessionEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashSessionSummaryEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/CashSessionSummaryEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ChargeEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ChargeEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/DocumentSequenceEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/DocumentSequenceEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/PaymentMethodEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/PaymentMethodEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ProductEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ProductEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/TPRoleEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/TPRoleEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ThirdPartyEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/cashRegister/entity/ThirdPartyEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/ConfigParamServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/ConfigParamServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/userController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/userController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/JwtUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/util/JwtUtils.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/GlobalExceptionHandler$ErrorResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/GlobalExceptionHandler$ErrorResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/util/exceptions/GlobalExceptionHandler.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,22 +50,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Api local.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/israe/Desktop/projects/kairos/api",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Api local.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/israe/Desktop/projects/kairos/api&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.sync&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl" />
@@ -209,7 +142,8 @@
       <option name="presentableId" value="Default" />
       <updated>1764719130118</updated>
       <workItem from="1772379600962" duration="19000" />
-      <workItem from="1772387002382" duration="5079000" />
+      <workItem from="1772387002382" duration="9227000" />
+      <workItem from="1772476069684" duration="2682000" />
     </task>
     <servers />
   </component>

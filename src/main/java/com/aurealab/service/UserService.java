@@ -17,4 +17,5 @@ public interface UserService {
     public UserDTO getUserById(Long id);
     public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> findUserAndParamsById(Long id);
     public UserEntity getUserEntityById(Long id);
+    public ResponseEntity<APIResponseDTO<UserDTO>> getMyAccount();
 }

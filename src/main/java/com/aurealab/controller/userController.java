@@ -32,6 +32,11 @@ public class userController {
         return userService.findUserAndParamsById(id);
     }
 
+    @GetMapping(value = "/myaccount" ,produces = "application/json")
+    public ResponseEntity<APIResponseDTO<UserDTO>> getMyAccount() {
+        return userService.getMyAccount();
+    }
+
     @PostMapping(produces = "application/json", value = "/user")
     public APIResponseDTO<String> postUsers(@RequestBody UserDTO user) {
         System.out.print("usersada");
