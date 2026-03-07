@@ -16,6 +16,7 @@ public class ProductMapper {
                 entity.getName(),
                 entity.getBasePrice(),
                 entity.getDescription(),
+                entity.getType(),
                 entity.isActive()
         );
     }
@@ -29,7 +30,8 @@ public class ProductMapper {
         entity.setName(dto.name());
         entity.setBasePrice(dto.basePrice());
         entity.setDescription(dto.description());
-        entity.setActive(dto.isActive());
+        entity.setType(dto.type());
+        entity.setActive(dto.active());
 
         return entity;
     }

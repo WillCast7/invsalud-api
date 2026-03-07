@@ -1,5 +1,7 @@
 package com.aurealab.dto.CashRegister;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 
 public record ProductDTO(
@@ -7,6 +9,7 @@ public record ProductDTO(
         String name,
         BigDecimal basePrice,
         String description,
-        boolean isActive
+        String type,
+        boolean active
 ) {
 }

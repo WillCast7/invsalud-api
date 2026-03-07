@@ -12,6 +12,8 @@ public class constants {
         public static final String asd = "No hay sesión activa para realizar esta acción";
         public static final String cashSessionExist = "Ya hay una caja abierta para el dia de hoy";
         public static final String cashSessionDontExist = "No hay una caja abierta realizar esta acción";
+        public static final String passwordsNotEquals = "Las contraseñas ingresadas no coinciden";
+        public static final String invalidPassword = "La contraseña ingresada no es igual la actual";
     }
     public static class success{
         public static final String savedSuccess = "Creado exitosamente ";

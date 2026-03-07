@@ -39,5 +39,9 @@ public class ConfigParamsController {
         return configParamService.getCreatingUserParams();
     }
 
+    @GetMapping(produces = "application/json")
+    public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> getAllConfigParams() {
+        return configParamService.getCreatingUserParams();
+    }
 
 }

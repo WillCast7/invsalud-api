@@ -41,8 +41,6 @@ public class ChargeServiceImpl implements ChargeService {
     }
 
     public ChargeDTO findByThirdPartyId(Long thirdPartyId){
-        System.out.println("thirdPartyId");
-        System.out.println(thirdPartyId);
         try {
             ChargeEntity chargeEntity = tenantService.executeInTenant(tenancy, () -> {
                 return chargeRepository.findByThirdPartyId(thirdPartyId);

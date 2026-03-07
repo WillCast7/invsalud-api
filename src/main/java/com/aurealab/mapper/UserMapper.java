@@ -38,6 +38,22 @@ public class UserMapper {
     }
 
     /* ===================== Entity -> DTO ===================== */
+    public static UserDTO toDtoWithPassword(UserEntity entity) {
+        if (entity == null) return null;
+
+        return new UserDTO(
+                entity.getId(),
+                entity.getEmail(),
+                entity.getUserName(),
+                entity.getPassword(),
+                PersonMapper.toDto(entity.getPerson()),
+                RoleMapper.toDto(entity.getRole()),
+                CompanyMapper.toDto(entity.getCompany()),
+                entity.isEnable()
+        );
+    }
+
+    /* ===================== Entity -> DTO ===================== */
     public static UserDTO toDtoResponse(UserEntity entity) {
         if (entity == null) return null;
 

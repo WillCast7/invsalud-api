@@ -1,5 +1,6 @@
 package com.aurealab.dto.response;
 
+import com.aurealab.dto.CashRegister.ChargeDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyRoleDTO;
 import com.aurealab.dto.ConfigParamDTO;
@@ -13,5 +14,6 @@ import java.util.Set;
 public record ThirdPartyWithParamsResponseDTO(
         ThirdPartyDTO thirdParty,
         Set<ConfigParamDTO> documentTypes,
-        Set<ThirdPartyRoleDTO> roles
+        Set<ThirdPartyRoleDTO> roles,
+        ChargeDTO charge
 ) {}

@@ -7,17 +7,14 @@ import lombok.*;
  *
  * @param <T> Tipo de datos que se incluye en la respuesta.
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+
 @Builder
-public class MenuDTO {
-	private Long id;
-	private String name;
-	private String father;
-	private String nameFather;
-	private String route;
-	private int orderMenu;
-	private String icon;
-}
+public record MenuDTO(
+	Long id,
+	String name,
+	String father,
+	String nameFather,
+	String route,
+	int orderMenu,
+	String icon
+) {}

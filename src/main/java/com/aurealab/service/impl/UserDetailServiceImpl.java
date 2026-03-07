@@ -69,8 +69,6 @@ public class UserDetailServiceImpl {
     @Transactional(readOnly = true)
     public ResponseEntity<APIResponseDTO<AuthResponse>> loginUser(LoginRequest userLogin) {
 
-        String passwordEncode = passwordEncoder.encode(userLogin.password());
-
         UserEntity userEntity = validateCredentials(userLogin.username());
         if (!passwordEncoder.matches(userLogin.password(), userEntity.getPassword())) {
             throw new BaseException(constants.errors.loginError, constants.descriptions.loginError) {};

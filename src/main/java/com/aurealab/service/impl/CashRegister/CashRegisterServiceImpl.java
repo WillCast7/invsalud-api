@@ -11,6 +11,7 @@ import com.aurealab.model.cashRegister.entity.CashMovementEntity;
 import com.aurealab.model.cashRegister.entity.CashSessionEntity;
 import com.aurealab.model.cashRegister.repository.CashSessionRepository;
 import com.aurealab.model.cashRegister.specs.CashMovementSpecs;
+import com.aurealab.model.cashRegister.specs.CashSessionSpecs;
 import com.aurealab.service.CashRegister.CashRegisterService;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.constants;
@@ -51,10 +52,10 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     }
 
     public ResponseEntity<APIResponseDTO<List<CashSessionEntity>>> getAllSessions() {
-        String tenant = "conduvalle";
+;
         List<CashSessionEntity> cashSessionEntities;
         try{
-            cashSessionEntities = tenantService.executeInTenant(tenant, () -> {
+            cashSessionEntities = tenantService.executeInTenant(tenancy, () -> {
                 return cashSessionRepository.findAll();
             });
         } catch (Exception e) {
@@ -64,9 +65,10 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     }
 
     public Page<CashSessionDTO> findPageable(String searchValue, Pageable pageable){
+        Specification<CashSessionEntity> spec = CashSessionSpecs.searchByMovementOrThirdParty(searchValue);
 
         return tenantService.executeInTenant(tenancy, () -> {
-            Page<CashSessionEntity> entities = cashSessionRepository.findAll(pageable);
+            Page<CashSessionEntity> entities = cashSessionRepository.findAll(spec, pageable);
             return entities.map(CashSessionMapper::toDto);
         });
     }

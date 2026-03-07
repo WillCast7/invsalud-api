@@ -14,5 +14,7 @@ public interface ChargeService {
     public ChargeDTO saveIncome(ThirdPartyDTO thirdParty, BigDecimal expectedAmount, BigDecimal receivedAmount);
     public ChargeDTO saveExpense(ThirdPartyDTO thirdPartyId, BigDecimal totalAmount);
     public ResponseEntity<APIResponseDTO<ChargeDTO>> findByCustomerId(Long id);
+    public ChargeDTO findByThirdPartyId(Long thirdPartyId);
+    public ChargeDTO findPendingChargeByThirdParty(Long id);
 
 }

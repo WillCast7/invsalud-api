@@ -81,11 +81,13 @@ public class CashMovementServiceImpl implements CashMovementService {
 
     private String tenancy = "conduvalle";
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
-        System.out.println("LocalDate.now()");
-        System.out.println(LocalDate.now());
+
+        CashSessionDTO todaySession = cashSessionService.findTodaySession();
+
         CashSessionsResponseDTO sessions = new CashSessionsResponseDTO(
-                cashSessionService.findTodaySession(),
-                cashSessionService.findOpenedSession()
+                todaySession,
+                cashSessionService.findOpenedSession(),
+                Objects.equals(todaySession, null) ? null : getSummaries(todaySession.id())
             );
 
 

@@ -9,6 +9,7 @@ import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.mapper.CashRegister.ThirdPartyMapper;
 import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRepository;
+import com.aurealab.service.CashRegister.ChargeService;
 import com.aurealab.service.CashRegister.ThirdPartyRoleService;
 import com.aurealab.service.CashRegister.ThirdPartyService;
 import com.aurealab.service.ConfigParamService;
@@ -35,6 +36,9 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Autowired
     TenantService tenantService;
+
+    @Autowired
+    ChargeService chargeService;
 
     @Autowired
     ConfigParamService configParamsService;
@@ -118,6 +122,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                     .thirdParty(findThirdPartyById(id))
                     .documentTypes(params.documentTypes())
                     .roles(params.roles())
+                    .charge(chargeService.findPendingChargeByThirdParty(id))
                     .build(), constants.success.findedSuccess));
     }
 
