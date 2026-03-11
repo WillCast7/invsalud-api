@@ -7,8 +7,11 @@ import com.aurealab.dto.ConfigParamDTO;
 import com.aurealab.dto.CustomerTableDTO;
 import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.mapper.CashRegister.ThirdPartyMapper;
+import com.aurealab.model.cashRegister.entity.CashSessionEntity;
 import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRepository;
+import com.aurealab.model.cashRegister.specs.CashSessionSpecs;
+import com.aurealab.model.specs.ThirdPartySpecs;
 import com.aurealab.service.CashRegister.ChargeService;
 import com.aurealab.service.CashRegister.ThirdPartyRoleService;
 import com.aurealab.service.CashRegister.ThirdPartyService;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.aurealab.util.constants;
@@ -138,16 +142,17 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     public ResponseEntity<APIResponseDTO<String>> findAllThirdParties(int page, int size, String searchValue) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<ThirdPartyDTO> response = findAll(pageable);
-
+        Page<ThirdPartyDTO> response = findAll(pageable, searchValue);
         return ResponseEntity.ok(
                 APIResponseDTO.withPageable("ok", constants.messages.consultGood, response)
         );
     }
 
-    public Page<ThirdPartyDTO> findAll(Pageable pageable) {
+    public Page<ThirdPartyDTO> findAll(Pageable pageable, String searchValue) {
         return tenantService.executeInTenant(tenancy, () -> {
-            Page<ThirdPartyEntity> thirdPartyEntities = thirdPartyRepository.findAll(pageable);
+            Specification<ThirdPartyEntity> spec = ThirdPartySpecs.search(searchValue);
+
+            Page<ThirdPartyEntity> thirdPartyEntities = thirdPartyRepository.findAll(spec, pageable);
             return thirdPartyEntities.map(ThirdPartyMapper::toDto);
         });
     }

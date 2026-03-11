@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/util/constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/util/constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/repository/ThirdPartyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/cashRegister/repository/ThirdPartyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/pdf/PdfReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/pdf/PdfReportServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$configParam.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/util/constants$configParam.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,11 +79,11 @@
       <recent name="com.aurealab.model.cashRegister.repository" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.aurealab.model.specs" />
       <recent name="com.aurealab.model.cashRegister.specs" />
       <recent name="com.aurealab.dto.response" />
       <recent name="com.aurealab.dto.CashRegister.request" />
       <recent name="com.aurealab.model.cashRegister.entity" />
-      <recent name="com.aurealab.dto.CashRegister" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Api local">
@@ -146,7 +149,7 @@
       <workItem from="1772846853024" duration="1395000" />
       <workItem from="1772857142888" duration="21713000" />
       <workItem from="1773013468736" duration="37000" />
-      <workItem from="1773264615537" duration="805000" />
+      <workItem from="1773264615537" duration="3926000" />
     </task>
     <servers />
   </component>

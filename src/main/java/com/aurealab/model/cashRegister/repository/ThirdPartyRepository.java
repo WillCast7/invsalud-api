@@ -1,11 +1,13 @@
 package com.aurealab.model.cashRegister.repository;
 
 import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
 import java.util.Set;
 
 public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Long> {
@@ -29,4 +31,6 @@ public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Lo
             "JOIN FETCH tp.roles r " +
             "WHERE r.roleName = :roleName")
     Set<ThirdPartyEntity> findAllWithRoleByRole(String roleName);
+
+    Page<ThirdPartyEntity> findAll(Specification<ThirdPartyEntity> spec, Pageable pageable);
 }
