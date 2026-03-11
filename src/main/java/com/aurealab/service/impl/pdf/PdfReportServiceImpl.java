@@ -330,8 +330,8 @@ public class PdfReportServiceImpl implements PdfReportService {
             clientInfo.setWidthPercentage(100);
             clientInfo.setWidths(new float[]{1f, 3f, 1f, 1.5f});
 
-            addTableRow(clientInfo, move.customer().documentType(), move.customer().documentNumber(), "", "", lightGray);
-            addTableRow(clientInfo, "SEÑOR(ES)", move.customer().fullName(), "FECHA", "", lightGray);
+            addTableRow(clientInfo, move.customer().documentType(), move.customer().documentNumber(), "FECHA", move.createdAt().toLocalDate().toString(), lightGray);
+            addTableRow(clientInfo, "SEÑOR(ES)", move.customer().fullName(), "", "", lightGray);
             addTableRow(clientInfo, "DIRECCIÓN", move.customer().address(), "", "", lightGray);
 
             // Fila Mixta (Teléfono, Método de Pago)
