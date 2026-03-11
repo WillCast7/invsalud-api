@@ -69,7 +69,7 @@ public class constants {
         public static final String statusTransactionPaid = "PAID";
         public static final String statusOpen = "OPEN";
         public static final String statusClose = "CLOSED";
-        public static final String thirdPartyRoleCustomer = "cliente";
+        public static final String thirdPartyRoleCustomer = "CLIENTE";
         public static final String incomePrefix = "FE";
         public static final String expensePrefix = "FS";
     }
