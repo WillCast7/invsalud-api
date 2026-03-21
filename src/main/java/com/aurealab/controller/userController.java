@@ -25,7 +25,7 @@ public class userController {
     ResponseEntity<APIResponseDTO<String>> getUsers(@RequestParam(defaultValue = "1") int page,
                                                     @RequestParam(defaultValue = "10") int size,
                                                     @RequestParam(defaultValue = "") String searchValue) {
-        return userService.getUsers(page, size, searchValue);
+        return userService.getCompanyUsers(page, size, searchValue);
     }
 
     @GetMapping(value = "/user/{id}" ,produces = "application/json")
@@ -53,8 +53,8 @@ public class userController {
         return userService.updateMyUser(user);
     }
 
-    @PatchMapping(produces = "application/json")
-    ResponseEntity<APIResponseDTO<String>> patchUsers(@RequestParam(defaultValue = "1") int page,
+    @GetMapping(produces = "application/json", value = "/users/all")
+    ResponseEntity<APIResponseDTO<String>> getAllUsers(@RequestParam(defaultValue = "1") int page,
                                                     @RequestParam(defaultValue = "10") int size,
                                                     @RequestParam(defaultValue = "") String searchValue) {
         return userService.getUsers(page, size, searchValue);

@@ -13,6 +13,9 @@ import com.aurealab.model.aurea.entity.PersonEntity;
 import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.entity.UserEntity;
 import com.aurealab.model.aurea.repository.UserRepository;
+import com.aurealab.model.cashRegister.entity.CashMovementEntity;
+import com.aurealab.model.cashRegister.specs.CashMovementSpecs;
+import com.aurealab.model.specs.UserSpecs;
 import com.aurealab.service.UserService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
@@ -26,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,12 +59,17 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
 
     public ResponseEntity<APIResponseDTO<String>> getUsers(int page, int size, String searchValue) {
-
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        return ResponseEntity.ok(APIResponseDTO.withPageable("ok", constants.success.findedSuccess, findAllPageableUsers(pageable)));
+        return ResponseEntity.ok(APIResponseDTO.withPageable("ok", constants.success.findedSuccess, findAllPageableUsers(pageable, searchValue, false)));
 
     }
+
+    public ResponseEntity<APIResponseDTO<String>> getCompanyUsers(int page, int size, String searchValue) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return ResponseEntity.ok(APIResponseDTO.withPageable("ok", constants.success.findedSuccess, findAllPageableUsers(pageable, searchValue, true)));
+
+    }
+
 
     public ResponseEntity<APIResponseDTO<String>> changePass(PasswordRequestDTO passwords){
         if(!Objects.equals(passwords.newPassword(), passwords.confirmPassword())){
@@ -81,8 +90,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public Page<UserTableResponseDTO> findAllPageableUsers(Pageable pageable){
-        Page<UserEntity> users = userRepository.findAll(pageable);
+    public Page<UserTableResponseDTO> findAllPageableUsers(Pageable pageable, String searchValue, boolean isWithCompany ) {
+        Specification<UserEntity> spec = isWithCompany?
+                UserSpecs.searchWithCompany(searchValue, jwtUtils.getCurrentTenant()):
+                UserSpecs.search(searchValue);
+        Page<UserEntity> users = userRepository.findAll(spec, pageable);
         return users.map(UserMapper::toDtoSimplyResponse);
     }
 

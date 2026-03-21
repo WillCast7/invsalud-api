@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface UserService {
     public ResponseEntity<APIResponseDTO<String>> getUsers(int page, int size, String searchValue);
+    public ResponseEntity<APIResponseDTO<String>> getCompanyUsers(int page, int size, String searchValue);
     public APIResponseDTO<UserDTO> getUserResponse(Long id);
     public UserTableResponseDTO getSimplyUserById(Long id);
     public APIResponseDTO<String> saveUser(UserDTO user);
