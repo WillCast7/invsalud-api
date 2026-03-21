@@ -48,10 +48,7 @@ public class UserDetailServiceImpl {
     /**
      * Carga los detalles del usuario incluyendo roles, permisos y menú.
      */
-    public UserDetails loadUserDetails(Long id, String roleName, RoleEntity role, String username) throws UsernameNotFoundException {
-        log.info("Cargando detalles del usuario con rol: {}", roleName);
-        log.info(role.getRole());
-        System.out.println("📌 Consultando en tenant: " + TenantContext.getCurrentTenant());
+    public UserDetails loadUserDetails(Long id, String roleName, RoleEntity role, String tenant, String username) throws UsernameNotFoundException {
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         role.getPermissionList()
@@ -60,7 +57,7 @@ public class UserDetailServiceImpl {
         authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRole())));
 
         log.info("Detalles del usuario cargados correctamente");
-        return new CustomUserDetails(id, username, "password", authorityList);
+        return new CustomUserDetails(id, username, "password", tenant, authorityList);
     }
 
     /**
@@ -77,8 +74,8 @@ public class UserDetailServiceImpl {
         try {
 
             // Cargar detalles del usuario
-            UserDetails userDetails = loadUserDetails(userEntity.getId(), userEntity.getRole().getRoleName(), userEntity.getRole(), userLogin.username());
-            System.out.println(userEntity.getRole().getRoleName());
+            UserDetails userDetails = loadUserDetails(userEntity.getId(), userEntity.getRole().getRoleName(), userEntity.getRole(), userEntity.getCompany().getTenantName(), userLogin.username());
+
             Set<MenuItemEntity> optionalMenu = menuServiceImpl.getMenuByRoleName(userEntity.getRole().getRoleName());
             if (optionalMenu.isEmpty()){
                 log.warn("No se encontró ningún menu asociado al validador: {}", userEntity.getRole());

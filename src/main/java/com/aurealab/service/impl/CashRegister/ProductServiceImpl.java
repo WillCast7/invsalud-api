@@ -8,6 +8,7 @@ import com.aurealab.model.cashRegister.repository.ProductRepository;
 import com.aurealab.model.cashRegister.specs.ProductSpecs;
 import com.aurealab.service.CashRegister.ProductService;
 import com.aurealab.service.impl.shared.TenantService;
+import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -29,10 +30,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     TenantService tenantService;
 
-    private String tenancy = "conduvalle";
+    @Autowired
+    JwtUtils jwtUtils;
 
     public List<ProductEntity> findAllProducts(){
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return productRepository.findAll();
         });
     };
@@ -41,14 +43,14 @@ public class ProductServiceImpl implements ProductService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, tenantService.executeInTenant(tenancy, () -> {
+        return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return productRepository.findAll(ProductSpecs.search(searchValue), pageable);
         })));
     };
 
     public List<ProductDTO> findProductsByType(String type){
         List<ProductDTO> productDTOS = new ArrayList<>();
-        tenantService.executeInTenant(tenancy, () -> {
+        tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return productRepository.findAllByType(type);
         }).forEach(productEntity -> productDTOS.add(ProductMapper.toDto(productEntity)));
 
@@ -61,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
           return ResponseEntity.ok(
                   APIResponseDTO.success(
                       ProductMapper.toDto(
-                          tenantService.executeInTenant(tenancy, () -> {
+                          tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
                             return productRepository.save(productSearched);
                           })
                       ), constants.success.findedSuccess
@@ -74,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
             APIResponseDTO.success(
                 ProductMapper.toDto(
                     tenantService.executeInTenant(
-                        tenancy, () -> {
+                        jwtUtils.getCurrentTenant(), () -> {
                             return productRepository.save(
                                 ProductMapper.toEntity(
                                     product
@@ -89,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public ProductEntity getProductEntityById(Long id){
-        Optional<ProductEntity> productOptional = tenantService.executeInTenant(tenancy, () -> {
+        Optional<ProductEntity> productOptional = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return productRepository.findById(id);
         });
 

@@ -8,6 +8,7 @@ import com.aurealab.model.cashRegister.entity.TPRoleEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRoleRepository;
 import com.aurealab.service.CashRegister.ThirdPartyRoleService;
 import com.aurealab.service.impl.shared.TenantService;
+import com.aurealab.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +24,13 @@ public class ThirdPartyRoleServiceImpl implements ThirdPartyRoleService{
     @Autowired
     ThirdPartyRoleRepository thirdPartyRoleRepository;
 
-    private String tenancy = "conduvalle";
+    @Autowired
+    JwtUtils jwtUtils;
 
     public Set<ThirdPartyRoleDTO> findRoleByRoleName(String role){
         Set<ThirdPartyRoleDTO> roleDTOS = new HashSet<>();
 
-        Set<TPRoleEntity> roleEntity = tenantService.executeInTenant(tenancy, () -> {
+        Set<TPRoleEntity> roleEntity = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return thirdPartyRoleRepository.findByRoleName(role);
         });
 
@@ -39,7 +41,7 @@ public class ThirdPartyRoleServiceImpl implements ThirdPartyRoleService{
     }
 
     public Set<ThirdPartyRoleDTO> findAllEntitiesByIds(List<Long> ids) {
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Set<ThirdPartyRoleDTO> thirdPartyRole = new HashSet<>();
 
             List<TPRoleEntity> tpRoleEntities = thirdPartyRoleRepository.findAllById(ids);
@@ -52,7 +54,7 @@ public class ThirdPartyRoleServiceImpl implements ThirdPartyRoleService{
     }
 
     public Set<ThirdPartyRoleDTO> findAll() {
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Set<ThirdPartyRoleDTO> thirdPartyRole = new HashSet<>();
 
             List<TPRoleEntity> tpRoleEntities = thirdPartyRoleRepository.findAll();

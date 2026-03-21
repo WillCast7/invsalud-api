@@ -6,7 +6,36 @@
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/config/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/config/CustomUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/config/filter/JwtTokenValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/config/filter/JwtTokenValidator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/CompanyEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/CompanyEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashRegisterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashRegisterServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/DocumentSequenceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/DocumentSequenceServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ProductServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyRoleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyRoleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserDetailServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/pdf/PdfReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/pdf/PdfReportServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/util/JwtUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/util/JwtUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/CustomUserDetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/config/CustomUserDetails.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/filter/JwtTokenValidator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/config/filter/JwtTokenValidator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity$CompanyEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity$CompanyEntityBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/model/aurea/entity/CompanyEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashMovementServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashRegisterServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashRegisterServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/CashSessionServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ChargeServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/DocumentSequenceServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/DocumentSequenceServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ProductServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ProductServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ThirdPartyRoleServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ThirdPartyRoleServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/CashRegister/ThirdPartyServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/service/impl/UserDetailServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/util/JwtUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/util/JwtUtils.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,8 +156,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>
@@ -147,6 +176,12 @@
       <workItem from="1772857142888" duration="21713000" />
       <workItem from="1773013468736" duration="37000" />
       <workItem from="1773264615537" duration="5321000" />
+      <workItem from="1773282978201" duration="392000" />
+      <workItem from="1773441826677" duration="262000" />
+      <workItem from="1773505704754" duration="249000" />
+      <workItem from="1773973442013" duration="5677000" />
+      <workItem from="1773980342209" duration="4179000" />
+      <workItem from="1774043404598" duration="3585000" />
     </task>
     <servers />
   </component>

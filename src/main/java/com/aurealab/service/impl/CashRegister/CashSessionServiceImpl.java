@@ -37,8 +37,6 @@ public class CashSessionServiceImpl implements CashSessionService {
     @Autowired
     UserService userService;
 
-    private String tenancy = "conduvalle";
-
     public ResponseEntity<APIResponseDTO<Set<CashSessionDTO>>> getAllSessions(){
         return ResponseEntity.ok(APIResponseDTO.success(findAll(), constants.messages.consultGood));
     }
@@ -57,7 +55,7 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     public CashSessionDTO findById(Long id) {
         CashSessionEntity cashSessionEntity =
-        tenantService.executeInTenant(tenancy, () -> {
+        tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return cashSessionRepository.findById(id).get();
         });
 
@@ -66,7 +64,7 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     public CashSessionDTO findTodaySession() {
         CashSessionEntity cashSessionEntity =
-        tenantService.executeInTenant(tenancy, () -> {
+        tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return cashSessionRepository.findByBusinessDateAndStatus(
                     LocalDate.now(),
                     "OPEN"
@@ -78,7 +76,7 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     public CashSessionDTO findOpenedSession() {
         CashSessionEntity cashSessionEntity =
-        tenantService.executeInTenant(tenancy, () -> {
+        tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return cashSessionRepository.findByBusinessDateLessThanAndStatus(
                     LocalDate.now(),
                     "OPEN"
@@ -123,7 +121,7 @@ public class CashSessionServiceImpl implements CashSessionService {
     }
 
     public CashSessionDTO createCashSession(CashSessionEntity cashSession){
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return CashSessionMapper.toDto(
                     cashSessionRepository.save(cashSession)
             );
@@ -132,7 +130,7 @@ public class CashSessionServiceImpl implements CashSessionService {
 
     public CashSessionDTO findAndUpdate(CashSessionDTO cashSessionDTO){
 
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             CashSessionEntity cashSessionFinded = cashSessionRepository.findById(cashSessionDTO.id()).get();
             cashSessionFinded.setStatus(constants.configParam.statusClose);
             cashSessionFinded.setClosingAmount(cashSessionDTO.closingAmount());

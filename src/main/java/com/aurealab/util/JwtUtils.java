@@ -46,11 +46,13 @@ public class JwtUtils {
             // Obtén el username e id desde el principal
             String username;
             Long userId = null;
+            String tenant = null;
 
             if (authentication.getPrincipal() instanceof CustomUserDetails) {
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 username = userDetails.getUsername();
                 userId = userDetails.getId(); // Extraemos el ID
+                tenant = userDetails.getTenant();
             } else {
                 username = authentication.getPrincipal().toString();
             }
@@ -67,6 +69,7 @@ public class JwtUtils {
                     .withIssuer(this.userGenerator)
                     .withSubject(username)
                     .withClaim("userId", userId) // <--- AGREGAMOS EL ID AL JWT
+                    .withClaim("tenant", tenant)
                     .withClaim("authorities", authorities) // Añade las autoridades
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + 10800000)) // 3 horas de expiración
@@ -105,6 +108,10 @@ public class JwtUtils {
         return decodedJWT.getSubject();
     }
 
+    public String extractTenant(DecodedJWT decodedJWT){
+        return decodedJWT.getClaim("tenant").asString();
+    }
+
     public Long extractUserId(DecodedJWT decodedJWT) {
         return decodedJWT.getClaim("userId").asLong();
     }
@@ -121,6 +128,17 @@ public class JwtUtils {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
             return user.getId();
+        }
+        return null;
+    }
+
+    public String getCurrentTenant(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
+            if (user.getTenant() == null) {
+                throw new TokenException("El usuario no tiene un Tenant asignado en el contexto de seguridad.", null);
+            }
+            return user.getTenant();
         }
         return null;
     }

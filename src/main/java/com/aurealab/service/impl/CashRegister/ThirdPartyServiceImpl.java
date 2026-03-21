@@ -53,15 +53,13 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     @Autowired
     ThirdPartyRoleService thirdPartyRoleService;
 
-    private final String tenancy = "conduvalle";
-
     public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomersByDocumentNumber(String documentNumber){
         return ResponseEntity.ok(APIResponseDTO.success(findByDniNumberContaining(documentNumber), constants.success.findedSuccess));
     }
 
     public Set<ThirdPartyDTO> findByDniNumberContaining(String documentNumber){
         Set<ThirdPartyDTO> response = new HashSet<>();
-        Set<ThirdPartyEntity> thirdPartyEntities = tenantService.executeInTenant(tenancy, () -> thirdPartyRepository.findByDniNumberContaining(documentNumber));
+        Set<ThirdPartyEntity> thirdPartyEntities = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> thirdPartyRepository.findByDniNumberContaining(documentNumber));
 
         thirdPartyEntities.forEach(thirdPartyEntity -> response.add(ThirdPartyMapper.toDto(thirdPartyEntity)));
 
@@ -70,7 +68,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     public ThirdPartyDTO findByDniNumberAndDniType(String documentNumber, String docuentType){
 
-        ThirdPartyEntity thirdPartyEntity = tenantService.executeInTenant(tenancy, () -> {
+        ThirdPartyEntity thirdPartyEntity = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return thirdPartyRepository.findByDniNumberAndDniType(docuentType, documentNumber);
         });
 
@@ -80,7 +78,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     public List<ThirdPartyDTO> findThirdPartyByRole(String role){
         List<ThirdPartyDTO> response = new ArrayList<>();
-        Set<ThirdPartyEntity> thirdPartyEntities = tenantService.executeInTenant(tenancy, () -> {
+        Set<ThirdPartyEntity> thirdPartyEntities = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return thirdPartyRepository.findAllWithRoleByRole(role);
         });
 
@@ -107,7 +105,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     public ThirdPartyDTO saveThirdParty(ThirdPartyDTO thirdParty){
         System.out.println("save");
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return ThirdPartyMapper.toDto(
                     thirdPartyRepository.save(
                             ThirdPartyMapper.toEntity(thirdParty)
@@ -131,7 +129,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     public ThirdPartyDTO findThirdPartyById(Long id) {
-        return tenantService.executeInTenant(tenancy, () ->
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () ->
                 thirdPartyRepository.findById(id)
                         .map(ThirdPartyMapper::toDto)
                         .orElseThrow(() ->
@@ -149,7 +147,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     public Page<ThirdPartyDTO> findAll(Pageable pageable, String searchValue) {
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Specification<ThirdPartyEntity> spec = ThirdPartySpecs.search(searchValue);
 
             Page<ThirdPartyEntity> thirdPartyEntities = thirdPartyRepository.findAll(spec, pageable);

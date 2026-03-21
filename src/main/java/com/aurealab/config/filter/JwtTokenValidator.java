@@ -52,6 +52,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
             // 2. Extraemos la información incluyendo el ID
             String userName = jwtUtils.extractUsername(decodedJWT);
+            String tenant = jwtUtils.extractTenant(decodedJWT);
             Long userId = jwtUtils.extractUserId(decodedJWT);
             String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
 
@@ -60,7 +61,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
             // 3. RECONSTRUIMOS EL CustomUserDetails
             // El password se pasa vacío "" por seguridad ya que el token ya fue validado
-            CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", authorities);
+            CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", tenant, authorities);
 
             // 4. Seteamos la autenticación usando el objeto userDetails como Principal
             SecurityContext context = SecurityContextHolder.createEmptyContext();

@@ -78,8 +78,6 @@ public class CashMovementServiceImpl implements CashMovementService {
     @Autowired
     DocumentSequenceServiceImpl documentSequenceService;
 
-
-    private String tenancy = "conduvalle";
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
 
         CashSessionDTO todaySession = cashSessionService.findTodaySession();
@@ -127,7 +125,7 @@ public class CashMovementServiceImpl implements CashMovementService {
         List<ThirdPartyDTO> advisors = new ArrayList<>();
 
         try {
-            List<PaymentMethodEntity> paymentMethodEntities = tenantService.executeInTenant(tenancy, () -> {
+            List<PaymentMethodEntity> paymentMethodEntities = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
                 return paymentMethodRepository.findAll();
                 });
 
@@ -159,7 +157,7 @@ public class CashMovementServiceImpl implements CashMovementService {
         Set<ConfigParamDTO> documentType;
 
         try {
-            List<PaymentMethodEntity> paymentMethodEntities = tenantService.executeInTenant(tenancy, () -> {
+            List<PaymentMethodEntity> paymentMethodEntities = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
                 return paymentMethodRepository.findAll();
             });
 
@@ -266,7 +264,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
     public Set<CashMovementResponseDTO> findAllByCashSessionId(Long id){
         Specification<CashMovementEntity> spec = CashMovementSpecs.searchBySessionAndTerm(id, null);
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Set<CashMovementResponseDTO> response = new HashSet<>();
             cashMovementRepository.findAll(spec)
                     .forEach(cashMovementEntity -> response
@@ -279,7 +277,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         Specification<CashMovementEntity> spec = CashMovementSpecs.searchBySessionAndTerm(id, searchValue);
 
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Page<CashMovementEntity> entities = cashMovementRepository.findAll(spec, pageable);
             return entities.map(CashMovementMapper::toDtoList);
         });
@@ -289,7 +287,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         Specification<CashMovementEntity> spec = CashMovementSpecs.searchBySessionAndTerm(id, searchValue);
 
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Page<CashMovementEntity> entities = cashMovementRepository.findAll(spec, pageable);
             return entities.map(CashMovementMapper::toDtoTable);
         });
@@ -304,7 +302,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         cashMovementEntity.setCreatedBySystemUserId(jwtUtils.getCurrentUserId());
 
-        CashMovementResponseDTO response = tenantService.executeInTenant(tenancy, () -> {
+        CashMovementResponseDTO response = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return CashMovementMapper.toDto(
                     cashMovementRepository.save(cashMovementEntity)
             );
@@ -314,7 +312,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
     public CashSessionSummaryDTO getSummaries(Long sessionId){
         // 1. Buscamos el resumen en los movimientos
-        CashSessionSummaryProjection summary = tenantService.executeInTenant(tenancy, () -> {
+        CashSessionSummaryProjection summary = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return cashMovementRepository.getSessionSummary(sessionId);
         });
 
@@ -362,7 +360,7 @@ public class CashMovementServiceImpl implements CashMovementService {
     }
 
     public CashMovementResponseDTO findById(Long id){
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return CashMovementMapper.toDto(cashMovementRepository.findById(id).get());
 
         });

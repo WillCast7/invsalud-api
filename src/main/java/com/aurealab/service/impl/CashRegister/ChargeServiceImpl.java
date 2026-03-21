@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Service
 public class ChargeServiceImpl implements ChargeService {
-    private String tenancy = "conduvalle";
+
     @Autowired
     ChargeRepository chargeRepository;
 
@@ -42,7 +42,7 @@ public class ChargeServiceImpl implements ChargeService {
 
     public ChargeDTO findByThirdPartyId(Long thirdPartyId){
         try {
-            ChargeEntity chargeEntity = tenantService.executeInTenant(tenancy, () -> {
+            ChargeEntity chargeEntity = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
                 return chargeRepository.findByThirdPartyId(thirdPartyId);
             });
 
@@ -105,7 +105,7 @@ public class ChargeServiceImpl implements ChargeService {
         System.out.println(chargeToSave.paidAmount());
         System.out.println(chargeToSave.totalAmount());
 
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             ChargeEntity entity = ChargeMapper.toEntity(chargeToSave);
             return ChargeMapper.toDto(chargeRepository.save(entity));
         });
@@ -148,14 +148,14 @@ public class ChargeServiceImpl implements ChargeService {
                     .build();
         }
 
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             ChargeEntity entity = ChargeMapper.toEntity(chargeToSave);
             return ChargeMapper.toDto(chargeRepository.save(entity));
         });
     }
 
     public ChargeDTO findPendingChargeByThirdParty(Long id){
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return ChargeMapper.toDto(chargeRepository.findPendingChargeByThirdParty(id));
         });
     }

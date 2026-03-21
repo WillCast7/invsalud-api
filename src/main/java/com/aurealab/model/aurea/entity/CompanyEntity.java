@@ -26,6 +26,9 @@ public class CompanyEntity {
     @Column(name = "legal_name")
     private String legalName;
 
+    @Column(name = "tenant_name")
+    private String tenantName;
+
     @Column(name = "tax_id")
     private String taxId;
 

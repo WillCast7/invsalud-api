@@ -14,6 +14,7 @@ import com.aurealab.model.cashRegister.specs.CashMovementSpecs;
 import com.aurealab.model.cashRegister.specs.CashSessionSpecs;
 import com.aurealab.service.CashRegister.CashRegisterService;
 import com.aurealab.service.impl.shared.TenantService;
+import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,12 +34,10 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     CashSessionRepository cashSessionRepository;
 
     @Autowired
-    UserRepository userRepository;
+    JwtUtils jwtUtils;
 
     @Autowired
     private TenantService tenantService;
-
-    private String tenancy = "conduvalle";
 
     public ResponseEntity<APIResponseDTO<String>> GetAllCashSessions(int page, int size, String searchValue){
 
@@ -55,7 +54,7 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 ;
         List<CashSessionEntity> cashSessionEntities;
         try{
-            cashSessionEntities = tenantService.executeInTenant(tenancy, () -> {
+            cashSessionEntities = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
                 return cashSessionRepository.findAll();
             });
         } catch (Exception e) {
@@ -67,7 +66,7 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     public Page<CashSessionDTO> findPageable(String searchValue, Pageable pageable){
         Specification<CashSessionEntity> spec = CashSessionSpecs.searchByMovementOrThirdParty(searchValue);
 
-        return tenantService.executeInTenant(tenancy, () -> {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             Page<CashSessionEntity> entities = cashSessionRepository.findAll(spec, pageable);
             return entities.map(CashSessionMapper::toDto);
         });

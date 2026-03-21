@@ -372,10 +372,8 @@ public class PdfReportServiceImpl implements PdfReportService {
             totalsTable.setWidths(new float[]{4f, 1f, 1f});
 
             // Celda de observación (licencia...)
-            PdfPCell obsCell = new PdfPCell(new Phrase(formatCurrency(new NumberToText().convertir(move.receivedAmount())) + " PESOS M/CTE",
-                    FontFactory.getFont(FontFactory.HELVETICA, 7)));
-            obsCell.setBackgroundColor(lightGray);
-            totalsTable.addCell(obsCell);
+            totalsTable.addCell(new PdfPCell(new Phrase("Observacion:" + move.observations(),
+                    FontFactory.getFont(FontFactory.HELVETICA, 7))));
 
             // Subtotal y Total
             totalsTable.addCell(new PdfPCell(new Phrase("Saldo", valueFont)));
@@ -383,7 +381,11 @@ public class PdfReportServiceImpl implements PdfReportService {
             subV.setHorizontalAlignment(Element.ALIGN_RIGHT);
             totalsTable.addCell(subV);
 
-            totalsTable.addCell(createNoBorderCell("", valueFont));
+            PdfPCell obsCell = new PdfPCell(new Phrase(new NumberToText().convertir(move.receivedAmount()) + " PESOS M/CTE",
+                    FontFactory.getFont(FontFactory.HELVETICA, 7)));
+            obsCell.setBackgroundColor(lightGray);
+            totalsTable.addCell(obsCell);
+
             PdfPCell totalL = new PdfPCell(new Phrase("Recibido", valueFont));
             totalL.setBackgroundColor(lightGray);
             totalsTable.addCell(totalL);
@@ -443,7 +445,7 @@ public class PdfReportServiceImpl implements PdfReportService {
         lTel.setBackgroundColor(gray);
         lTel.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(lTel);
-        table.addCell(new PdfPCell(new Phrase("3102277740", FontFactory.getFont(FontFactory.HELVETICA, 8))));
+        table.addCell(new PdfPCell(new Phrase(move.customer().phoneNumber(), FontFactory.getFont(FontFactory.HELVETICA, 8))));
 
         PdfPCell lMet = new PdfPCell(new Phrase("MÉTODO DE PAGO", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7)));
         lMet.setBackgroundColor(gray);
