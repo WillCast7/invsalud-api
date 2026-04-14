@@ -1,4 +1,4 @@
-package com.aurealab.service.CashRegister;
+package com.aurealab.service;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ChargeDTO;

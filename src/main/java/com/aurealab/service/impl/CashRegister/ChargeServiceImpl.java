@@ -6,7 +6,7 @@ import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import com.aurealab.mapper.CashRegister.ChargeMapper;
 import com.aurealab.model.cashRegister.entity.ChargeEntity;
 import com.aurealab.model.cashRegister.repository.ChargeRepository;
-import com.aurealab.service.CashRegister.ChargeService;
+import com.aurealab.service.ChargeService;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;

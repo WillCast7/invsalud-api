@@ -18,9 +18,10 @@ import com.aurealab.model.cashRegister.repository.CashMovementRepository;
 import com.aurealab.model.cashRegister.repository.PaymentMethodRepository;
 import com.aurealab.model.cashRegister.repository.ProductRepository;
 import com.aurealab.model.cashRegister.specs.CashMovementSpecs;
+import com.aurealab.service.*;
 import com.aurealab.service.CashRegister.*;
-import com.aurealab.service.ConfigParamService;
 import com.aurealab.service.impl.shared.TenantService;
+import com.aurealab.service.management.ConfigParamService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -120,7 +120,8 @@ public class CashMovementServiceImpl implements CashMovementService {
         Map<String, Object> response = new HashMap<>();
 
         Set<PaymentMethodDTO> paymentMethods = new HashSet<>();
-        List<ProductDTO> products = new ArrayList<>();
+        Set<ProductDTO> products = new HashSet<>();
+        Set<ProductDTO> followingProducts = new HashSet<>();
         Set<ConfigParamDTO> documentType;
         List<ThirdPartyDTO> advisors = new ArrayList<>();
 
@@ -129,7 +130,9 @@ public class CashMovementServiceImpl implements CashMovementService {
                 return paymentMethodRepository.findAll();
                 });
 
-            products = productService.findProductsByType(constants.configParam.incomeTransaction);
+            products = productService.findAllProductsByCategory(1L);
+
+            followingProducts = productService.findAllProductsByCategory(2L);
 
             advisors = thirdPartyService.findThirdPartyByRole(constants.roles.advisor);
 
@@ -144,6 +147,7 @@ public class CashMovementServiceImpl implements CashMovementService {
         response.put("documentType", documentType);
         response.put("paymentMethods", paymentMethods);
         response.put("products", products);
+        response.put("followingProducts", followingProducts);
         response.put("advisors", advisors);
 
         return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess ));

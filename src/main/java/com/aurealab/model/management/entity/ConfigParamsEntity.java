@@ -1,4 +1,4 @@
-package com.aurealab.model.aurea.entity;
+package com.aurealab.model.management.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

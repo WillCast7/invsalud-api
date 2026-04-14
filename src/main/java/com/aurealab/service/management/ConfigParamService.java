@@ -1,4 +1,4 @@
-package com.aurealab.service;
+package com.aurealab.service.management;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
@@ -14,6 +14,5 @@ public interface ConfigParamService {
     public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> getCreatingUserParams();
     public ThirdPartyWithParamsResponseDTO findCreatingThirdPartyParams();
     public UserWithParamsResponseDTO findCreatingUserParams();
-
-
+    public ResponseEntity<APIResponseDTO<String>> getConfigParams(int page, int size, String searchValue);
 }

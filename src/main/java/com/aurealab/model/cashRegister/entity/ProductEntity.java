@@ -30,4 +30,13 @@ public class ProductEntity {
 
     @Column(name = "is_active")
     private boolean isActive = true;
+
+    @Column(name = "applies_to_case")
+    private boolean appliesToCase;
+
+    @Column(name = "category_id")
+    private Long categoryId;
+
+    @Column(name = "use_third_party")
+    private boolean useThirdParty = true;
 }

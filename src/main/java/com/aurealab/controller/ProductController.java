@@ -2,8 +2,7 @@ package com.aurealab.controller;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ProductDTO;
-import com.aurealab.model.cashRegister.entity.ProductEntity;
-import com.aurealab.service.CashRegister.ProductService;
+import com.aurealab.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

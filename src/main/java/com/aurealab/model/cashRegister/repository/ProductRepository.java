@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     public List<ProductEntity> findAllByType(String type);
@@ -17,4 +19,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Page<ProductEntity> findAll(Specification<ProductEntity> spec, Pageable pageable);
 
     List<ProductEntity> id(Long id);
+
+    @Query("SELECT p FROM ProductEntity p WHERE p.categoryId = :id")
+    Set<ProductEntity> findAllByCategoryId(Long id);
 }

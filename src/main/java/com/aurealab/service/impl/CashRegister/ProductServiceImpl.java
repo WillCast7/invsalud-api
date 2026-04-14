@@ -6,7 +6,7 @@ import com.aurealab.mapper.CashRegister.ProductMapper;
 import com.aurealab.model.cashRegister.entity.ProductEntity;
 import com.aurealab.model.cashRegister.repository.ProductRepository;
 import com.aurealab.model.cashRegister.specs.ProductSpecs;
-import com.aurealab.service.CashRegister.ProductService;
+import com.aurealab.service.ProductService;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
@@ -17,10 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -36,6 +33,22 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductEntity> findAllProducts(){
         return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return productRepository.findAll();
+        });
+    };
+
+    public Set<ProductDTO> findAllProductsByCategory(Long categoryId){
+        Set<ProductDTO>productDTOSet = new HashSet<>();
+        findAllProductsByCategoryEntity(categoryId).forEach(
+                productEntity -> productDTOSet.add(
+                        ProductMapper.toDto(productEntity)
+                )
+        );
+        return productDTOSet;
+    };
+
+    public Set<ProductEntity> findAllProductsByCategoryEntity(Long categoryId){
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            return productRepository.findAllByCategoryId(categoryId);
         });
     };
 

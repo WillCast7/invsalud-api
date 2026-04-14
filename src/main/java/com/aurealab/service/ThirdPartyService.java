@@ -1,4 +1,4 @@
-package com.aurealab.service.CashRegister;
+package com.aurealab.service;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyDTO;
@@ -7,7 +7,6 @@ import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface ThirdPartyService {

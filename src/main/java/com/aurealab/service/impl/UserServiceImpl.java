@@ -1,29 +1,23 @@
 package com.aurealab.service.impl;
 
 import com.aurealab.dto.APIResponseDTO;
-import com.aurealab.dto.RoleDTO;
 import com.aurealab.dto.UserDTO;
 import com.aurealab.dto.request.PasswordRequestDTO;
-import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.dto.response.UserTableResponseDTO;
 import com.aurealab.dto.response.UserWithParamsResponseDTO;
-import com.aurealab.mapper.CompanyMapper;
 import com.aurealab.mapper.UserMapper;
 import com.aurealab.model.aurea.entity.PersonEntity;
-import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.entity.UserEntity;
 import com.aurealab.model.aurea.repository.UserRepository;
-import com.aurealab.model.cashRegister.entity.CashMovementEntity;
-import com.aurealab.model.cashRegister.specs.CashMovementSpecs;
 import com.aurealab.model.specs.UserSpecs;
 import com.aurealab.service.UserService;
+import com.aurealab.service.impl.management.ConfigParamServiceImpl;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
 import com.aurealab.util.exceptions.DataPersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,11 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 

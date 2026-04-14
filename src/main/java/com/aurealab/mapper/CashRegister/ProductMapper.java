@@ -17,7 +17,10 @@ public class ProductMapper {
                 entity.getBasePrice(),
                 entity.getDescription(),
                 entity.getType(),
-                entity.isActive()
+                entity.isActive(),
+                entity.isAppliesToCase(),
+                entity.getCategoryId(),
+                entity.isUseThirdParty()
         );
     }
 
@@ -31,8 +34,10 @@ public class ProductMapper {
         entity.setBasePrice(dto.basePrice());
         entity.setDescription(dto.description());
         entity.setType(dto.type());
-        entity.setActive(dto.active());
-
+        entity.setActive(dto.isActive());
+        entity.setAppliesToCase(dto.appliesToCase());
+        entity.setCategoryId(dto.categoryId());
+        entity.setUseThirdParty(dto.useThirdParty());
         return entity;
     }
 }

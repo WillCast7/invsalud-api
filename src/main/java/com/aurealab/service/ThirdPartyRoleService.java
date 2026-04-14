@@ -1,7 +1,6 @@
-package com.aurealab.service.CashRegister;
+package com.aurealab.service;
 
 import com.aurealab.dto.CashRegister.ThirdPartyRoleDTO;
-import com.aurealab.model.cashRegister.entity.TPRoleEntity;
 
 import java.util.List;
 import java.util.Set;

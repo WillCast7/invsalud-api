@@ -1,16 +1,15 @@
-package com.aurealab.controller.CashRegister;
+package com.aurealab.controller;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import com.aurealab.dto.CashRegister.request.ThirdPartyRequestDTO;
 import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
-import com.aurealab.service.CashRegister.ThirdPartyService;
+import com.aurealab.service.ThirdPartyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Set;
 
 @RestController

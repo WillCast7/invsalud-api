@@ -2,7 +2,7 @@ package com.aurealab.mapper;
 
 
 import com.aurealab.dto.ConfigParamDTO;
-import com.aurealab.model.aurea.entity.ConfigParamsEntity;
+import com.aurealab.model.management.entity.ConfigParamsEntity;
 
 public class ConfigParamsMapper {
     private ConfigParamsMapper(){}
@@ -16,6 +16,8 @@ public class ConfigParamsMapper {
                 entity.getName(),
                 entity.getShortname(),
                 entity.getParent(),
+                entity.getDefinition(),
+                entity.getOrder(),
                 entity.isActive()
         );
     }
@@ -29,6 +31,8 @@ public class ConfigParamsMapper {
         entity.setName(dto.getName());
         entity.setShortname(dto.getShortname());
         entity.setParent(dto.getParent());
+        entity.setDefinition(dto.getDefinition());
+        entity.setOrder(dto.getOrder());
         entity.setActive(dto.isActive());
         return entity;
     }
