@@ -1,0 +1,10 @@
+./src/main/java/com/aurealab/controller/PurchasingController.java
+./src/main/java/com/aurealab/dto/PurchasingDTO.java
+./src/main/java/com/aurealab/dto/tables/PurchasingTableDTO.java
+./src/main/java/com/aurealab/mapper/inventory/PurchasingMapper.java
+./src/main/java/com/aurealab/model/inventory/entity/PurchasingEntity.java
+./src/main/java/com/aurealab/model/inventory/entity/PurchasingItemEntity.java
+./src/main/java/com/aurealab/model/inventory/repository/PurchasingRepository.java
+./src/main/java/com/aurealab/model/specs/PurchasingSpecs.java
+./src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java
+./src/main/java/com/aurealab/service/Inventory/PurchasingService.java
