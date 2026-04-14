@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  springapp:
+    build: .
+    container_name: invsalud-api
+    ports:
+      - "9091:9090"
+    env_file:
+      - .env
+    networks:
+      - invsalud-shared-net
+
+networks:
+  invsalud-shared-net:
+    external: true
+    name: invsalud-network
