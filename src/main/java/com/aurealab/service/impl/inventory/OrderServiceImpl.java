@@ -260,10 +260,4 @@ public class OrderServiceImpl implements OrderService {
         return ResponseEntity.ok(APIResponseDTO.success(OrderMapper.toDto(savedOrder), constants.success.updatedSuccess));
     }
 
-    @Override
-    public ResponseEntity<APIResponseDTO<List<OrderDTO>>> getQuotations() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getQuotations'");
-    }
-
 }
