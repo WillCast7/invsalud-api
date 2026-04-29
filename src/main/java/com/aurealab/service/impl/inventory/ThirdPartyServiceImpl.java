@@ -41,6 +41,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     ThirdPartyRoleService thirdPartyRoleService;
 
 
+    @Transactional
     public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomersByDocumentNumber(String documentNumber){
         return ResponseEntity.ok(APIResponseDTO.success(findByDniNumberContaining(documentNumber), constants.success.findedSuccess));
     }
@@ -54,6 +55,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
         return response;
     }
 
+    @Transactional
     public ThirdPartyDTO findByDniNumberAndDniType(String documentNumber, String docuentType){
 
         ThirdPartyEntity thirdPartyEntity =  thirdPartyRepository.findByDniNumberAndDniType(docuentType, documentNumber);
@@ -63,6 +65,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     }
 
+    @Transactional
     public List<ThirdPartyDTO> findThirdPartyByRole(String role){
         List<ThirdPartyDTO> response = new ArrayList<>();
         Set<ThirdPartyEntity> thirdPartyEntities =  thirdPartyRepository.findAllWithRoleByRole(role);
@@ -72,8 +75,8 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
         return response;
     }
 
+    @Transactional
     public ResponseEntity<APIResponseDTO<ThirdPartyDTO>> saveCustomer(ThirdPartyRequestDTO thirdPartyDTO){
-
         ThirdPartyDTO thirdParty = ThirdPartyDTO.builder()
                 .id(thirdPartyDTO.id() == null ? null :thirdPartyDTO.id() )
                 .documentType(thirdPartyDTO.documentType())
@@ -99,6 +102,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
         );
     }
 
+    @Transactional
     public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> findThirdPartyAndParamsById(Long id) {
 
         @SuppressWarnings("unchecked")
@@ -119,7 +123,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     public ThirdPartyEntity findThirdPartyEntityById(Long id) {
         return thirdPartyRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("ThirdParty no encontrado con id: " + id)
+                new EntityNotFoundException(constants.messages.dontFoundByID)
         );
     }
 

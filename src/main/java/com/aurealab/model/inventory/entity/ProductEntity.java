@@ -46,9 +46,6 @@ public class ProductEntity {
     @Column(name = "created_by")
     private Long createdBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resolution_id") // Nombre de la columna en la tabla 'products'
-    private ResolutionEntity resolution;
 
     public ProductEntity(Long id) {
         this.id = id;

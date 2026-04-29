@@ -4,6 +4,7 @@ public class constants {
     public static class messages {
         public static final String error = "Ha ocurrido un error: ";
         public static final String noData = "No encontró ningún dato";
+        public static final String noAssociatedMedicine = "No encontró ningún medicamento asociado";
         public static final String consultGood = "Consultado correctamente";
         public static final String responseSaveUserGood = "Datos creado correctamente";
         public static final String responseUpdateGood = "Datos actualizados correctamente";
@@ -77,9 +78,22 @@ public class constants {
         public static final String statusOpen = "OPEN";
         public static final String statusClose = "CLOSED";
         public static final String thirdPartyRoleCustomer = "cliente";
-        public static final String incomePublicHealtPrefix = "ISP";
+
+        //compras
+        public static final String incomePublicHealthPrefix = "ISP";
         public static final String incomeEspecialControlPrefix = "ICE";
         public static final String incomeRecipePrefix = "IR";
+
+        //cotizaciones
+        public static final String orderPublicHealthPrefix = "CSP";
+        public static final String orderEspecialControlPrefix = "CCE";
+        public static final String orderRecipePrefix = "CR";
+
+        //ventas
+        public static final String salePublicHealthPrefix = "SSP";
+        public static final String saleEspecialControlPrefix = "SCE";
+        public static final String saleRecipePrefix = "SR";
+
         public static final String expensePrefix = "FS";
     }
 

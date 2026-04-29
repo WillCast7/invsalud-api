@@ -4,6 +4,7 @@ import com.aurealab.dto.CashRegister.ProductDTO;
 import com.aurealab.dto.ResolutionDTO;
 import com.aurealab.dto.tables.ResolutionTableDTO;
 import com.aurealab.model.inventory.entity.ProductEntity;
+import com.aurealab.model.inventory.entity.ResolutionAllowedProductEntity;
 import com.aurealab.model.inventory.entity.ResolutionEntity;
 
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ public class ResolutionMapper {
         if (entity == null) return null;
 
         Set<ProductDTO> products = new HashSet<ProductDTO>();
-        //entity.getProducts().forEach(item -> products.add(ProductMapper.toDto(item)));
+        if (entity.getAllowedProduct() != null) {
+            entity.getAllowedProduct().forEach(item -> products.add(ProductMapper.toDto(item.getProduct())));
+        }
 
         return new ResolutionDTO(
                 entity.getId(),
@@ -69,12 +72,16 @@ public class ResolutionMapper {
         entity.setCreatedAt(dto.createdAt());
         entity.setCreatedBy(dto.createdBy());
         
-        if (dto.items() != null) {
-            Set<ProductEntity> items = new HashSet<ProductEntity>();
-            dto.items().forEach(item -> items.add(ProductMapper.toEntity(item)));
-            entity.setProducts(items);
+        if (dto.products() != null && !dto.products().isEmpty()) {
+            Set<ResolutionAllowedProductEntity> items = new HashSet<>();
+            dto.products().forEach(item -> {
+                ResolutionAllowedProductEntity raProduct = new ResolutionAllowedProductEntity();
+                raProduct.setResolution(entity);
+                raProduct.setProduct(new ProductEntity(item.id())); // referencia por ID, evita entidad detached
+                items.add(raProduct);
+            });
+            entity.setAllowedProduct(items);
         }
-
         return entity;
     }
 }

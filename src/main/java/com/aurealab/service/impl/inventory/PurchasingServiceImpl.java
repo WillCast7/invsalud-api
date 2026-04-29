@@ -95,7 +95,7 @@ public class PurchasingServiceImpl implements PurchasingService {
     public ResponseEntity<APIResponseDTO<String>> savePurchasing(PurchasingRequestDTO purchasingDTO) {
         // 1. Identificar el prefijo y obtener datos del contexto
         String productType = switch (purchasingDTO.type()) {
-            case constants.productTypes.PublicHealth -> constants.configParam.incomePublicHealtPrefix;
+            case constants.productTypes.PublicHealth -> constants.configParam.incomePublicHealthPrefix;
             case constants.productTypes.Recipe -> constants.configParam.incomeRecipePrefix;
             default -> constants.configParam.incomeEspecialControlPrefix;
         };

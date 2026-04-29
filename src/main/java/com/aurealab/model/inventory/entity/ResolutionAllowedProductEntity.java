@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "resolutionallowed_products")
+@Table(name = "resolution_allowed_products")
 public class  ResolutionAllowedProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

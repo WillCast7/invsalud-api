@@ -5,21 +5,28 @@ import com.aurealab.dto.PrescriptionInventoryDTO;
 import com.aurealab.dto.PrescriptionInventoryTableDTO;
 import com.aurealab.mapper.inventory.PrescriptionInventoryMapper;
 import com.aurealab.model.inventory.entity.PrescriptionInventoryEntity;
+import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.repository.PrescriptionInventoryRepository;
 import com.aurealab.model.specs.PrescriptionInventorySpecs;
 import com.aurealab.service.Inventory.PrescriptionInventoryService;
 import com.aurealab.util.constants;
+import com.aurealab.util.exceptions.BaseException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PrescriptionInventoryServiceImpl implements PrescriptionInventoryService {
@@ -51,9 +58,14 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     }
 
     public PrescriptionInventoryDTO findById(Long id) {
-        Optional<PrescriptionInventoryEntity> prescriptionInventory = prescriptionInventoryRepository.findById(id);
-        return prescriptionInventory.map(PrescriptionInventoryMapper::toDto).orElse(null);
+        return PrescriptionInventoryMapper.toDto(findByIdEntity(id));
     }
+
+    public PrescriptionInventoryEntity findByIdEntity(Long id) {
+        return prescriptionInventoryRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(constants.messages.dontFoundByID));
+    }
+
 
     @Transactional
     public PrescriptionInventoryEntity processPrescriptionInventory(PrescriptionInventoryDTO dto) {
@@ -77,5 +89,21 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
             PrescriptionInventoryEntity newEntity = PrescriptionInventoryMapper.toEntity(dto);
             return prescriptionInventoryRepository.save(newEntity);
         }
+    }
+
+    @Transactional
+    public Set<PrescriptionInventoryDTO> getResolutionProductById(Long thirdPartyId){
+        Set<PrescriptionInventoryDTO> prescriptionInventories = new HashSet<>();
+        getResolutionProductEntityById(thirdPartyId).forEach(prescriptionInventory ->
+                prescriptionInventories.add(PrescriptionInventoryMapper.toDto(prescriptionInventory))
+                );
+        System.out.println("getting resolution productsss");
+        System.out.println(prescriptionInventories);
+        return prescriptionInventories;
+    }
+
+    @Transactional
+    public Set<PrescriptionInventoryEntity> getResolutionProductEntityById(Long thirdPartyId){
+        return  prescriptionInventoryRepository.findByThirdPartyIdGranteed(thirdPartyId);
     }
 }

@@ -44,7 +44,7 @@ public class ThirdPartyEntity {
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "thirdparty_roles",
             joinColumns = @JoinColumn(name = "person_id"),
@@ -53,7 +53,7 @@ public class ThirdPartyEntity {
     private Set<TPRoleEntity> roles = new HashSet<>();
 
     // Dentro de ThirdPartyEntity
-    @OneToMany(mappedBy = "thirdParty")
+    @OneToMany(mappedBy = "thirdParty", cascade = CascadeType.ALL)
     private Set<ResolutionEntity> resolutions = new HashSet<>();
 
     public ThirdPartyEntity(Long id) {
