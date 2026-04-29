@@ -16,5 +16,5 @@ public record ThirdPartyDTO(
         String phoneNumber,
         OffsetDateTime createdAt,
         Long createdBySystemUserId,
-        Set<ThirdPartyRoleDTO> roles) {
-}
+        Set<ThirdPartyRoleDTO> roles
+) {}

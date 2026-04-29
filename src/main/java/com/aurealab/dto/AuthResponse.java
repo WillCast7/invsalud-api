@@ -6,8 +6,9 @@ import java.util.Set;
 
 @JsonPropertyOrder({"username", "message", "jwt", "status"})
 public record AuthResponse(String username,
-                      String names,
-                      String jwt,
-                      Set<MenuDTO> menus) {
+                  String names,
+                  String jwt,
+                  Set<MenuDTO> menus,
+                  CompanyConfigDTO companyConfig) {
 
 }

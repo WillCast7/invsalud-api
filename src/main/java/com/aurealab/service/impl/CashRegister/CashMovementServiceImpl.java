@@ -13,6 +13,7 @@ import com.aurealab.mapper.CashRegister.CashMovementMapper;
 import com.aurealab.mapper.CashRegister.PaymentMethodMapper;
 import com.aurealab.model.aurea.interfaz.CashSessionSummaryProjection;
 import com.aurealab.model.cashRegister.entity.CashMovementEntity;
+import com.aurealab.model.cashRegister.entity.CashMovementItemsEntity;
 import com.aurealab.model.cashRegister.entity.PaymentMethodEntity;
 import com.aurealab.model.cashRegister.repository.CashMovementRepository;
 import com.aurealab.model.cashRegister.repository.PaymentMethodRepository;
@@ -20,6 +21,9 @@ import com.aurealab.model.cashRegister.repository.ProductRepository;
 import com.aurealab.model.cashRegister.specs.CashMovementSpecs;
 import com.aurealab.service.*;
 import com.aurealab.service.CashRegister.*;
+import com.aurealab.mapper.CashRegister.CashMovementItemMapper;
+import com.aurealab.mapper.CashRegister.FollowingMapper;
+import com.aurealab.model.cashRegister.repository.FollowingRepository;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.service.management.ConfigParamService;
 import com.aurealab.util.JwtUtils;
@@ -77,6 +81,15 @@ public class CashMovementServiceImpl implements CashMovementService {
 
     @Autowired
     DocumentSequenceServiceImpl documentSequenceService;
+
+    @Autowired
+    FollowingItemService followingItemService;
+
+    @Autowired
+    CashMovementItemService cashMovementItemService;
+
+    @Autowired
+    FollowingRepository followingRepository;
 
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
 
@@ -184,7 +197,6 @@ public class CashMovementServiceImpl implements CashMovementService {
     public ResponseEntity<APIResponseDTO<String>> saveIncomeTransaction(
             ThirdPartyDTO thirdParty,
             CashMovementRequestDTO income){
-
         if(cashSessionService.findTodaySession() == null){
             throw new RuntimeException(constants.messages.cashSessionDontExist);
         }
@@ -193,6 +205,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
         try{
             ThirdPartyDTO thirdPartySearched = thirdPartyService.findByDniNumberAndDniType(thirdParty.documentType(), thirdParty.documentNumber());
+
             if(thirdPartySearched == null){
                 customer = ThirdPartyDTO.builder()
                         .documentType(thirdParty.documentType())
@@ -218,17 +231,20 @@ public class CashMovementServiceImpl implements CashMovementService {
                         .roles(thirdPartySearched.roles())
                         .build();
             }
+
             ThirdPartyDTO customerSaved = thirdPartyService.saveThirdParty(customer);
 
             ChargeDTO chargeSaved = chargeService.saveIncome(customerSaved, income.expectedAmount(), income.receivedAmount());
 
-            saveMovement(
+            CashMovementResponseDTO movementSaved = saveMovement(
                     income,
                     chargeSaved.id(),
                     chargeSaved.thirdParty().id(),
                     constants.configParam.incomeTransaction,
                     constants.configParam.incomePrefix
             );
+
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -299,7 +315,7 @@ public class CashMovementServiceImpl implements CashMovementService {
 
     public CashMovementResponseDTO saveMovement(CashMovementRequestDTO movement, Long chargeId, Long customerId, String type, String prefix){
 
-        CashMovementEntity cashMovementEntity = CashMovementMapper.toEntity(movement, chargeId, customerId, type);
+        CashMovementEntity cashMovementEntity = CashMovementMapper.toEntity(movement, chargeId, customerId, type, jwtUtils.getCurrentUserId());
         String referenceNumber = documentSequenceService.getNextInvoiceNumber(prefix);
 
         cashMovementEntity.setReferenceNumber(referenceNumber);
@@ -363,11 +379,95 @@ public class CashMovementServiceImpl implements CashMovementService {
         return ResponseEntity.ok(APIResponseDTO.success(findById(id), constants.success.findedSuccess));
     }
 
-    public CashMovementResponseDTO findById(Long id){
-        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
-            return CashMovementMapper.toDto(cashMovementRepository.findById(id).get());
+    public CashMovementResponseDTO findById(Long id) {
+        String currentTenant = jwtUtils.getCurrentTenant();
+        System.out.println("Buscando ID: " + id + " en el Tenant: " + currentTenant);
 
+        return tenantService.executeInTenant(currentTenant, () -> {
+            CashMovementEntity entity = cashMovementRepository.findByIdCustom(id)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el movimiento " + id + " en el esquema " + currentTenant));
+
+            System.out.println("Registro encontrado: " + entity.getId());
+            return CashMovementMapper.toDto(entity);
         });
     }
 
+    public Set<CashMovementResponseDTO> findAllByCustomerId(Long id){
+        Set<CashMovementResponseDTO> response = new HashSet<>();
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            cashMovementRepository.findAllByCustomerIdWithFollowingActive(id)
+                    .forEach(entity -> response.add(CashMovementMapper.toDto(entity)));
+            return response;
+        });
+    }
+
+    public List<CashMovementResponseDTO> findAllByCustomerIdOrderByCreatedAtDesc(Long id){
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            List<CashMovementResponseDTO> response = new ArrayList<>();
+            cashMovementRepository.findAllByCustomerIdOrderByCreatedAtDesc(id)
+                    .forEach(entity -> response.add(CashMovementMapper.toDto(entity)));
+            return response;
+        });
+    }
+
+    @Override
+    public CashMovementResponseDTO findActiveFollowingByCustomerId(Long id) {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            return cashMovementRepository.findFollowingActiveByThirdPartyId(id)
+                    .map(CashMovementMapper::toDtoFollowing)
+                    .orElse(null); // Ahora devolverá null sin explotar
+        });
+    }
+
+    @Override
+    public Set<CashMovementResponseDTO> findItemsByCustomerId(Long id) {
+        System.out.println("Buscando ID: " + id);
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            System.out.println("Buscando ID: " + id);
+            Set<CashMovementResponseDTO> items = new HashSet<>();
+            Set<CashMovementEntity> cashMovements = cashMovementRepository.findAllByCustomerIdWithFollowingActive(id);
+
+
+            cashMovements.forEach(item -> items.add(CashMovementMapper.toDtoItems(item)));
+            return items;
+        });
+    }
+
+    @Override
+    public ResponseEntity<APIResponseDTO<String>> updateFollowingItemStatus(Long id, String status) {
+        return followingItemService.updateStatus(id, status);
+    }
+
+    @Override
+    public ResponseEntity<APIResponseDTO<String>> updateCashMovementItemStatus(Long id, String status) {
+        return cashMovementItemService.updateStatus(id, status);
+    }
+
+    @Override
+    public ResponseEntity<APIResponseDTO<String>> finishItemsCase(Long movementId) {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            CashMovementEntity entity = cashMovementRepository.findByIdCustom(movementId)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el movimiento " + movementId));
+            
+            entity.setFollowingIsActive(false);
+            cashMovementRepository.save(entity);
+            
+            return ResponseEntity.ok(APIResponseDTO.success("Caso finalizado exitosamente", constants.success.savedSuccess));
+        });
+    }
+
+    @Override
+    public ResponseEntity<APIResponseDTO<String>> finishFollowingCase(Long movementId) {
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            CashMovementEntity entity = cashMovementRepository.findByIdCustom(movementId)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el movimiento " + movementId));
+            
+            if (entity.getFollowing() != null) {
+                entity.getFollowing().setActive(false);
+                cashMovementRepository.save(entity);
+            }
+            
+            return ResponseEntity.ok(APIResponseDTO.success("Caso finalizado exitosamente", constants.success.savedSuccess));
+        });
+    }
 }

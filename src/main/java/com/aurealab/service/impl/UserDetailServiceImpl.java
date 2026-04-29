@@ -8,8 +8,12 @@ import com.aurealab.model.aurea.repository.UserRepository;
 import com.aurealab.model.aurea.entity.MenuItemEntity;
 import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.repository.RoleRepository;
+import com.aurealab.model.aurea.entity.CompanyConfigEntity;
+import com.aurealab.model.aurea.repository.CompanyConfigRepository;
+import com.aurealab.service.CompanyConfigService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
+import com.aurealab.mapper.CompanyConfigMapper;
 import com.aurealab.util.exceptions.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +38,10 @@ public class UserDetailServiceImpl {
     UserRepository userRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    MenuServiceImpl menuServiceImpl;
 
     @Autowired
-    MenuServiceImpl menuServiceImpl;
+    CompanyConfigService companyConfigService;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -89,9 +93,14 @@ public class UserDetailServiceImpl {
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())
             );
 
+            CompanyConfigDTO companyConfig = companyConfigService.getCompanyConfigById(userEntity.getCompany().getId());
 
-            AuthResponse authResponse = new AuthResponse(userLogin.username(), userEntity.getPerson().getNames()
-                    , accessToken, menuList);
+            AuthResponse authResponse = new AuthResponse(userLogin.username(),
+                    userEntity.getPerson().getNames(),
+                    accessToken,
+                    menuList,
+                    companyConfig
+            );
 
 
             return ResponseEntity.ok(APIResponseDTO.success(authResponse, constants.success.loginSuccess)); // Enviar cookie en la respuesta

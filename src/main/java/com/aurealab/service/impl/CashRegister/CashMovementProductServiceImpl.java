@@ -1,7 +1,7 @@
 package com.aurealab.service.impl.CashRegister;
 
-import com.aurealab.dto.CashRegister.CashMovementProductsDTO;
-import com.aurealab.mapper.CashRegister.CashMovementProductMapper;
+import com.aurealab.dto.CashRegister.CashMovementItemDTO;
+import com.aurealab.mapper.CashRegister.CashMovementItemMapper;
 import com.aurealab.model.cashRegister.repository.CashMovementProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,20 +16,20 @@ public class CashMovementProductServiceImpl {
     CashMovementProductsRepository chargeProductRepository;
 
 
-    public CashMovementProductsDTO save(CashMovementProductsDTO chargeProduct){
-        return CashMovementProductMapper.toDto(
+    public CashMovementItemDTO save(CashMovementItemDTO chargeProduct){
+        return CashMovementItemMapper.toDto(
                 chargeProductRepository.save(
-                        CashMovementProductMapper.toEntity(chargeProduct)
+                        CashMovementItemMapper.toEntity(chargeProduct)
                 )
         );
     }
 
-    public List<CashMovementProductsDTO> saveList(List<CashMovementProductsDTO> chargeProduct){
-        List<CashMovementProductsDTO> list = new ArrayList<>();
+    public List<CashMovementItemDTO> saveList(List<CashMovementItemDTO> chargeProduct){
+        List<CashMovementItemDTO> list = new ArrayList<>();
         chargeProduct.forEach(chargeProductDTO -> list.add(
-                CashMovementProductMapper.toDto(
+                CashMovementItemMapper.toDto(
                         chargeProductRepository.save(
-                                CashMovementProductMapper.toEntity(chargeProductDTO)
+                                CashMovementItemMapper.toEntity(chargeProductDTO)
                         )
                 )
         ));

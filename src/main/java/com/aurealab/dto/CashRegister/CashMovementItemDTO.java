@@ -3,14 +3,17 @@ package com.aurealab.dto.CashRegister;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Set;
 
-public record CashMovementProductsDTO(
+public record CashMovementItemDTO(
         Long id,
-        String product,
+        ProductDTO product,
         Integer quantity,
         BigDecimal unitPrice,
         BigDecimal subtotal,
-        CashMovementResponseDTO cashMovement
+        LocalDateTime statusDoneAt,
+        String status
 
 ) {
 }

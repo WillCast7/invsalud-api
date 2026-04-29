@@ -14,6 +14,7 @@ public record ProductDTO(
         boolean isActive,
         boolean appliesToCase,
         Long categoryId,
-        boolean useThirdParty
+        boolean useThirdParty,
+        Integer quantity
 ) {
 }

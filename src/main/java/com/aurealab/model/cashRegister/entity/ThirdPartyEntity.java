@@ -1,5 +1,6 @@
 package com.aurealab.model.cashRegister.entity;
 
+import com.aurealab.dto.CashRegister.FollowingDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

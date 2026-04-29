@@ -20,7 +20,8 @@ public class ProductMapper {
                 entity.isActive(),
                 entity.isAppliesToCase(),
                 entity.getCategoryId(),
-                entity.isUseThirdParty()
+                entity.isUseThirdParty(),
+                null
         );
     }
 

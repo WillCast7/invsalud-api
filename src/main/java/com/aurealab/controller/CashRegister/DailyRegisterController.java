@@ -54,6 +54,8 @@ public class DailyRegisterController {
 
     @PostMapping(produces = "application/json", value = "/income")
     ResponseEntity<APIResponseDTO<String>>  saveIncome(@RequestBody @Valid SaveTransactionDTO forms){
+        System.out.println("dtos here");
+        System.out.println(forms);
         return cashMovementService.saveIncomeTransaction(forms.customer(), forms.transaction());
     }
 
@@ -70,6 +72,18 @@ public class DailyRegisterController {
     @GetMapping(produces = "application/json", value = "/totalAmount/{id}")
     public ResponseEntity<APIResponseDTO<CashSessionSummaryDTO>> calculateTotalAmount(@PathVariable Long id){
         return cashMovementService.calculateTotalAmount(id);
+    }
+
+    @PutMapping(produces = "application/json", value = "/following/item/status/{id}")
+    public ResponseEntity<APIResponseDTO<String>> updateFollowingItemStatus(@PathVariable Long id, @RequestBody java.util.Map<String, String> body){
+        String status = body.get("status");
+        return cashMovementService.updateFollowingItemStatus(id, status);
+    }
+
+    @PutMapping(produces = "application/json", value = "/movement/item/status/{id}")
+    public ResponseEntity<APIResponseDTO<String>> updateCashMovementItemStatus(@PathVariable Long id, @RequestBody java.util.Map<String, String> body){
+        String status = body.get("status");
+        return cashMovementService.updateCashMovementItemStatus(id, status);
     }
 }
 

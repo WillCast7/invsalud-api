@@ -18,4 +18,5 @@ public interface ThirdPartyService {
     public ResponseEntity<APIResponseDTO<ThirdPartyDTO>> saveCustomer(ThirdPartyRequestDTO thirdPartyDTO);
     public ResponseEntity<APIResponseDTO<String>> findAllThirdParties(int page, int size, String searchValue);
     public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> findThirdPartyAndParamsById(Long id);
+    public ResponseEntity<APIResponseDTO<com.aurealab.dto.response.ThirdpartyHistoryResponseDTO>> findThirdPartyHistoryById(Long id);
 }

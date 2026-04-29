@@ -1,10 +1,10 @@
 package com.aurealab.service.CashRegister;
 
-import com.aurealab.dto.CashRegister.CashMovementProductsDTO;
+import com.aurealab.dto.CashRegister.CashMovementItemDTO;
 
 import java.util.List;
 
 public interface CashMovementProductService {
-    public CashMovementProductsDTO save(CashMovementProductsDTO chargeProduct);
-    public List<CashMovementProductsDTO> saveList(List<CashMovementProductsDTO> chargeProduct);
+    public CashMovementItemDTO save(CashMovementItemDTO chargeProduct);
+    public List<CashMovementItemDTO> saveList(List<CashMovementItemDTO> chargeProduct);
 }

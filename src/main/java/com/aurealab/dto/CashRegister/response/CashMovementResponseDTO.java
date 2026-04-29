@@ -1,12 +1,13 @@
 package com.aurealab.dto.CashRegister.response;
 
-import com.aurealab.dto.CashRegister.CashSessionDTO;
-import com.aurealab.dto.CashRegister.ChargeDTO;
-import com.aurealab.dto.CashRegister.PaymentMethodDTO;
-import com.aurealab.dto.CashRegister.ThirdPartyDTO;
+import com.aurealab.dto.CashRegister.*;
+import com.aurealab.model.cashRegister.entity.*;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public record CashMovementResponseDTO(
         Long id,
@@ -17,13 +18,16 @@ public record CashMovementResponseDTO(
         BigDecimal expectedAmount,
         BigDecimal receivedAmount,
         String concept,
-        String product,
-        PaymentMethodDTO paymentMethod,
-        int advisor,
+        ThirdPartyDTO advisor,
         boolean isVoid,
         OffsetDateTime createdAt,
         Long createdBySystemUserId,
         String referenceNumber,
-        String observations
+        String observations,
+        Set<CashMovementItemDTO> items,
+        Set<CashMovementPaymentDTO> payments,
+        boolean followingIsActive,
+        FollowingDTO following
+
 ){
 }

@@ -178,7 +178,7 @@ public class PdfReportServiceImpl implements PdfReportService {
                         constants.configParam.expenseTransactionVar : constants.configParam.incomeTransactionVar;
                 table.addCell(createDataCell(tipoLabel, bodyFont));
 
-                table.addCell(createDataCell(move.product(), bodyFont));
+                table.addCell(createDataCell("move.product()", bodyFont));
                 table.addCell(createDataCell(move.concept(), bodyFont));
                 table.addCell(createDataCell(formatCurrency(move.receivedAmount()), bodyFont));
             }
@@ -356,7 +356,7 @@ public class PdfReportServiceImpl implements PdfReportService {
             detailTable.addCell(hValue);
 
             // Contenido Principal
-            PdfPCell contentCell = new PdfPCell(new Phrase(move.product() + " - " + move.concept(), valueFont));
+            PdfPCell contentCell = new PdfPCell(new Phrase("move.product()" + " - " + move.concept(), valueFont));
             contentCell.setMinimumHeight(150f); // Espacio para que se vea como la imagen
             detailTable.addCell(contentCell);
 
@@ -451,6 +451,6 @@ public class PdfReportServiceImpl implements PdfReportService {
         lMet.setBackgroundColor(gray);
         lMet.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(lMet);
-        table.addCell(new PdfPCell(new Phrase(move.paymentMethod().name(), FontFactory.getFont(FontFactory.HELVETICA, 8))));
+        table.addCell(new PdfPCell(new Phrase("move.paymentMethod().name()", FontFactory.getFont(FontFactory.HELVETICA, 8))));
     }
 }

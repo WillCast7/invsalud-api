@@ -15,7 +15,7 @@ public class ThirdPartyMapper {
 
     /* ===================== Entity -> DTO ===================== */
     public static ThirdPartyDTO toDto(ThirdPartyEntity entity) {
-        if (entity == null) return null;
+        if (entity == null || entity.getId() == null || entity.getId() == 0) return null;
 
         Set<ThirdPartyRoleDTO> roles = new HashSet<>();
 
@@ -38,7 +38,7 @@ public class ThirdPartyMapper {
 
     /* ===================== Entity -> DTO ===================== */
     public static ThirdPartyDTO toDtoList(ThirdPartyEntity entity) {
-        if (entity == null) return null;
+        if (entity == null || entity.getId() == null || entity.getId() == 0) return null;
 
 
 

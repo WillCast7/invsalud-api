@@ -3,11 +3,13 @@ package com.aurealab.service.impl.CashRegister;
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import com.aurealab.dto.CashRegister.request.ThirdPartyRequestDTO;
+import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.mapper.CashRegister.ThirdPartyMapper;
 import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
 import com.aurealab.model.cashRegister.repository.ThirdPartyRepository;
 import com.aurealab.model.specs.ThirdPartySpecs;
+import com.aurealab.service.CashRegister.CashMovementService;
 import com.aurealab.service.ChargeService;
 import com.aurealab.service.ThirdPartyRoleService;
 import com.aurealab.service.ThirdPartyService;
@@ -16,6 +18,7 @@ import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.util.JwtUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +50,10 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Autowired
     ThirdPartyRoleService thirdPartyRoleService;
+
+    @Lazy
+    @Autowired
+    CashMovementService cashMovementService;
 
     public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomersByDocumentNumber(String documentNumber){
         return ResponseEntity.ok(APIResponseDTO.success(findByDniNumberContaining(documentNumber), constants.success.findedSuccess));
@@ -113,14 +120,25 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
         @SuppressWarnings("unchecked")
         ThirdPartyWithParamsResponseDTO params = configParamsService.findCreatingThirdPartyParams();
-
+        ThirdPartyDTO thirdParty = findThirdPartyById(id);
         return ResponseEntity.ok(APIResponseDTO.success(
                 ThirdPartyWithParamsResponseDTO.builder()
-                    .thirdParty(findThirdPartyById(id))
+                    .thirdParty(thirdParty)
                     .documentTypes(params.documentTypes())
                     .roles(params.roles())
                     .charge(chargeService.findPendingChargeByThirdParty(id))
+                    .items(cashMovementService.findItemsByCustomerId(id))
+                    .following(cashMovementService.findActiveFollowingByCustomerId(id))
                     .build(), constants.success.findedSuccess));
+    }
+
+    public ResponseEntity<APIResponseDTO<com.aurealab.dto.response.ThirdpartyHistoryResponseDTO>> findThirdPartyHistoryById(Long id) {
+        System.out.println("findThirdPartyHistoryById: " + id);
+        ThirdPartyDTO thirdParty = findThirdPartyById(id);
+        List<CashMovementResponseDTO> movements = cashMovementService.findAllByCustomerIdOrderByCreatedAtDesc(id);
+        
+        com.aurealab.dto.response.ThirdpartyHistoryResponseDTO historyDTO = new com.aurealab.dto.response.ThirdpartyHistoryResponseDTO(thirdParty, movements);
+        return ResponseEntity.ok(APIResponseDTO.success(historyDTO, constants.success.findedSuccess));
     }
 
     public ThirdPartyDTO findThirdPartyById(Long id) {

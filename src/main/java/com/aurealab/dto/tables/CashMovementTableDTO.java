@@ -9,8 +9,6 @@ public record CashMovementTableDTO(
         BigDecimal expectedAmount,
         BigDecimal receivedAmount,
         String concept,
-        String product,
-        String paymentMethod,
         boolean isVoid,
         String referenceNumber,
         String color
