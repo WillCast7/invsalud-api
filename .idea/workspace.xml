@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="" />
+    <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/PrescriptionInventoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/PrescriptionInventoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PrescriptionInventoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PrescriptionInventoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/PrescriptionInventorySpecs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/PrescriptionInventorySpecs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PrescriptionInventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PrescriptionInventoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/RecipeInventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/RecipeInventoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PrescriptionInventoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PrescriptionInventoryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/RecipeInventoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/RecipeInventoryServiceImpl.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

@@ -17,15 +17,17 @@ public class PrescriptionInventoryController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventoryForTable(@RequestParam(defaultValue = "1") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
-                                                                            @RequestParam(defaultValue = "") String searchValue) {
-        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue);
+                                                                            @RequestParam(defaultValue = "") String searchValue,
+                                                                            @RequestParam(defaultValue = "all") String type) {
+        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue, type);
     }
 
     @GetMapping(produces = "application/json", value = "/expired")
     public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventoryExpiredForTable(@RequestParam(defaultValue = "1") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
-                                                                            @RequestParam(defaultValue = "") String searchValue) {
-        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue);
+                                                                            @RequestParam(defaultValue = "") String searchValue,
+                                                                            @RequestParam(defaultValue = "all") String type) {
+        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue, type);
     }
 
     @GetMapping(produces = "application/json", value = "/{id}")

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,7 +15,10 @@ import java.util.Optional;
 import java.time.LocalDate;
 import java.util.Set;
 
-public interface PrescriptionInventoryRepository extends JpaRepository<PrescriptionInventoryEntity, Long> {
+public interface PrescriptionInventoryRepository extends JpaRepository<PrescriptionInventoryEntity, Long>, JpaSpecificationExecutor<PrescriptionInventoryEntity> {
+
+    @EntityGraph(attributePaths = {"batch", "product"})
+    Optional<PrescriptionInventoryEntity> findById(Long id);
 
     @EntityGraph(attributePaths = {"batch", "product"})
     Page<PrescriptionInventoryEntity> findAll(Specification<PrescriptionInventoryEntity> spec, Pageable pageable);

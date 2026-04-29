@@ -171,7 +171,7 @@ public class PurchasingServiceImpl implements PurchasingService {
     private void updateRecipeInventory(int incomingUnits) {
         System.out.println("entro al update");
 
-        RecipeInventoryEntity current = recipeInventoryService.findById();
+        RecipeInventoryEntity current = recipeInventoryService.findByIdEntity();
 
         BigDecimal units = BigDecimal.valueOf(incomingUnits);
 

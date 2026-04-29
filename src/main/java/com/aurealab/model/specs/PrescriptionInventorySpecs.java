@@ -10,10 +10,17 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class PrescriptionInventorySpecs {
-    public static Specification<PrescriptionInventoryEntity> search(String searchTerm) {
+    public static Specification<PrescriptionInventoryEntity> search(String searchTerm, String type) {
         return (root, query, cb) -> {
+            Predicate typePredicate = null;
+            if ("public".equalsIgnoreCase(type)) {
+                typePredicate = cb.isTrue(root.join("product").get("isPublicHealth"));
+            } else if ("special".equalsIgnoreCase(type)) {
+                typePredicate = cb.isFalse(root.join("product").get("isPublicHealth"));
+            }
+
             if (searchTerm == null || searchTerm.trim().isEmpty()) {
-                return cb.conjunction();
+                return typePredicate != null ? typePredicate : cb.conjunction();
             }
             String pattern = "%" + searchTerm.toLowerCase() + "%";
 
@@ -28,7 +35,7 @@ public class PrescriptionInventorySpecs {
             Predicate pharmaceuticalFormProductPredicate = cb.like(cb.lower(productJoin.get("pharmaceuticalForm")), pattern);
 
 
-            return cb.or(
+            Predicate searchPredicate = cb.or(
                     batchPredicate,
                     nameProductPredicate,
                     codeProductPredicate,
@@ -36,6 +43,14 @@ public class PrescriptionInventorySpecs {
                     presentationProductPredicate,
                     pharmaceuticalFormProductPredicate
             );
+
+            if ("public".equalsIgnoreCase(type)) {
+                return cb.and(searchPredicate, cb.isTrue(productJoin.get("isPublicHealth")));
+            } else if ("special".equalsIgnoreCase(type)) {
+                return cb.and(searchPredicate, cb.isFalse(productJoin.get("isPublicHealth")));
+            }
+
+            return searchPredicate;
 
         };
     }

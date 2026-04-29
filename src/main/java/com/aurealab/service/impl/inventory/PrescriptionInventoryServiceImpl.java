@@ -34,9 +34,10 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     @Autowired
     PrescriptionInventoryRepository prescriptionInventoryRepository;
 
-    public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventory(int page, int size, String searchValue) {
+    @Transactional
+    public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventory(int page, int size, String searchValue, String type) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue)));
+        return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue, type)));
     }
 
     public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> getPrescriptionInventoryById(Long id){
@@ -46,13 +47,14 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     }
 
     public Page<PrescriptionInventoryDTO> findAll(Pageable pageable, String searchValue) {
-        Specification<PrescriptionInventoryEntity> spec = PrescriptionInventorySpecs.search(searchValue);
+        Specification<PrescriptionInventoryEntity> spec = PrescriptionInventorySpecs.search(searchValue, constants.productTypes.SpecialControl);
         Page<PrescriptionInventoryEntity> prescriptionInventoryEntities = prescriptionInventoryRepository.findAll(spec, pageable);
         return prescriptionInventoryEntities.map(PrescriptionInventoryMapper::toDto);
     }
 
-    public Page<PrescriptionInventoryTableDTO> findAllToTable(Pageable pageable, String searchValue) {
-        Specification<PrescriptionInventoryEntity> spec = PrescriptionInventorySpecs.search(searchValue);
+    @Transactional
+    public Page<PrescriptionInventoryTableDTO> findAllToTable(Pageable pageable, String searchValue, String type) {
+        Specification<PrescriptionInventoryEntity> spec = PrescriptionInventorySpecs.search(searchValue, type);
         Page<PrescriptionInventoryEntity> prescriptionInventoryEntities = prescriptionInventoryRepository.findAll(spec, pageable);
         return prescriptionInventoryEntities.map(PrescriptionInventoryMapper::toTableDto);
     }
