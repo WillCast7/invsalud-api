@@ -37,6 +37,7 @@ public class ResolutionServiceImpl implements ResolutionService {
         return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue)));
     }
 
+    @Transactional
     public ResponseEntity<APIResponseDTO<ResolutionDTO>> getResolutionById(Long id){
         ResolutionDTO response = findById(id);
         if(response == null) throw new RuntimeException(constants.messages.noData);
