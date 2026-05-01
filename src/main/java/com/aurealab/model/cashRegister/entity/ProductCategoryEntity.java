@@ -9,11 +9,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "product_categories")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "product_categories")
 public class ProductCategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +26,4 @@ public class ProductCategoryEntity {
     private LocalDateTime createdAt;
     @Column(name = "full_name")
     private String fullName;
-
 }
