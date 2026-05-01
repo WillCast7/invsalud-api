@@ -15,11 +15,11 @@ import java.util.Set;
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     public List<ProductEntity> findAllByType(String type);
 
-    @EntityGraph(attributePaths = {"name", "type", "description"})
+    @EntityGraph(attributePaths = {"name", "type", "description", "category"})
     Page<ProductEntity> findAll(Specification<ProductEntity> spec, Pageable pageable);
 
     List<ProductEntity> id(Long id);
 
-    @Query("SELECT p FROM ProductEntity p WHERE p.categoryId = :id")
+    @Query("SELECT p FROM ProductEntity p WHERE p.category.id = :id")
     Set<ProductEntity> findAllByCategoryId(Long id);
 }

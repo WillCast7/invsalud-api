@@ -34,8 +34,9 @@ public class ProductEntity {
     @Column(name = "applies_to_case")
     private boolean appliesToCase;
 
-    @Column(name = "category_id")
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", nullable = false)
+    private ProductCategoryEntity category;
 
     @Column(name = "use_third_party")
     private boolean useThirdParty = true;

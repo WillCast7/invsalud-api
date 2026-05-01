@@ -13,7 +13,7 @@ public record ProductDTO(
         String type,
         boolean isActive,
         boolean appliesToCase,
-        Long categoryId,
+        ProductCategoryDTO category,
         boolean useThirdParty,
         Integer quantity
 ) {

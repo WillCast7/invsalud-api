@@ -19,7 +19,7 @@ public class ProductMapper {
                 entity.getType(),
                 entity.isActive(),
                 entity.isAppliesToCase(),
-                entity.getCategoryId(),
+                ProductCategoryMapper.toDto(entity.getCategory()),
                 entity.isUseThirdParty(),
                 null
         );
@@ -37,7 +37,7 @@ public class ProductMapper {
         entity.setType(dto.type());
         entity.setActive(dto.isActive());
         entity.setAppliesToCase(dto.appliesToCase());
-        entity.setCategoryId(dto.categoryId());
+        entity.setCategory(ProductCategoryMapper.toEntity(dto.category()));
         entity.setUseThirdParty(dto.useThirdParty());
         return entity;
     }
