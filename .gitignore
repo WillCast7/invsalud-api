@@ -1,0 +1,63 @@
+# ==============================================================================
+# JAVA & MAVEN
+# ==============================================================================
+*.class
+*.log
+*.ctxt
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Carpeta de salida de Maven (¡CRÍTICO!)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ==============================================================================
+# IDE - INTELI J IDEA
+# ==============================================================================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+cmake-build-*/
+
+# ==============================================================================
+# IDE - ECLIPSE
+# ==============================================================================
+.settings/
+.project
+.classpath
+bin/
+.factorypath
+
+# ==============================================================================
+# IDE - VS CODE
+# ==============================================================================
+.vscode/
+
+# ==============================================================================
+# SISTEMA OPERATIVO & TEMPORALES
+# ==============================================================================
+.DS_Store
+Thumbs.db
+tmp/
+temp/
+
+# ==============================================================================
+# CONFIGURACIÓN PERSONAL / SECRETOS (Opcional pero recomendado)
+# ==============================================================================
+# Descomenta la siguiente línea si usas un archivo local para credenciales
+# application-local.properties

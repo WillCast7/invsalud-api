@@ -9,6 +9,7 @@ import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.repository.PrescriptionInventoryRepository;
 import com.aurealab.model.specs.PrescriptionInventorySpecs;
 import com.aurealab.service.Inventory.PrescriptionInventoryService;
+import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,8 +37,21 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     @Autowired
     PrescriptionInventoryRepository prescriptionInventoryRepository;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    DocumentSequenceServiceImpl documentSequenceService;
+
+
     @Transactional
     public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventory(int page, int size, String searchValue, String type) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue, type)));
+    }
+
+    @Transactional
+    public ResponseEntity<APIResponseDTO<String>> getExpiredPrescriptionInventory(int page, int size, String searchValue, String type) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue, type)));
     }
@@ -54,9 +70,38 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
 
     @Transactional
     public Page<PrescriptionInventoryTableDTO> findAllToTable(Pageable pageable, String searchValue, String type) {
-        Specification<PrescriptionInventoryEntity> spec = PrescriptionInventorySpecs.search(searchValue, type);
-        Page<PrescriptionInventoryEntity> prescriptionInventoryEntities = prescriptionInventoryRepository.findAll(spec, pageable);
+        Specification<PrescriptionInventoryEntity> spec = Objects.equals(type, "expired") || Objects.equals(type, "removed") ?
+                PrescriptionInventorySpecs.searchExpired(searchValue, type):
+                PrescriptionInventorySpecs.search(searchValue, type);
+
+        Page<PrescriptionInventoryEntity> prescriptionInventoryEntities =
+                prescriptionInventoryRepository.findAll(spec, pageable);
+
         return prescriptionInventoryEntities.map(PrescriptionInventoryMapper::toTableDto);
+    }
+
+    @Transactional
+    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPresciptionInventory(Long id){
+
+        PrescriptionInventoryEntity prescriptionInventory =  findByIdEntity(id);
+
+        if(prescriptionInventory.isDrawal()) throw new RuntimeException(constants.messages.medicineDrawaled);
+
+        prescriptionInventory.setDrawal(true);
+        prescriptionInventory.setActive(false);
+        prescriptionInventory.setWithdrawalBy(jwtUtils.getCurrentUserId());
+        prescriptionInventory.setWithdrawnAt(LocalDateTime.now());
+        prescriptionInventory.setWithdrawalCode(documentSequenceService.getNextInvoiceNumber(constants.configParam.drawalMedicine));
+        return ResponseEntity.ok(
+                APIResponseDTO.success(
+                    PrescriptionInventoryMapper.toDto(
+                        prescriptionInventoryRepository.save(
+                                prescriptionInventory
+                        )
+                    ),
+                    constants.success.updatedSuccess
+                )
+        );
     }
 
     public PrescriptionInventoryDTO findById(Long id) {
@@ -75,19 +120,13 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
                 dto.batch().id(), dto.product().id(), dto.expirationDate()
         );
 
-        System.out.println("processing prescription inventory");
-        System.out.println(":)");
-
-
         if (existing.isPresent()) {
-            System.out.println("Is present");
-
             PrescriptionInventoryEntity entity = existing.get();
             entity.setTotalUnits(entity.getTotalUnits() + dto.totalUnits());
             entity.setAvailableUnits(entity.getAvailableUnits() + dto.availableUnits());
             return prescriptionInventoryRepository.save(entity);
+
         } else {
-            System.out.println("Prescription inventory not found");
             PrescriptionInventoryEntity newEntity = PrescriptionInventoryMapper.toEntity(dto);
             return prescriptionInventoryRepository.save(newEntity);
         }
@@ -108,4 +147,5 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     public Set<PrescriptionInventoryEntity> getResolutionProductEntityById(Long thirdPartyId){
         return  prescriptionInventoryRepository.findByThirdPartyIdGranteed(thirdPartyId);
     }
+
 }

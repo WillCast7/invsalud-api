@@ -169,7 +169,6 @@ public class PurchasingServiceImpl implements PurchasingService {
 
     // Métodos de apoyo para mantener el código limpio
     private void updateRecipeInventory(int incomingUnits) {
-        System.out.println("entro al update");
 
         RecipeInventoryEntity current = recipeInventoryService.findByIdEntity();
 

@@ -10,7 +10,7 @@ public class constants {
         public static final String responseUpdateGood = "Datos actualizados correctamente";
         public static final String dontFoundByID = "No encontro ningun dato con ese ID";
         public static final String switchDTOToEntityError = "Error al convertir DTO a Entity: el objeto es nulo.";
-        public static final String asd = "No hay sesión activa para realizar esta acción";
+        public static final String medicineDrawaled = "El medicamento ya ha sido retirado";
         public static final String cashSessionExist = "Ya hay una caja abierta para el dia de hoy";
         public static final String cashSessionDontExist = "No hay una caja abierta realizar esta acción";
         public static final String passwordsNotEquals = "Las contraseñas ingresadas no coinciden";
@@ -80,21 +80,21 @@ public class constants {
         public static final String thirdPartyRoleCustomer = "cliente";
 
         //compras
-        public static final String incomePublicHealthPrefix = "ISP";
-        public static final String incomeEspecialControlPrefix = "ICE";
-        public static final String incomeRecipePrefix = "IR";
+        public static final String incomePublicHealthPrefix = "ISP"; //ingreso salud publica
+        public static final String incomeEspecialControlPrefix = "ICE"; //ingreso control especial
+        public static final String incomeRecipePrefix = "IR"; //ingreso recetarios
 
         //cotizaciones
-        public static final String orderPublicHealthPrefix = "CSP";
-        public static final String orderEspecialControlPrefix = "CCE";
-        public static final String orderRecipePrefix = "CR";
+        public static final String orderPublicHealthPrefix = "CSP"; //cotizacion salud publica
+        public static final String orderEspecialControlPrefix = "CCE"; //cotizacion control especial
+        public static final String orderRecipePrefix = "CR"; //cotizacion recetarios
 
         //ventas
-        public static final String salePublicHealthPrefix = "SSP";
-        public static final String saleEspecialControlPrefix = "SCE";
-        public static final String saleRecipePrefix = "SR";
+        public static final String salePublicHealthPrefix = "SSP"; //salida salud publica
+        public static final String saleEspecialControlPrefix = "SCE"; //salida control especial
+        public static final String saleRecipePrefix = "SR"; //salida recetarios
 
-        public static final String expensePrefix = "FS";
+        public static final String drawalMedicine = "RM"; //retiro medicamento
     }
 
     public static class colors{

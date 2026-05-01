@@ -27,7 +27,7 @@ public class PrescriptionInventoryController {
                                                                             @RequestParam(defaultValue = "10") int size,
                                                                             @RequestParam(defaultValue = "") String searchValue,
                                                                             @RequestParam(defaultValue = "all") String type) {
-        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue, type);
+        return prescriptionInventoryService.getExpiredPrescriptionInventory(page, size, searchValue, type);
     }
 
     @GetMapping(produces = "application/json", value = "/{id}")
@@ -35,4 +35,8 @@ public class PrescriptionInventoryController {
         return prescriptionInventoryService.getPrescriptionInventoryById(id);
     }
 
+    @PutMapping(produces = "application/json", value = "/expired/drawal/{id}")
+    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPrescriptionInventory(@PathVariable Long id) {
+        return prescriptionInventoryService.drawalPresciptionInventory(id);
+    }
 }
