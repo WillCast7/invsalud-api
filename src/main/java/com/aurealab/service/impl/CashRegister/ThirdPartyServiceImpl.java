@@ -151,6 +151,17 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
         );
     }
 
+    public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findProviders(){
+        return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            Specification<ThirdPartyEntity> spec = ThirdPartySpecs.searchProviders();
+            Set<ThirdPartyDTO> providers = new HashSet<>();
+                    thirdPartyRepository.findAll(spec).forEach(thirdPartyEntity ->  providers.add(ThirdPartyMapper.toDto(thirdPartyEntity)));
+            return ResponseEntity.ok(
+                    APIResponseDTO.success(providers, constants.success.findedSuccess)
+            );
+        });
+    }
+
     public ResponseEntity<APIResponseDTO<String>> findAllThirdParties(int page, int size, String searchValue) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<ThirdPartyDTO> response = findAll(pageable, searchValue);

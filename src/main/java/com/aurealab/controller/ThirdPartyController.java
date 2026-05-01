@@ -30,6 +30,11 @@ public class ThirdPartyController {
         return thirdPartyService.findAllThirdParties(page, size, searchValue);
     }
 
+    @GetMapping(produces = "application/json", value = "/providers")
+    ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findProviders(){
+        return thirdPartyService.findProviders();
+    }
+
     @GetMapping(produces = "application/json", value = "/{id}")
     ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findCustomersByDocumentNumber(@PathVariable String id){
         return thirdPartyService.findCustomersByDocumentNumber(id);

@@ -33,4 +33,6 @@ public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Lo
     Set<ThirdPartyEntity> findAllWithRoleByRole(String roleName);
 
     Page<ThirdPartyEntity> findAll(Specification<ThirdPartyEntity> spec, Pageable pageable);
+
+    Set<ThirdPartyEntity> findAll(Specification<ThirdPartyEntity> spec);
 }

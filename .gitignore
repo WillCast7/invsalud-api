@@ -1,13 +1,19 @@
-############################
-# Compiled files
-############################
+# ==============================================================================
+# JAVA & MAVEN
+# ==============================================================================
 *.class
 *.log
+*.ctxt
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
-############################
-# Maven
-############################
-/target/
+# Carpeta de salida de Maven (¡CRÍTICO!)
+target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -16,72 +22,42 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
-############################
-# Package files
-############################
-*.jar
-*.war
-*.ear
-
-############################
-# IDE - IntelliJ
-############################
+# ==============================================================================
+# IDE - INTELI J IDEA
+# ==============================================================================
 .idea/
-*.iws
 *.iml
+*.iws
 *.ipr
 out/
+cmake-build-*/
 
-############################
-# IDE - Eclipse / STS
-############################
+# ==============================================================================
+# IDE - ECLIPSE
+# ==============================================================================
+.settings/
 .project
 .classpath
-.settings/
-.springBeans
-.sts4-cache/
+bin/
+.factorypath
 
-############################
-# VS Code
-############################
+# ==============================================================================
+# IDE - VS CODE
+# ==============================================================================
 .vscode/
 
-############################
-# OS
-############################
+# ==============================================================================
+# SISTEMA OPERATIVO & TEMPORALES
+# ==============================================================================
 .DS_Store
 Thumbs.db
+tmp/
+temp/
 
-############################
-# Environment variables
-############################
-.env
-.env.*
-!.env.example
-
-############################
-# Spring profiles sensibles
-############################
-application-local.properties
-application-dev.properties
-application-prod.properties
-
-############################
-# Docker
-############################
-docker-compose.override.yml
-docker-data/
-*.pid
-
-############################
-# Test / coverage
-############################
-/coverage/
-*.exec
-
-############################
-# Misc
-############################
-*.swp
-*.swo
+# ==============================================================================
+# CONFIGURACIÓN PERSONAL / SECRETOS (Opcional pero recomendado)
+# ==============================================================================
+# Descomenta la siguiente línea si usas un archivo local para credenciales
+# application-local.properties
