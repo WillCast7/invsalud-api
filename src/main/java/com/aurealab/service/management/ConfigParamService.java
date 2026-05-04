@@ -2,6 +2,7 @@ package com.aurealab.service.management;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
+import com.aurealab.dto.response.ReportParamsResponseDTO;
 import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.dto.response.UserWithParamsResponseDTO;
 import org.springframework.http.ResponseEntity;
@@ -15,4 +16,5 @@ public interface ConfigParamService {
     public ThirdPartyWithParamsResponseDTO findCreatingThirdPartyParams();
     public UserWithParamsResponseDTO findCreatingUserParams();
     public ResponseEntity<APIResponseDTO<String>> getConfigParams(int page, int size, String searchValue);
+    public ResponseEntity<APIResponseDTO<ReportParamsResponseDTO>> getReportParams();
 }

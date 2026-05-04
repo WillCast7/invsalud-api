@@ -20,4 +20,5 @@ public interface ThirdPartyService {
     public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> findThirdPartyAndParamsById(Long id);
     public ResponseEntity<APIResponseDTO<com.aurealab.dto.response.ThirdpartyHistoryResponseDTO>> findThirdPartyHistoryById(Long id);
     public ResponseEntity<APIResponseDTO<Set<ThirdPartyDTO>>> findProviders();
+    public Set<ThirdPartyDTO> findProvidersDTO();
 }

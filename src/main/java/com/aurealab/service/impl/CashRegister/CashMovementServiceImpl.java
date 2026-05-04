@@ -91,7 +91,7 @@ public class CashMovementServiceImpl implements CashMovementService {
     @Autowired
     FollowingRepository followingRepository;
 
-    public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
+    public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getFilteredTransactions(int page, int size, String searchValue, Long thirdPartyId, String type, Long advisorId, String startDate, String endDate) {
 
         CashSessionDTO todaySession = cashSessionService.findTodaySession();
 
@@ -101,6 +101,30 @@ public class CashMovementServiceImpl implements CashMovementService {
                 Objects.equals(todaySession, null) ? null : getSummaries(todaySession.id())
             );
 
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Specification<CashMovementEntity> spec = CashMovementSpecs.searchFilteredMovements(searchValue, thirdPartyId, type, advisorId, startDate, endDate);
+
+        Page<CashMovementTableDTO> cashMovementPage = tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
+            Page<CashMovementEntity> entities = cashMovementRepository.findAll(spec, pageable);
+            return entities.map(CashMovementMapper::toDtoTable);
+        });
+        
+        return ResponseEntity.ok(
+                APIResponseDTO.withPageable(sessions, constants.messages.consultGood, cashMovementPage)
+        );
+    }
+
+    public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue) {
+
+        CashSessionDTO todaySession = cashSessionService.findTodaySession();
+
+        CashSessionsResponseDTO sessions = new CashSessionsResponseDTO(
+                todaySession,
+                cashSessionService.findOpenedSession(),
+                Objects.equals(todaySession, null) ? null : getSummaries(todaySession.id())
+        );
+
 
         if (sessions.todaySession() == null){
             return ResponseEntity.ok(APIResponseDTO.success(sessions, constants.messages.noData));
@@ -109,7 +133,7 @@ public class CashMovementServiceImpl implements CashMovementService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
         Page<CashMovementTableDTO> cashMovementPage = findAllTableByCashSessionId(sessions.todaySession().id(), searchValue, pageable);
-        
+
         return ResponseEntity.ok(
                 APIResponseDTO.withPageable(sessions, constants.messages.consultGood, cashMovementPage)
         );

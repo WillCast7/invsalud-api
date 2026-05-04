@@ -2,14 +2,17 @@ package com.aurealab.service.impl.management;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.ConfigParamDTO;
+import com.aurealab.dto.response.ReportParamsResponseDTO;
 import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.dto.response.UserWithParamsResponseDTO;
 import com.aurealab.mapper.ConfigParamsMapper;
+import com.aurealab.model.cashRegister.entity.ThirdPartyEntity;
 import com.aurealab.model.management.entity.ConfigParamsEntity;
 import com.aurealab.model.management.repository.ConfigParamsRepository;
 import com.aurealab.model.specs.ConfigParamSpecs;
 import com.aurealab.service.ProductService;
 import com.aurealab.service.ThirdPartyRoleService;
+import com.aurealab.service.ThirdPartyService;
 import com.aurealab.service.impl.shared.TenantService;
 import com.aurealab.service.management.ConfigParamService;
 import com.aurealab.service.RoleService;
@@ -18,6 +21,7 @@ import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +42,10 @@ public class ConfigParamServiceImpl implements ConfigParamService {
 
     @Autowired
     ThirdPartyRoleService thirdPartyRoleService;
+
+    @Lazy
+    @Autowired
+    ThirdPartyService thirdPartyService;
 
     @Autowired
     ProductService productService;
@@ -130,5 +138,13 @@ public class ConfigParamServiceImpl implements ConfigParamService {
             Page<ConfigParamsEntity> configParamEntity = configParamsRepository.findAll(specs, pageable);
             return configParamEntity.map(ConfigParamsMapper::toDto);
         });
+    }
+
+    public ResponseEntity<APIResponseDTO<ReportParamsResponseDTO>> getReportParams(){
+        ReportParamsResponseDTO response = ReportParamsResponseDTO.builder()
+                .providers(thirdPartyService.findProvidersDTO())
+                .products(productService.findAllProductsDTO())
+                .build();
+        return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess));
     }
 }

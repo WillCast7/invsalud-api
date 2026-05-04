@@ -1,6 +1,7 @@
 package com.aurealab.controller;
 
 import com.aurealab.dto.APIResponseDTO;
+import com.aurealab.dto.response.ReportParamsResponseDTO;
 import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.dto.response.UserWithParamsResponseDTO;
 import com.aurealab.service.management.ConfigParamService;
@@ -40,4 +41,8 @@ public class ConfigParamsController {
         return configParamService.getConfigParams(page, size, searchValue);
     }
 
+    @GetMapping(produces = "application/json", value = "/reports")
+    public ResponseEntity<APIResponseDTO<ReportParamsResponseDTO>> getReportParams() {
+        return configParamService.getReportParams();
+    }
 }

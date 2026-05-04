@@ -30,7 +30,13 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     JwtUtils jwtUtils;
 
-    public List<ProductEntity> findAllProducts(){
+    public Set<ProductDTO> findAllProductsDTO(){
+        Set<ProductDTO> products = new HashSet<>();
+        findAllProductsEntity().forEach(product -> products.add(ProductMapper.toDto(product)));
+        return products;
+    };
+
+    public List<ProductEntity> findAllProductsEntity(){
         return tenantService.executeInTenant(jwtUtils.getCurrentTenant(), () -> {
             return productRepository.findAll();
         });

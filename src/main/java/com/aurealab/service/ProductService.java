@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface ProductService {
-    public List<ProductEntity> findAllProducts();
+    public List<ProductEntity> findAllProductsEntity();
+    public Set<ProductDTO> findAllProductsDTO();
     public List<ProductDTO> findProductsByType(String type);
     public ResponseEntity<APIResponseDTO<String>> findPaginatedProducts(int page, int size, String searchValue);
     public ResponseEntity<APIResponseDTO<ProductDTO>> changeStatus(Long id);

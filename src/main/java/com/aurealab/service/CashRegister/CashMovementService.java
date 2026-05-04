@@ -15,6 +15,7 @@ import java.util.List;
 
 public interface CashMovementService {
     public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getAllDayTransactions(int page, int size, String searchValue);
+    public ResponseEntity<APIResponseDTO<CashSessionsResponseDTO>> getFilteredTransactions(int page, int size, String searchValue, Long thirdPartyId, String type, Long advisorId, String startDate, String endDate);
     ResponseEntity<APIResponseDTO<Object>> getIncomeFormParams();
     ResponseEntity<APIResponseDTO<Object>> getExpenseFormParams();
     public CashMovementResponseDTO saveMovement(CashMovementRequestDTO movement, Long chargeId, Long customerId, String type, String expense);
