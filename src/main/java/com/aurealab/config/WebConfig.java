@@ -20,7 +20,8 @@ public class WebConfig {
                 "http://localhost:4200",         // Para pruebas locales
                 "http://willcast.cloud",         // Tu dominio final
                 "https://willcast.cloud",        // Si usas SSL/HTTPS
-                "http://76.13.30.238"           // La IP de tu VPS de Hostinger
+                "http://76.13.30.238",           // La IP de tu VPS de Hostinger
+                "https://76.13.30.238"           // La IP de tu VPS de Hostinger
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
