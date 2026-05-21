@@ -11,7 +11,7 @@
 *.zip
 *.tar.gz
 *.rar
-
+.env
 # Carpeta de salida de Maven (¡CRÍTICO!)
 target/
 pom.xml.tag
