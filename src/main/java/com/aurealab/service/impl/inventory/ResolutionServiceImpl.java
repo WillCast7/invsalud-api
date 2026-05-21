@@ -60,8 +60,7 @@ public class ResolutionServiceImpl implements ResolutionService {
     @Transactional(readOnly = true)
     public ResolutionDTO findById(Long id) {
         Optional<ResolutionEntity> prescriptionInventory = resolutionRepository.findById(id);
-        System.out.println("prescriptionInventory: ");
-        System.out.println("prescriptionInventory: " + prescriptionInventory.get().getCode());
+
         return prescriptionInventory.map(ResolutionMapper::toDto).orElse(null);
     }
 }

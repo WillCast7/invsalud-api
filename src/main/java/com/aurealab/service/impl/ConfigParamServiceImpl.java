@@ -131,8 +131,7 @@ public class ConfigParamServiceImpl implements ConfigParamService {
                 throw new BaseException(constants.errors.findError, constants.descriptions.configParams, new Exception("Config param not found")) {};
             }
             ConfigParamsEntity entity = ConfigParamsMapper.toEntity(configParamDTO);
-            System.out.println(configParamDTO);
-            System.out.println("configParamDTO");
+
             ConfigParamsEntity savedEntity = configParamsRepository.save(entity);
             return ResponseEntity.ok(APIResponseDTO.success(ConfigParamsMapper.toDto(savedEntity), constants.success.updatedSuccess));
         } catch (BaseException e) {

@@ -15,8 +15,6 @@ public class PurchasingItemMapper {
             return null;
         }
 
-System.out.println("is purchasing mapper");
-
         return PurchasingItemDTO.builder()
                 .id(entity.getId())
                 .batch(BatchMapper.toDto(entity.getBatch()))

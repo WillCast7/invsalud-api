@@ -29,8 +29,6 @@ public class RecipeInventoryServiceImpl implements RecipeInventoryService {
     }
 
     public ResponseEntity<APIResponseDTO<RecipeInventoryDTO>> findById(){
-        System.out.println("nanafa");
-
         return ResponseEntity.ok(APIResponseDTO.success(RecipeInventoryMapper.toDto(findByIdEntity()), constants.messages.consultGood)) ;
     }
 

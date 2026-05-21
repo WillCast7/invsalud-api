@@ -67,7 +67,7 @@ public class PurchasingServiceImpl implements PurchasingService {
 
     public ResponseEntity<APIResponseDTO<PurchasingDTO>> getPurchasingById(Long id){
         PurchasingDTO response = findById(id);
-        System.out.println("neeega");
+
         if(response == null) throw new RuntimeException(constants.messages.noData);
         return ResponseEntity.ok(APIResponseDTO.success(response, constants.success.findedSuccess));
     }
@@ -129,11 +129,9 @@ public class PurchasingServiceImpl implements PurchasingService {
             recipeDetail.setPriceTotal(purchasingDTO.recipe().priceTotal());
             recipeDetail.setStartSerial(purchasingDTO.recipe().startSerial());
             recipeDetail.setFinalSerial(purchasingDTO.recipe().finalSerial());
-            System.out.println("inicio del proceso");
 
             entityToSave.setPurchasingRecipe(recipeDetail);
             entityToSave.setItems(new ArrayList<>()); // Recetas no suelen llevar items de inventario individual
-            System.out.println("inicio del proceso");
 
             // Actualizar Inventario de Folios (Esto sí debe ser una operación aparte o al final)
             updateRecipeInventory(purchasingDTO.recipe().units());
@@ -156,9 +154,7 @@ public class PurchasingServiceImpl implements PurchasingService {
             entityToSave.setPurchasingRecipe(null);
         }
 
-        System.out.println("pre guardar");
         PurchasingEntity savedEntity = purchasingRepository.save(entityToSave);
-        System.out.println("post guardar");
 
         // 5. Post-Procesamiento (Solo para inventario individual si no es receta)
         if (!Objects.equals(savedEntity.getType(), constants.productTypes.Recipe)) {

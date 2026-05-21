@@ -96,7 +96,7 @@ public class UserDetailServiceImpl {
 
             // Cargar detalles del usuario
             UserDetails userDetails = loadUserDetails(userEntity.getId(), userEntity.getRole().getRoleName(), userEntity.getRole(), userLogin.username());
-            System.out.println(userEntity.getRole().getRoleName());
+
             Set<MenuItemEntity> optionalMenu = menuServiceImpl.getMenuByRoleName(userEntity.getRole().getRoleName());
             if (optionalMenu.isEmpty()){
                 log.warn("No se encontró ningún menu asociado al validador: {}", userEntity.getRole());
@@ -127,7 +127,6 @@ public class UserDetailServiceImpl {
      * Valida las credenciales del usuario en la base de datos.
      */
     public UserEntity validateCredentials(String username) {
-            System.out.println("username: " + username);
             return userRepository.findByUserNameOrEmail(username, username)
                     .orElseThrow(() -> new BaseException(
                             constants.errors.invalidUser,

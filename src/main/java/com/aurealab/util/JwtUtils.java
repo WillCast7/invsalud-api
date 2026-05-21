@@ -60,8 +60,7 @@ public class JwtUtils {
                     .stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(","));
-            System.out.println("authorities");
-            System.out.println(authorities);
+
             // Crear el token
             String jwtToken = JWT.create()
                     .withIssuer(this.userGenerator)

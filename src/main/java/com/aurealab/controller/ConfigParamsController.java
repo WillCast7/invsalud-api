@@ -34,8 +34,6 @@ public class ConfigParamsController {
 
     @GetMapping(produces = "application/json", value = "/parent/{parent}")
     public ResponseEntity<APIResponseDTO<Set<ConfigParamDTO>>> findParamsByParent(@PathVariable String parent) {
-        System.out.println("parent here");
-        System.out.println(parent);
         return configParamService.searchParamsByParent(parent);
     }
 
@@ -53,8 +51,6 @@ public class ConfigParamsController {
 
     @PutMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<APIResponseDTO<ConfigParamDTO>> updateConfigParam(@RequestBody ConfigParamDTO configParamDTO) {
-        System.out.println("configParamDTOs");
-        System.out.println(configParamDTO);
         return configParamService.updateConfigParam(configParamDTO);
     }
 

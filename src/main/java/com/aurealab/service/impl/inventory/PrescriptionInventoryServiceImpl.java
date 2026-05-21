@@ -135,8 +135,7 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
         getResolutionProductEntityById(thirdPartyId).forEach(prescriptionInventory ->
                 prescriptionInventories.add(PrescriptionInventoryMapper.toDto(prescriptionInventory))
                 );
-        System.out.println("getting resolution productsss");
-        System.out.println(prescriptionInventories);
+
         return prescriptionInventories;
     }
 

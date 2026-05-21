@@ -200,7 +200,6 @@ public class UserServiceImpl implements UserService {
         if (userOptional.isPresent()){
             return UserMapper.toDtoSimplyResponse(userOptional.get());
         } else {
-            System.out.println("No esta presente");
             return null;
         }
     }
