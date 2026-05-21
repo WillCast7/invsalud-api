@@ -10,11 +10,12 @@ public class constants {
         public static final String responseUpdateGood = "Datos actualizados correctamente";
         public static final String dontFoundByID = "No encontro ningun dato con ese ID";
         public static final String switchDTOToEntityError = "Error al convertir DTO a Entity: el objeto es nulo.";
-        public static final String medicineDrawaled = "El medicamento ya ha sido retirado";
+        public static final String medicineDrawled = "El medicamento ya ha sido retirado";
         public static final String cashSessionExist = "Ya hay una caja abierta para el dia de hoy";
         public static final String cashSessionDontExist = "No hay una caja abierta realizar esta acción";
         public static final String passwordsNotEquals = "Las contraseñas ingresadas no coinciden";
         public static final String invalidPassword = "La contraseña ingresada no es igual la actual";
+        public static final String invalidCredentials = "Las credenciales ingresadas no coinciden";
     }
     public static class success{
         public static final String savedSuccess = "Creado exitosamente ";
@@ -22,6 +23,7 @@ public class constants {
         public static final String findedSuccess = "busqueda completada ";
         public static final String updatedSuccess = "Actualizado exitosamente";
         public static final String overedSuccess = "Proceso terminado satisfactoriamente";
+        public static final String forgotPassSuccess = "revise su correo para los siguientes para su cambio de contrasena";
     }
     public static class errors{
         public static final String saveError = "Error al intentar crear";
@@ -39,6 +41,7 @@ public class constants {
         public static final String dataPersistenceError = "Datos duplicados";
         public static final String invalidRole = "No se encontró ningún rol asociado al validador";
         public static final String invalidUser = "No se encontró ningún usuario con esas credenciales";
+        public static final String userBlocked = "Usuario bloqueado. Contacte al administrador";
         public static final String invalidMenu = "No se encontró ningún menu asociado al validador";
     }
 

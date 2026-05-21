@@ -31,6 +31,8 @@ public interface PrescriptionInventoryRepository extends JpaRepository<Prescript
             "JOIN pis.batch b " +
             "JOIN ResolutionAllowedProductEntity rap ON rap.product = p " +
             "JOIN rap.resolution r " +
-            "WHERE r.thirdParty.id = :thirdPartyId")
-    Set<PrescriptionInventoryEntity> findByThirdPartyIdGranteed(@Param("thirdPartyId") Long thirdPartyId);
+            "WHERE r.thirdParty.id = :thirdPartyId " +
+            "AND pis.expirationDate >= CURRENT_DATE " +
+            "AND pis.isDrawal = false")
+    Set<PrescriptionInventoryEntity> findByThirdPartyIdGranted(@Param("thirdPartyId") Long thirdPartyId);
 }

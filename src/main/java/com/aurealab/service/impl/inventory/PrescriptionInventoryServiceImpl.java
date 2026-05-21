@@ -5,13 +5,11 @@ import com.aurealab.dto.PrescriptionInventoryDTO;
 import com.aurealab.dto.PrescriptionInventoryTableDTO;
 import com.aurealab.mapper.inventory.PrescriptionInventoryMapper;
 import com.aurealab.model.inventory.entity.PrescriptionInventoryEntity;
-import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.repository.PrescriptionInventoryRepository;
 import com.aurealab.model.specs.PrescriptionInventorySpecs;
 import com.aurealab.service.Inventory.PrescriptionInventoryService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
-import com.aurealab.util.exceptions.BaseException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +82,7 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
 
         PrescriptionInventoryEntity prescriptionInventory =  findByIdEntity(id);
 
-        if(prescriptionInventory.isDrawal()) throw new RuntimeException(constants.messages.medicineDrawaled);
+        if(prescriptionInventory.isDrawal()) throw new RuntimeException(constants.messages.medicineDrawled);
 
         prescriptionInventory.setDrawal(true);
         prescriptionInventory.setActive(false);
@@ -145,7 +142,7 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
 
     @Transactional
     public Set<PrescriptionInventoryEntity> getResolutionProductEntityById(Long thirdPartyId){
-        return  prescriptionInventoryRepository.findByThirdPartyIdGranteed(thirdPartyId);
+        return  prescriptionInventoryRepository.findByThirdPartyIdGranted(thirdPartyId);
     }
 
 }

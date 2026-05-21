@@ -22,10 +22,6 @@ public class ConfigParamsController {
     @Autowired
     ConfigParamService configParamService;
 
-
-    @Autowired
-    CustomerService customerService;
-
     @GetMapping(produces = "application/json", value = "/thirdParty")
     public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> getCreatingCustomerParams() {
        return configParamService.getCreatingCustomerParams();
@@ -48,6 +44,18 @@ public class ConfigParamsController {
                                                                     @RequestParam(defaultValue = "10") int size,
                                                                     @RequestParam(defaultValue = "") String searchValue) {
         return configParamService.getConfigParams(page, size, searchValue);
+    }
+
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> createConfigParam(@RequestBody ConfigParamDTO configParamDTO) {
+        return configParamService.createConfigParam(configParamDTO);
+    }
+
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> updateConfigParam(@RequestBody ConfigParamDTO configParamDTO) {
+        System.out.println("configParamDTOs");
+        System.out.println(configParamDTO);
+        return configParamService.updateConfigParam(configParamDTO);
     }
 
 }

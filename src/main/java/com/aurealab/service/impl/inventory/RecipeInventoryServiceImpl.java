@@ -6,6 +6,7 @@ import com.aurealab.mapper.inventory.RecipeInventoryMapper;
 import com.aurealab.model.inventory.entity.RecipeInventoryEntity;
 import com.aurealab.model.inventory.repository.RecipeInventoryRepository;
 import com.aurealab.service.Inventory.RecipeInventoryService;
+import com.aurealab.service.Inventory.ThirdPartyService;
 import com.aurealab.util.constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class RecipeInventoryServiceImpl implements RecipeInventoryService {
     @Autowired
     RecipeInventoryRepository recipeInventoryRepository;
 
+    @Autowired
+    ThirdPartyService thirdPartyService;
+
     public RecipeInventoryEntity save(RecipeInventoryEntity recipeInventoryEntity) {
         return
                 recipeInventoryRepository.save(
@@ -25,6 +29,8 @@ public class RecipeInventoryServiceImpl implements RecipeInventoryService {
     }
 
     public ResponseEntity<APIResponseDTO<RecipeInventoryDTO>> findById(){
+        System.out.println("nanafa");
+
         return ResponseEntity.ok(APIResponseDTO.success(RecipeInventoryMapper.toDto(findByIdEntity()), constants.messages.consultGood)) ;
     }
 

@@ -87,7 +87,6 @@ public class PurchasingServiceImpl implements PurchasingService {
     @Transactional
     public PurchasingDTO findById(Long id) {
         Optional<PurchasingEntity> prescriptionInventory = purchasingRepository.findById(id);
-        System.out.println("neewega");
         return prescriptionInventory.map(PurchasingMapper::toDto).orElse(null);
     }
 
@@ -128,6 +127,8 @@ public class PurchasingServiceImpl implements PurchasingService {
             recipeDetail.setUnits(purchasingDTO.recipe().units());
             recipeDetail.setPriceUnit(purchasingDTO.recipe().priceUnit());
             recipeDetail.setPriceTotal(purchasingDTO.recipe().priceTotal());
+            recipeDetail.setStartSerial(purchasingDTO.recipe().startSerial());
+            recipeDetail.setFinalSerial(purchasingDTO.recipe().finalSerial());
             System.out.println("inicio del proceso");
 
             entityToSave.setPurchasingRecipe(recipeDetail);
@@ -172,12 +173,10 @@ public class PurchasingServiceImpl implements PurchasingService {
 
         RecipeInventoryEntity current = recipeInventoryService.findByIdEntity();
 
-        BigDecimal units = BigDecimal.valueOf(incomingUnits);
-
         RecipeInventoryEntity updated = RecipeInventoryEntity.builder()
                 .id(1L)
                 .totalUnits(current.getTotalUnits() + incomingUnits)
-                .avaliableUnits(current.getAvaliableUnits().add(units))
+                .avaliableUnits(current.getAvaliableUnits() + incomingUnits)
                 .price(current.getPrice())
                 .build();
         recipeInventoryService.save(updated);

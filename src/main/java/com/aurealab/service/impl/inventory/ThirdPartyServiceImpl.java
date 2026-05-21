@@ -95,6 +95,18 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Transactional
     public ThirdPartyDTO saveThirdParty(ThirdPartyDTO thirdParty){
+        if (thirdParty.id() != null) {
+            thirdPartyRepository.findById(thirdParty.id()).ifPresent(existing -> {
+                if (existing.getResolutions() != null) {
+                    for (com.aurealab.model.inventory.entity.ResolutionEntity res : existing.getResolutions()) {
+                        if (res.getAllowedProduct() != null) {
+                            res.getAllowedProduct().clear();
+                        }
+                    }
+                }
+                thirdPartyRepository.saveAndFlush(existing);
+            });
+        }
         return ThirdPartyMapper.toDto(
                 thirdPartyRepository.save(
                         ThirdPartyMapper.toEntity(thirdParty)

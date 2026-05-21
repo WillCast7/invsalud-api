@@ -1,21 +1,12 @@
 package com.aurealab.service.impl.inventory;
 
-import com.aurealab.dto.APIResponseDTO;
-import com.aurealab.dto.OrderDTO;
+import com.aurealab.dto.*;
 import com.aurealab.dto.tables.OrderTableDTO;
 import com.aurealab.mapper.inventory.OrderMapper;
-import com.aurealab.model.inventory.entity.OrderEntity;
+import com.aurealab.model.inventory.entity.*;
 import com.aurealab.model.inventory.repository.OrderRepository;
 import com.aurealab.model.specs.OrderSpecs;
-import com.aurealab.service.Inventory.OrderService;
-import com.aurealab.dto.OrderRequestDTO;
-import com.aurealab.dto.OrderItemRequestDTO;
-import com.aurealab.model.inventory.entity.OrderItemEntity;
-import com.aurealab.model.inventory.entity.PrescriptionInventoryEntity;
-import com.aurealab.model.inventory.entity.ThirdPartyEntity;
-import com.aurealab.service.Inventory.DocumentSequenceService;
-import com.aurealab.service.Inventory.PrescriptionInventoryService;
-import com.aurealab.service.Inventory.ThirdPartyService;
+import com.aurealab.service.Inventory.*;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
 import jakarta.transaction.Transactional;
@@ -28,9 +19,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -47,6 +40,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     PrescriptionInventoryService prescriptionInventoryService;
+
+    @Autowired
+    RecipeInventoryService recipeInventoryService;
 
     @Autowired
     JwtUtils jwtUtils;
@@ -106,32 +102,49 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderCode(documentSequenceService.getNextInvoiceNumber(prefix));
 
-        // Mapear items
         List<OrderItemEntity> items = new ArrayList<>();
-        if (request.items() != null) {
-            for (OrderItemRequestDTO itemDto : request.items()) {
-                OrderItemEntity item = new OrderItemEntity();
-                PrescriptionInventoryEntity inventory = prescriptionInventoryService.findByIdEntity(itemDto.product());
 
-                if (inventory.getAvailableUnits() < itemDto.units()) {
-                    throw new RuntimeException("No hay suficientes unidades para el producto seleccionado.");
+        if(prefix.equals(constants.configParam.orderRecipePrefix)) {
+
+            RecipeInventoryEntity recipeInventory = recipeInventoryService.findByIdEntity();
+
+            items.add(new OrderItemEntity().builder()
+                .order(order)
+                //.inventory(inventory)
+                .priceUnit(recipeInventory.getPrice())
+                .units(request.units())
+                .priceTotal(BigDecimal.valueOf(request.units()).multiply(recipeInventory.getPrice()))
+                .build()
+            );
+
+
+
+            updateRecipeInventory(Math.toIntExact(request.units()), "order");
+
+        }else {
+            if (request.items() != null) {
+                for (OrderItemRequestDTO itemDto : request.items()) {
+                    OrderItemEntity item = new OrderItemEntity();
+                    PrescriptionInventoryEntity inventory = prescriptionInventoryService.findByIdEntity(itemDto.product());
+
+                    if (inventory.getAvailableUnits() < itemDto.units()) {
+                        throw new RuntimeException("No hay suficientes unidades para el producto seleccionado.");
+                    }
+
+                    // Descontar inventario
+                    inventory.setAvailableUnits((int) (inventory.getAvailableUnits() - itemDto.units()));
+
+                    item.setOrder(order);
+                    item.setInventory(inventory);
+                    item.setPriceUnit(itemDto.priceUnit());
+                    item.setUnits(itemDto.units());
+                    item.setPriceTotal(itemDto.priceTotal());
+                    items.add(item);
                 }
-
-                // Descontar inventario
-                inventory.setAvailableUnits((int) (inventory.getAvailableUnits() - itemDto.units()));
-
-
-                item.setOrder(order);
-                item.setInventory(inventory);
-                item.setPriceUnit(itemDto.priceUnit());
-                item.setUnits(itemDto.units());
-                item.setPriceTotal(itemDto.priceTotal());
-                items.add(item);
             }
         }
-
-        
         order.setItems(items);
+
 
         OrderEntity savedOrder = orderRepository.save(order);
         return ResponseEntity.ok(APIResponseDTO.success(OrderMapper.toDto(savedOrder), constants.success.savedSuccess));
@@ -260,4 +273,50 @@ public class OrderServiceImpl implements OrderService {
         return ResponseEntity.ok(APIResponseDTO.success(OrderMapper.toDto(savedOrder), constants.success.updatedSuccess));
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrderRecipe(Long id, SellRecipeRequestDTO request) {
+        OrderEntity order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(constants.messages.dontFoundByID));
+
+        if (!order.getStatus().equalsIgnoreCase("PENDING")) {
+            throw new RuntimeException("La cotización no está en estado PENDIENTE y no puede ser vendida");
+        }
+
+        order.setStatus("SOLD");
+        order.setSold(true);
+        order.setSoldAt(LocalDateTime.now());
+
+        String prefix = constants.configParam.saleRecipePrefix;
+        order.setSoldCode(documentSequenceService.getNextInvoiceNumber(prefix));
+
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+            for (OrderItemEntity itemEntity : order.getItems()) {
+                itemEntity.setStartSerialSold(request.initialSerial());
+                itemEntity.setEndSerialSold(request.finalSerial());
+            }
+        }
+
+        OrderEntity savedOrder = orderRepository.save(order);
+        updateRecipeInventory(Math.toIntExact(order.getItems().get(0).getUnits()), "sale");
+        return ResponseEntity.ok(APIResponseDTO.success(OrderMapper.toDto(savedOrder), constants.success.updatedSuccess));
+    }
+
+    private void updateRecipeInventory(int incomingUnits, String type) {
+
+        RecipeInventoryEntity current = recipeInventoryService.findByIdEntity();
+
+        if (Objects.equals(type, "sale")) {
+            if (current.getTotalUnits() < incomingUnits) {
+                throw new RuntimeException("No hay suficientes unidades.");
+            }
+            current.setTotalUnits(current.getTotalUnits() - incomingUnits);
+        } else {
+            if (current.getAvaliableUnits() < incomingUnits) {
+                throw new RuntimeException("No hay suficientes unidades.");
+            }
+            current.setAvaliableUnits(current.getAvaliableUnits() - incomingUnits);
+        }
+        recipeInventoryService.save(current);
+    }
 }

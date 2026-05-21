@@ -18,4 +18,5 @@ public class RecipeInventoryController {
     public ResponseEntity<APIResponseDTO<RecipeInventoryDTO>> getPurchasingForTable() {
         return recipeInventoryService.findById();
     }
+
 }

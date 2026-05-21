@@ -19,6 +19,7 @@ public class ConfigParamsEntity {
     private String shortname;
     private String parent;
     private String definition;
+    @Column(name = "\"order\"")
     private int order;
     @Column(name = "is_active")
     private boolean isActive;

@@ -13,4 +13,10 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<UserEntity, Long>, ListPagingAndSortingRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUserNameOrEmail(String userName, String email);
+
+    @Query("SELECT usr FROM UserEntity usr " +
+            "JOIN usr.person prsn " +
+            "WHERE usr.userName = :userName AND prsn.documentNumber = :documentNumber")
+    Optional<UserEntity> findByUserNameAndDocumentNumber(@Param("userName") String userName, @Param("documentNumber") String documentNumber);
+
 }

@@ -43,6 +43,13 @@ public class OrderController {
         return orderService.getOrderById(id);
     }
 
+
+    @GetMapping(produces = "application/json", value = "/recipe/{id}")
+    public ResponseEntity<APIResponseDTO<OrderDTO>> getOrdersRecipe(@PathVariable Long id) {
+        return orderService.getOrderById(id);
+
+    }
+
     @PostMapping(produces = "application/json")
     public ResponseEntity<APIResponseDTO<OrderDTO>> saveOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
         return orderService.saveOrder(orderRequestDTO);
@@ -56,5 +63,10 @@ public class OrderController {
     @PostMapping(produces = "application/json", value = "/sell/{id}")
     public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrder(@PathVariable Long id) {
         return orderService.sellOrder(id);
+    }
+
+    @PostMapping(produces = "application/json", value = "/sell/recipe/{id}")
+    public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrderRecipe(@PathVariable Long id, @RequestBody com.aurealab.dto.SellRecipeRequestDTO request) {
+        return orderService.sellOrderRecipe(id, request);
     }
 }

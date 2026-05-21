@@ -31,7 +31,7 @@ public class ConfigParamsMapper {
         entity.setName(dto.getName());
         entity.setShortname(dto.getShortname());
         entity.setParent(dto.getParent());
-        entity.setActive(dto.isActive());
+        entity.setActive(dto.getActive());
         entity.setDefinition(dto.getDefinition());
         entity.setOrder(dto.getOrder());
         return entity;

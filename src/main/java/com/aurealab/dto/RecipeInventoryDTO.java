@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public record RecipeInventoryDTO(
     Long id,
     BigDecimal priceUnit,
-    BigDecimal total,
+    int total,
     int units
 ) {
 }

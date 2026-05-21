@@ -54,4 +54,7 @@ UserEntity {
 
     @Column(name = "created_by")
     private Long createdBy;
+
+    @Column(name = "login_attempt")
+    private Long loginAttempt;
 }

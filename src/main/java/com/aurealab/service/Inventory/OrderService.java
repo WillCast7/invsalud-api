@@ -11,5 +11,6 @@ public interface OrderService {
     public ResponseEntity<APIResponseDTO<OrderDTO>> saveOrder(OrderRequestDTO orderRequestDTO);
     public ResponseEntity<APIResponseDTO<OrderDTO>> abortOrder(Long id);
     public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrder(Long id);
+    public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrderRecipe(Long id, com.aurealab.dto.SellRecipeRequestDTO request);
     public ResponseEntity<APIResponseDTO<OrderDTO>> savePublicSale(OrderRequestDTO request);
 }

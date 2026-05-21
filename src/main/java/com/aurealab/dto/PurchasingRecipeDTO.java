@@ -11,6 +11,8 @@ public record PurchasingRecipeDTO(
         Long id,
         BigDecimal priceUnit,
         int units,
-        BigDecimal priceTotal
+        BigDecimal priceTotal,
+        Long startSerial,
+        Long finalSerial
 ) {
 }

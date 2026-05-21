@@ -24,5 +24,5 @@ public class RecipeInventoryEntity {
     private int totalUnits;
 
     @Column(name = "avaliable_units")
-    private BigDecimal avaliableUnits;
+    private int avaliableUnits;
 }
