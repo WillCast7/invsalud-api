@@ -37,11 +37,8 @@ public class SchemaMultiTenantConnectionProvider implements MultiTenantConnectio
 
         try (Statement statement = connection.createStatement()) {
             String sql = "SET search_path TO " + tenantIdentifier + ", public";
-            System.out.println("🔧 Ejecutando SQL: " + sql);
             statement.execute(sql);
-            System.out.println("✅ search_path cambiado exitosamente");
         } catch (SQLException e) {
-            System.err.println("❌ ERROR al cambiar search_path: " + e.getMessage());
             connection.close();
             throw e;
         }

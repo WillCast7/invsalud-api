@@ -83,7 +83,7 @@ public class ConfigParamServiceImpl implements ConfigParamService {
     public UserWithParamsResponseDTO findCreatingUserParams(){
         return UserWithParamsResponseDTO.builder()
                 .documentTypes(getConfigParamsByParent("documentType"))
-                .roles(roleService.getAllRoles())
+                .roles(roleService.getAllRolesUpperThanMyRole())
                 .build();
     }
 
@@ -114,4 +114,35 @@ public class ConfigParamServiceImpl implements ConfigParamService {
         return configParamEntity.map(ConfigParamsMapper::toDto);
     }
 
+<<<<<<< HEAD
+=======
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> createConfigParam(ConfigParamDTO configParamDTO) {
+        try {
+            ConfigParamsEntity entity = ConfigParamsMapper.toEntity(configParamDTO);
+            ConfigParamsEntity savedEntity = configParamsRepository.save(entity);
+            return ResponseEntity.ok(APIResponseDTO.success(ConfigParamsMapper.toDto(savedEntity), constants.success.savedSuccess));
+        } catch (Exception e) {
+            log.error("Error creating config param: ", e);
+            throw new BaseException(constants.errors.saveError, constants.descriptions.configParams, e) {};
+        }
+    }
+
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> updateConfigParam(ConfigParamDTO configParamDTO) {
+        try {
+            if (configParamDTO.getId() == null || !configParamsRepository.existsById(configParamDTO.getId())) {
+                throw new BaseException(constants.errors.findError, constants.descriptions.configParams, new Exception("Config param not found")) {};
+            }
+            ConfigParamsEntity entity = ConfigParamsMapper.toEntity(configParamDTO);
+
+            ConfigParamsEntity savedEntity = configParamsRepository.save(entity);
+            return ResponseEntity.ok(APIResponseDTO.success(ConfigParamsMapper.toDto(savedEntity), constants.success.updatedSuccess));
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error updating config param: ", e);
+            throw new BaseException(constants.errors.updateError, constants.descriptions.configParams, e) {};
+        }
+    }
+
+>>>>>>> develop
 }

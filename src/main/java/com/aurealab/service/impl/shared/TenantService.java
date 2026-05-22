@@ -17,7 +17,6 @@ public class TenantService {
         try {
             // 1. Cambiamos el contexto PRIMERO (fuera de la transacción)
             TenantContext.setCurrentTenant(tenantId);
-            System.out.println("📌 Contexto establecido para: " + tenantId);
 
             // 2. Ahora llamamos al ejecutor que INICIA la transacción
             // Hibernate llamará al Resolver y ahora sí leerá el otro schema

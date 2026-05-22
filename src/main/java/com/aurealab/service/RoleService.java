@@ -7,4 +7,5 @@ import java.util.Set;
 public interface RoleService {
 
     public Set<RoleDTO> getAllRoles();
+    public Set<RoleDTO> getAllRolesUpperThanMyRole();
 }

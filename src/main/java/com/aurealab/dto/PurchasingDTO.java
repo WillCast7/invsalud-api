@@ -18,5 +18,6 @@ public record PurchasingDTO(
     String purchasedBy,
     String purchasedCode,
     Boolean isActive,
-    List<PurchasingItemDTO> items
+    List<PurchasingItemDTO> items,
+    PurchasingRecipeDTO purchasingRecipe
     ) {}

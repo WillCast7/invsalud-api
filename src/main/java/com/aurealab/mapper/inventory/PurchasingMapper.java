@@ -5,6 +5,7 @@ import com.aurealab.dto.PurchasingItemDTO;
 import com.aurealab.dto.tables.PurchasingTableDTO;
 import com.aurealab.model.inventory.entity.PurchasingEntity;
 import com.aurealab.model.inventory.entity.PurchasingItemEntity;
+import com.aurealab.model.inventory.entity.PurchasingRecipeEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ public class PurchasingMapper {
 
         // 1. Mapear ítems
         List<PurchasingItemDTO> items = new ArrayList<>();
+
+
         if (entity.getItems() != null) {
             entity.getItems().forEach(item -> items.add(PurchasingItemMapper.toDto(item)));
         }
@@ -36,7 +39,8 @@ public class PurchasingMapper {
                 entity.getPurchasedBy(),
                 entity.getPurchasedCode(),
                 entity.getIsActive(),
-                items
+                items,
+                entity.getPurchasingRecipe()==null?null:PurchasingRecipeMapper.toDTO(entity.getPurchasingRecipe())
         );
     }
 

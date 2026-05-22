@@ -1,16 +1,13 @@
 package com.aurealab.dto;
 
-import com.aurealab.model.inventory.entity.OrderItemEntity;
-import com.aurealab.model.inventory.entity.ThirdPartyEntity;
-import jakarta.persistence.*;
-
+import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record OrderDTO(
         Long id,
-        ThirdPartyEntity thirdParty,
+        ThirdPartyDTO thirdParty,
         BigDecimal total,
         String status,
         String observations,
@@ -24,6 +21,6 @@ public record OrderDTO(
         boolean isActive,
         boolean isSold,
         String type,
-        List<OrderItemEntity> items
+        List<OrderItemDTO> items
 ) {
 }

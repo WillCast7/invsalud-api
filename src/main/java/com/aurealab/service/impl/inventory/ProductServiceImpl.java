@@ -2,12 +2,14 @@ package com.aurealab.service.impl.inventory;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.ProductDTO;
+import com.aurealab.dto.PrescriptionInventoryDTO;
 import com.aurealab.dto.response.ProductWithParamsResponseDTO;
 import com.aurealab.mapper.inventory.ProductMapper;
 import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.repository.ProductRepository;
 import com.aurealab.model.specs.ProductSpecs;
 import com.aurealab.service.ConfigParamService;
+import com.aurealab.service.Inventory.PrescriptionInventoryService;
 import com.aurealab.service.Inventory.ProductService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -31,6 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ConfigParamService configParamService;
+
+    @Autowired
+    PrescriptionInventoryService prescriptionInventoryService;
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -48,6 +54,21 @@ public class ProductServiceImpl implements ProductService {
                 response,
                 constants.success.findedSuccess
         ));
+    }
+
+    public ResponseEntity<APIResponseDTO<Set<PrescriptionInventoryDTO>>> getResolutionProductById(Long id){
+        try {
+            Set<PrescriptionInventoryDTO> result = prescriptionInventoryService.getResolutionProductById(id);
+            return ResponseEntity.ok(APIResponseDTO.success(
+                    result,
+                    constants.success.findedSuccess
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(APIResponseDTO.failure(
+                    e.getMessage(),
+                    constants.errors.findError
+            ));
+        }
     }
 
     public ResponseEntity<APIResponseDTO<String>> findPaginatedProducts(int page, int size, String searchValue){

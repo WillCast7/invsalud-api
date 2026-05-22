@@ -12,25 +12,31 @@ import org.springframework.web.bind.annotation.*;
 public class PrescriptionInventoryController {
 
     @Autowired
-    PrescriptionInventoryService prescriptionInventoryService;
+    PrescriptionInventoryService prescriptionInventory;
 
     @GetMapping(produces = "application/json")
     public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventoryForTable(@RequestParam(defaultValue = "1") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
-                                                                            @RequestParam(defaultValue = "") String searchValue) {
-        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue);
+                                                                            @RequestParam(defaultValue = "") String searchValue,
+                                                                            @RequestParam(defaultValue = "all") String type) {
+        return prescriptionInventory.getPrescriptionInventory(page, size, searchValue, type);
     }
 
     @GetMapping(produces = "application/json", value = "/expired")
     public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventoryExpiredForTable(@RequestParam(defaultValue = "1") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
-                                                                            @RequestParam(defaultValue = "") String searchValue) {
-        return prescriptionInventoryService.getPrescriptionInventory(page, size, searchValue);
+                                                                            @RequestParam(defaultValue = "") String searchValue,
+                                                                            @RequestParam(defaultValue = "all") String type) {
+        return prescriptionInventory.getExpiredPrescriptionInventory(page, size, searchValue, type);
     }
 
     @GetMapping(produces = "application/json", value = "/{id}")
     public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> getPrescriptionInventory(@PathVariable Long id) {
-        return prescriptionInventoryService.getPrescriptionInventoryById(id);
+        return prescriptionInventory.getPrescriptionInventoryById(id);
     }
 
+    @PutMapping(produces = "application/json", value = "/expired/drawal/{id}")
+    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPrescriptionInventory(@PathVariable Long id) {
+        return prescriptionInventory.drawalPresciptionInventory(id);
+    }
 }

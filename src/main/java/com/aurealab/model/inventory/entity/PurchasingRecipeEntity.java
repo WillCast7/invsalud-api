@@ -30,4 +30,10 @@ public class PurchasingRecipeEntity {
 
     @Column(name = "price_total")
     private BigDecimal priceTotal;
+
+    @Column(name = "start_serial")
+    private Long startSerial;
+
+    @Column(name = "final_serial")
+    private Long finalSerial;
 }

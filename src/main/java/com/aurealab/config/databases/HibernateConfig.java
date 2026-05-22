@@ -55,10 +55,6 @@ public class HibernateConfig {
         // Dialecto
         properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 
-        System.out.println("🔧 EntityManagerFactory configurado con multitenancy SCHEMA");
-        System.out.println("🔧 Connection Provider: " + connectionProvider.getClass().getName());
-        System.out.println("🔧 Tenant Resolver: " + tenantResolver.getClass().getName());
-
         em.setJpaPropertyMap(properties);
         return em;
     }

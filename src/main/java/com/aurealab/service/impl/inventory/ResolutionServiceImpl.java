@@ -37,6 +37,7 @@ public class ResolutionServiceImpl implements ResolutionService {
         return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue)));
     }
 
+    @Transactional
     public ResponseEntity<APIResponseDTO<ResolutionDTO>> getResolutionById(Long id){
         ResolutionDTO response = findById(id);
         if(response == null) throw new RuntimeException(constants.messages.noData);
@@ -59,8 +60,6 @@ public class ResolutionServiceImpl implements ResolutionService {
     @Transactional(readOnly = true)
     public ResolutionDTO findById(Long id) {
         Optional<ResolutionEntity> prescriptionInventory = resolutionRepository.findById(id);
-        System.out.println("prescriptionInventory: ");
-        System.out.println("prescriptionInventory: " + prescriptionInventory.get().getCode());
         return prescriptionInventory.map(ResolutionMapper::toDto).orElse(null);
     }
 }

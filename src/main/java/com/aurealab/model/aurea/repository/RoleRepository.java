@@ -18,4 +18,7 @@ public interface RoleRepository extends CrudRepository<RoleEntity, Long> {
 
     @Override
     Set<RoleEntity> findAll();
+
+    @Query("SELECT re FROM RoleEntity re WHERE re.id >= :id")
+    Set<RoleEntity> findAllUpperThanMyRole(Long id);
 }

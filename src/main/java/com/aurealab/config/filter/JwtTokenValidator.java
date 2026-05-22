@@ -45,30 +45,39 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
-            jwtToken = jwtToken.substring(7);
+            try {
+                jwtToken = jwtToken.substring(7);
 
-            // 1. Validamos el token
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+                // 1. Validamos el token (si lanza excepción, se captura abajo)
+                DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
 
-            // 2. Extraemos la información incluyendo el ID
-            String userName = jwtUtils.extractUsername(decodedJWT);
-            Long userId = jwtUtils.extractUserId(decodedJWT);
-            String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
+                // 2. Extraemos la información incluyendo el ID
+                String userName = jwtUtils.extractUsername(decodedJWT);
+                Long userId = jwtUtils.extractUserId(decodedJWT);
+                String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
 
-            Collection<? extends GrantedAuthority> authorities =
-                    AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+                Collection<? extends GrantedAuthority> authorities =
+                        AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
 
-            // 3. RECONSTRUIMOS EL CustomUserDetails
-            // El password se pasa vacío "" por seguridad ya que el token ya fue validado
-            CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", authorities);
+                // 3. RECONSTRUIMOS EL CustomUserDetails
+                CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", authorities);
 
-            // 4. Seteamos la autenticación usando el objeto userDetails como Principal
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
+                // 4. Seteamos la autenticación
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                context.setAuthentication(authentication);
+                SecurityContextHolder.setContext(context);
+
+            } catch (Exception e) {
+                // Si el token expiró o está corrupto, limpiamos el contexto de seguridad por si acaso
+                SecurityContextHolder.clearContext();
+
+                // Opcional: Puedes loguear el error si lo deseas para debug local
+                // logger.error("Error validando el token JWT: " + e.getMessage());
+            }
         }
 
+        // Esto siempre se ejecuta, permitiendo que las rutas públicas sigan su flujo libremente
         filterChain.doFilter(request, response);
     }
 

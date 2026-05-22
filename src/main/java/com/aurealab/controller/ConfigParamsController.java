@@ -22,10 +22,6 @@ public class ConfigParamsController {
     @Autowired
     ConfigParamService configParamService;
 
-
-    @Autowired
-    CustomerService customerService;
-
     @GetMapping(produces = "application/json", value = "/thirdParty")
     public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> getCreatingCustomerParams() {
        return configParamService.getCreatingCustomerParams();
@@ -38,8 +34,6 @@ public class ConfigParamsController {
 
     @GetMapping(produces = "application/json", value = "/parent/{parent}")
     public ResponseEntity<APIResponseDTO<Set<ConfigParamDTO>>> findParamsByParent(@PathVariable String parent) {
-        System.out.println("parent here");
-        System.out.println(parent);
         return configParamService.searchParamsByParent(parent);
     }
 
@@ -48,6 +42,16 @@ public class ConfigParamsController {
                                                                     @RequestParam(defaultValue = "10") int size,
                                                                     @RequestParam(defaultValue = "") String searchValue) {
         return configParamService.getConfigParams(page, size, searchValue);
+    }
+
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> createConfigParam(@RequestBody ConfigParamDTO configParamDTO) {
+        return configParamService.createConfigParam(configParamDTO);
+    }
+
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> updateConfigParam(@RequestBody ConfigParamDTO configParamDTO) {
+        return configParamService.updateConfigParam(configParamDTO);
     }
 
 }

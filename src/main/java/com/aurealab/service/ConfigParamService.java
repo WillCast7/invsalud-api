@@ -16,6 +16,8 @@ public interface ConfigParamService {
     public ThirdPartyWithParamsResponseDTO findCreatingThirdPartyParams();
     public UserWithParamsResponseDTO findCreatingUserParams();
     public ResponseEntity<APIResponseDTO<String>> getConfigParams(int page, int size, String searchValue);
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> createConfigParam(ConfigParamDTO configParamDTO);
+    public ResponseEntity<APIResponseDTO<ConfigParamDTO>> updateConfigParam(ConfigParamDTO configParamDTO);
 
 
 }

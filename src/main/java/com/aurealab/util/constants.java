@@ -4,16 +4,18 @@ public class constants {
     public static class messages {
         public static final String error = "Ha ocurrido un error: ";
         public static final String noData = "No encontró ningún dato";
+        public static final String noAssociatedMedicine = "No encontró ningún medicamento asociado";
         public static final String consultGood = "Consultado correctamente";
         public static final String responseSaveUserGood = "Datos creado correctamente";
         public static final String responseUpdateGood = "Datos actualizados correctamente";
         public static final String dontFoundByID = "No encontro ningun dato con ese ID";
         public static final String switchDTOToEntityError = "Error al convertir DTO a Entity: el objeto es nulo.";
-        public static final String asd = "No hay sesión activa para realizar esta acción";
+        public static final String medicineDrawled = "El medicamento ya ha sido retirado";
         public static final String cashSessionExist = "Ya hay una caja abierta para el dia de hoy";
         public static final String cashSessionDontExist = "No hay una caja abierta realizar esta acción";
         public static final String passwordsNotEquals = "Las contraseñas ingresadas no coinciden";
         public static final String invalidPassword = "La contraseña ingresada no es igual la actual";
+        public static final String invalidCredentials = "Las credenciales ingresadas no coinciden";
     }
     public static class success{
         public static final String savedSuccess = "Creado exitosamente ";
@@ -21,6 +23,7 @@ public class constants {
         public static final String findedSuccess = "busqueda completada ";
         public static final String updatedSuccess = "Actualizado exitosamente";
         public static final String overedSuccess = "Proceso terminado satisfactoriamente";
+        public static final String forgotPassSuccess = "revise su correo para los siguientes para su cambio de contrasena";
     }
     public static class errors{
         public static final String saveError = "Error al intentar crear";
@@ -38,6 +41,7 @@ public class constants {
         public static final String dataPersistenceError = "Datos duplicados";
         public static final String invalidRole = "No se encontró ningún rol asociado al validador";
         public static final String invalidUser = "No se encontró ningún usuario con esas credenciales";
+        public static final String userBlocked = "Usuario bloqueado. Contacte al administrador";
         public static final String invalidMenu = "No se encontró ningún menu asociado al validador";
     }
 
@@ -77,10 +81,23 @@ public class constants {
         public static final String statusOpen = "OPEN";
         public static final String statusClose = "CLOSED";
         public static final String thirdPartyRoleCustomer = "cliente";
-        public static final String incomePublicHealtPrefix = "ISP";
-        public static final String incomeEspecialControlPrefix = "ICE";
-        public static final String incomeRecipePrefix = "IR";
-        public static final String expensePrefix = "FS";
+
+        //compras
+        public static final String incomePublicHealthPrefix = "ISP"; //ingreso salud publica
+        public static final String incomeEspecialControlPrefix = "ICE"; //ingreso control especial
+        public static final String incomeRecipePrefix = "IR"; //ingreso recetarios
+
+        //cotizaciones
+        public static final String orderPublicHealthPrefix = "CSP"; //cotizacion salud publica
+        public static final String orderEspecialControlPrefix = "CCE"; //cotizacion control especial
+        public static final String orderRecipePrefix = "CR"; //cotizacion recetarios
+
+        //ventas
+        public static final String salePublicHealthPrefix = "SSP"; //salida salud publica
+        public static final String saleEspecialControlPrefix = "SCE"; //salida control especial
+        public static final String saleRecipePrefix = "SR"; //salida recetarios
+
+        public static final String drawalMedicine = "RM"; //retiro medicamento
     }
 
     public static class colors{
