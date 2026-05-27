@@ -7,6 +7,7 @@ import com.aurealab.dto.tables.PurchasingTableDTO;
 import com.aurealab.mapper.inventory.PrescriptionInventoryMapper;
 import com.aurealab.mapper.inventory.PurchasingItemMapper;
 import com.aurealab.mapper.inventory.PurchasingMapper;
+import com.aurealab.mapper.inventory.ThirdPartyMapper;
 import com.aurealab.model.inventory.entity.PurchasingEntity;
 import com.aurealab.model.inventory.entity.PurchasingItemEntity;
 import com.aurealab.model.inventory.entity.PurchasingRecipeEntity;
@@ -102,10 +103,14 @@ public class PurchasingServiceImpl implements PurchasingService {
         PersonDTO personCreator = userService.getUserById(jwtUtils.getCurrentUserId()).getPerson();
         String creatorFullName = personCreator.getNames() + " " + personCreator.getSurnames();
 
-        // 2. Preparar el contenedor principal (La Entidad Padre)
-        // Usamos el builder para preparar la cabecera de la compra
+
+        ThirdPartyDTO thirdPartyDTO = purchasingDTO.thirdParty();
+        if (thirdPartyDTO.id() == null) {
+            thirdPartyDTO = thirdPartyService.saveThirdParty(thirdPartyDTO);
+        }
+
         PurchasingEntity entityToSave = new PurchasingEntity();
-        entityToSave.setThirdParty(thirdPartyService.findThirdPartyEntityById(purchasingDTO.thirdParty()));
+        entityToSave.setThirdParty(ThirdPartyMapper.toEntity(thirdPartyDTO));
         entityToSave.setTotal(purchasingDTO.total());
         entityToSave.setType(purchasingDTO.type());
         entityToSave.setObservations(purchasingDTO.observations());
