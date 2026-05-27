@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="" />
+    <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/ResolutionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/ResolutionMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/ConfigParamServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/ConfigParamServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,7 +25,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/main/java/com/aurealab/dto/PageableResponseDTO.java" root0="FORCE_HIGHLIGHTING" />

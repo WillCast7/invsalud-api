@@ -72,14 +72,6 @@ public class ResolutionMapper {
         entity.setCreatedAt(dto.createdAt());
         entity.setCreatedBy(dto.createdBy());
         
-<<<<<<< HEAD
-        if (dto.items() != null) {
-            Set<ProductEntity> items = new HashSet<ProductEntity>();
-            dto.items().forEach(item -> items.add(ProductMapper.toEntity(item)));
-            entity.setProducts(items);
-        }
-
-=======
         if (dto.products() != null && !dto.products().isEmpty()) {
             Set<ResolutionAllowedProductEntity> items = new HashSet<>();
             dto.products().forEach(item -> {
@@ -90,7 +82,6 @@ public class ResolutionMapper {
             });
             entity.setAllowedProduct(items);
         }
->>>>>>> develop
         return entity;
     }
 }

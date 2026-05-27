@@ -114,8 +114,6 @@ public class ConfigParamServiceImpl implements ConfigParamService {
         return configParamEntity.map(ConfigParamsMapper::toDto);
     }
 
-<<<<<<< HEAD
-=======
     public ResponseEntity<APIResponseDTO<ConfigParamDTO>> createConfigParam(ConfigParamDTO configParamDTO) {
         try {
             ConfigParamsEntity entity = ConfigParamsMapper.toEntity(configParamDTO);
@@ -144,5 +142,4 @@ public class ConfigParamServiceImpl implements ConfigParamService {
         }
     }
 
->>>>>>> develop
 }
