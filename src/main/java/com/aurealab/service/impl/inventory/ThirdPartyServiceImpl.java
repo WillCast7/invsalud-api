@@ -107,9 +107,16 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                 thirdPartyRepository.saveAndFlush(existing);
             });
         }
+        ThirdPartyEntity thirdPartyEntity = ThirdPartyMapper.toEntity(thirdParty);
+
+        thirdPartyEntity.setCreatedBy(
+                thirdPartyEntity.getCreatedBy() == null ?
+                        jwtUtils.getCurrentUserId() : thirdPartyEntity.getCreatedBy()
+        );
+
         return ThirdPartyMapper.toDto(
                 thirdPartyRepository.save(
-                        ThirdPartyMapper.toEntity(thirdParty)
+                        thirdPartyEntity
                 )
         );
     }

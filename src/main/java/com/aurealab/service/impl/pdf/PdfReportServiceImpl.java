@@ -1,5 +1,6 @@
 package com.aurealab.service.impl.pdf;
 
+import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
@@ -45,7 +46,7 @@ public class PdfReportServiceImpl implements PdfReportService {
     Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
     Font bigTitleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.BLACK);
 
-    public ResponseEntity<InputStreamResource> downloadReport(Long sessionId){
+    public ResponseEntity<InputStreamResource> downloadOrder(Long sessionId){
 //        // 1. Obtener todos los datos necesarios
 //        CashSessionDTO session = cashSessionService.findById(sessionId);
 //        Set<CashMovementResponseDTO> movements = cashMovementService.findAllByCashSessionId(sessionId);
@@ -70,7 +71,6 @@ public class PdfReportServiceImpl implements PdfReportService {
                 .body(new InputStreamResource(bis));
 
     }
-
 
     public ByteArrayInputStream generateCashSessionReport(
             CashSessionDTO session,

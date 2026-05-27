@@ -10,7 +10,7 @@ import java.util.List;
 
 public record PurchasingRequestDTO(
     Long id,
-    Long thirdParty,
+    ThirdPartyDTO thirdParty,
     BigDecimal total,
     String type,
     String observations,
