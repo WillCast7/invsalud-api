@@ -4,10 +4,7 @@ import com.aurealab.service.Inventory.PdfReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/report")
@@ -16,9 +13,9 @@ public class PdfReportController {
     @Autowired
     PdfReportService pdfReportService;
 
-    @GetMapping(value = "/daily/{id}")
+    @GetMapping(value = "/order/{id}")
     public ResponseEntity<InputStreamResource> downloadReport(@PathVariable Long id){
-        return pdfReportService.downloadReport(id);
+        return pdfReportService.downloadOrder(id);
     }
 
     @GetMapping(value = "/invoice/{id}")
