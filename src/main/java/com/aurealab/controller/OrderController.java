@@ -1,9 +1,6 @@
 package com.aurealab.controller;
 
-import com.aurealab.dto.APIResponseDTO;
-import com.aurealab.dto.OrderDTO;
-import com.aurealab.dto.OrderRequestDTO;
-import com.aurealab.dto.PrescriptionInventoryDTO;
+import com.aurealab.dto.*;
 import com.aurealab.service.Inventory.OrderService;
 import com.aurealab.util.constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +63,7 @@ public class OrderController {
     }
 
     @PostMapping(produces = "application/json", value = "/sell/recipe/{id}")
-    public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrderRecipe(@PathVariable Long id, @RequestBody com.aurealab.dto.SellRecipeRequestDTO request) {
+    public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrderRecipe(@PathVariable Long id, @RequestBody SellRecipeRequestDTO request) {
         return orderService.sellOrderRecipe(id, request);
     }
 }

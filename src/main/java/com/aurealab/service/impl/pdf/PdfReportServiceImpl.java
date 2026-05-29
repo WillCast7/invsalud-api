@@ -15,6 +15,9 @@ import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.html.simpleparser.ChainedProperties;
+import com.lowagie.text.html.simpleparser.HTMLWorker;
+import com.lowagie.text.html.simpleparser.ImageProvider;
 import com.lowagie.text.pdf.PdfPCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -25,9 +28,19 @@ import org.springframework.stereotype.Service;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.PdfPTable;
 
+import com.aurealab.model.inventory.entity.OrderEntity;
+import com.aurealab.model.inventory.entity.OrderItemEntity;
+import com.aurealab.model.inventory.entity.PurchasingEntity;
+import com.aurealab.model.inventory.entity.PurchasingItemEntity;
+import com.aurealab.model.aurea.entity.DocumentTemplateEntity;
+import com.aurealab.model.inventory.repository.OrderRepository;
+import com.aurealab.model.inventory.repository.PurchasingRepository;
+import com.aurealab.model.aurea.repository.DocumentTemplateRepository;
+
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,30 +59,158 @@ public class PdfReportServiceImpl implements PdfReportService {
     Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
     Font bigTitleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.BLACK);
 
-    public ResponseEntity<InputStreamResource> downloadOrder(Long sessionId){
-//        // 1. Obtener todos los datos necesarios
-//        CashSessionDTO session = cashSessionService.findById(sessionId);
-//        Set<CashMovementResponseDTO> movements = cashMovementService.findAllByCashSessionId(sessionId);
-//        CashSessionSummaryDTO summary = cashMovementService.getSummaries(sessionId);
-//
-//        // Este es un ejemplo de un PNG minimalista en Base64
-//        UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
-//
-//        byte[] logo = java.util.Base64.getDecoder().decode(userDTO.getCompany().logoUrl());
-//
-//        // 2. Generar el PDF
-//        ByteArrayInputStream bis = generateCashSessionReport(session, movements, summary, logo);
+    @Autowired
+    private OrderRepository orderRepository;
 
-        // 3. Configurar headers de respuesta
+    @Autowired
+    private PurchasingRepository purchasingRepository;
+
+    @Autowired
+    private DocumentTemplateRepository documentTemplateRepository;
+
+    public ResponseEntity<InputStreamResource> downloadOrder(Long orderId) {
+        // 1. Fetch order
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("No se encontró la cotización con ID: " + orderId));
+
+        // 2. Determine category
+        String templateCategory = switch (order.getType()) {
+            case constants.productTypes.Recipe -> "RECETARIOS";
+            case constants.productTypes.SpecialControl -> "MEDICAMENTOS";
+            case constants.productTypes.PublicHealth -> "MEDICAMENTOS_SP";
+            default -> "RECETARIOS";
+        };
+
+        // 3. Fetch template
+        DocumentTemplateEntity template = documentTemplateRepository.findByCategoryAndIsDefault(templateCategory, true)
+                .orElseThrow(() -> new RuntimeException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory));
+
+        // 4. Fetch company & user info (needed for company headers)
+        UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
+
+        // 5. Replace variables in template HTML
+        String html = template.getHtmlContent();
+
+        // Company variables
+        html = html.replace("{{ company.name }}", userDTO.getCompany().legalName() != null ? userDTO.getCompany().legalName() : "")
+                .replace("{{ company.nit }}", userDTO.getCompany().nit() != null ? userDTO.getCompany().nit() : "")
+                .replace("{{ company.address }}", userDTO.getCompany().address() != null ? userDTO.getCompany().address() : "")
+                .replace("{{ company.phone }}", userDTO.getCompany().phone() != null ? userDTO.getCompany().phone() : "")
+                .replace("{{ company.logoUrl }}", userDTO.getCompany().logoUrl() != null ? userDTO.getCompany().logoUrl() : "");
+
+        // Order variables
+        html = html.replace("{{ order.orderCode }}", order.getOrderCode() != null ? order.getOrderCode() : "")
+                .replace("{{ order.createdAt }}", order.getCreatedAt() != null ? order.getCreatedAt().toLocalDate().toString() : "")
+                .replace("{{ order.total }}", formatCurrency(order.getTotal()))
+                .replace("{{ order.observations }}", order.getObservations() != null ? order.getObservations() : "");
+
+        // Client variables
+        if (order.getThirdParty() != null) {
+            html = html.replace("{{ thirdParty.fullName }}", order.getThirdParty().getFullName() != null ? order.getThirdParty().getFullName() : "")
+                    .replace("{{ thirdParty.documentNumber }}", order.getThirdParty().getDocumentNumber() != null ? order.getThirdParty().getDocumentNumber() : "")
+                    .replace("{{ thirdParty.email }}", order.getThirdParty().getEmail() != null ? order.getThirdParty().getEmail() : "")
+                    .replace("{{ thirdParty.phone }}", order.getThirdParty().getPhoneNumber() != null ? order.getThirdParty().getPhoneNumber() : "");
+        } else {
+            html = html.replace("{{ thirdParty.fullName }}", "")
+                    .replace("{{ thirdParty.documentNumber }}", "")
+                    .replace("{{ thirdParty.email }}", "")
+                    .replace("{{ thirdParty.phone }}", "");
+        }
+
+        // Table Items variables parsing
+        int trIndex = html.indexOf("<tr");
+        if (trIndex != -1 && order.getItems() != null) {
+            StringBuilder tableRows = new StringBuilder();
+            while (trIndex != -1) {
+                int nextTrClose = html.indexOf("</tr>", trIndex);
+                if (nextTrClose == -1) break;
+
+                String trContent = html.substring(trIndex, nextTrClose + 5);
+                if (trContent.contains("{{ item.")) {
+                    for (OrderItemEntity item : order.getItems()) {
+                        String rowHtml = trContent;
+
+                        String productCode = "";
+                        String productName = "";
+
+                        if (order.getType().equals(constants.productTypes.Recipe)) {
+                            productCode = "REC-001";
+                            productName = "Recetario de Control Especial";
+                        } else {
+                            if (item.getInventory() != null && item.getInventory().getProduct() != null) {
+                                productCode = item.getInventory().getProduct().getCode();
+                                productName = item.getInventory().getProduct().getName();
+                            }
+                        }
+
+                        rowHtml = rowHtml.replace("{{ item.product.code }}", productCode != null ? productCode : "")
+                                .replace("{{ item.inventory.product.code }}", productCode != null ? productCode : "")
+                                .replace("{{ item.product.name }}", productName != null ? productName : "")
+                                .replace("{{ item.inventory.product.name }}", productName != null ? productName : "")
+                                .replace("{{ item.units }}", String.valueOf(item.getUnits()))
+                                .replace("{{ item.priceUnit }}", formatCurrency(item.getPriceUnit()))
+                                .replace("{{ item.priceTotal }}", formatCurrency(item.getPriceTotal()));
+
+                        tableRows.append(rowHtml).append("\n");
+                    }
+
+                    html = html.substring(0, trIndex) + tableRows.toString() + html.substring(nextTrClose + 5);
+                    break;
+                }
+                trIndex = html.indexOf("<tr", nextTrClose);
+            }
+        }
+
+        // 6. Generate PDF using HTMLWorker
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4, 36, 36, 36, 36);
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+            
+            java.util.HashMap<String, Object> providers = new java.util.HashMap<>();
+            providers.put("img_provider", new ImageProvider() {
+                @Override
+                public Image getImage(String src, java.util.HashMap attrs, ChainedProperties chain, DocListener doc) {
+                    try {
+                        String base64Data = src;
+                        if (src.startsWith("data:image")) {
+                            int comma = src.indexOf("base64,");
+                            if (comma != -1) {
+                                base64Data = src.substring(comma + 7);
+                            }
+                        }
+                        byte[] decoded = java.util.Base64.getDecoder().decode(base64Data.trim());
+                        return Image.getInstance(decoded);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+            });
+
+            java.util.List<Element> elements = HTMLWorker.parseToList(new java.io.StringReader(html), null, providers);
+            for (Element element : elements) {
+                document.add(element);
+            }
+            
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al generar el PDF de la cotización: " + e.getMessage());
+        }
+
+        byte[] pdfBytes = out.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
+
+        // 7. Configure response headers
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=reporte-caja-" + sessionId + ".pdf");
-        ByteArrayInputStream bis = new ByteArrayInputStream( new byte[0], 1, 1);//TODO borrar
+        headers.add("Content-Disposition", "inline; filename=cotizacion-" + order.getOrderCode() + ".pdf");
+        
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
-
     }
 
     public ByteArrayInputStream generateCashSessionReport(
@@ -445,5 +586,320 @@ public class PdfReportServiceImpl implements PdfReportService {
         lMet.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(lMet);
         table.addCell(new PdfPCell(new Phrase("pmStr", FontFactory.getFont(FontFactory.HELVETICA, 8))));
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadSale(Long saleId) {
+        // 1. Fetch sale (stored in orders table)
+        OrderEntity order = orderRepository.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("No se encontró la venta con ID: " + saleId));
+
+        // 2. Determine category
+        String templateCategory = switch (order.getType()) {
+            case constants.productTypes.Recipe -> "RECETARIOS";
+            case constants.productTypes.SpecialControl -> "MEDICAMENTOS";
+            case constants.productTypes.PublicHealth -> "MEDICAMENTOS_SP";
+            default -> "RECETARIOS";
+        };
+
+        // 3. Fetch template
+        DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("VENTA", templateCategory, true)
+                .orElseThrow(() -> new RuntimeException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo VENTA"));
+
+        // 4. Fetch company & user info
+        UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
+
+        // 5. Replace variables in template HTML
+        String html = template.getHtmlContent();
+
+        // Company variables
+        html = html.replace("{{ company.name }}", userDTO.getCompany().legalName() != null ? userDTO.getCompany().legalName() : "")
+                .replace("{{ company.nit }}", userDTO.getCompany().nit() != null ? userDTO.getCompany().nit() : "")
+                .replace("{{ company.address }}", userDTO.getCompany().address() != null ? userDTO.getCompany().address() : "")
+                .replace("{{ company.phone }}", userDTO.getCompany().phone() != null ? userDTO.getCompany().phone() : "")
+                .replace("{{ company.logoUrl }}", userDTO.getCompany().logoUrl() != null ? userDTO.getCompany().logoUrl() : "");
+
+        // Sale/Order variables
+        String code = order.getSoldCode() != null ? order.getSoldCode() : (order.getOrderCode() != null ? order.getOrderCode() : "");
+        html = html.replace("{{ order.orderCode }}", code)
+                .replace("{{ order.soldCode }}", code)
+                .replace("{{ order.createdAt }}", order.getCreatedAt() != null ? order.getCreatedAt().toLocalDate().toString() : "")
+                .replace("{{ order.soldAt }}", order.getSoldAt() != null ? order.getSoldAt().toLocalDate().toString() : "")
+                .replace("{{ order.total }}", formatCurrency(order.getTotal()))
+                .replace("{{ order.observations }}", order.getObservations() != null ? order.getObservations() : "");
+
+        // Client variables
+        if (order.getThirdParty() != null) {
+            html = html.replace("{{ thirdParty.fullName }}", order.getThirdParty().getFullName() != null ? order.getThirdParty().getFullName() : "")
+                    .replace("{{ thirdParty.documentNumber }}", order.getThirdParty().getDocumentNumber() != null ? order.getThirdParty().getDocumentNumber() : "")
+                    .replace("{{ thirdParty.email }}", order.getThirdParty().getEmail() != null ? order.getThirdParty().getEmail() : "")
+                    .replace("{{ thirdParty.phone }}", order.getThirdParty().getPhoneNumber() != null ? order.getThirdParty().getPhoneNumber() : "");
+        } else {
+            html = html.replace("{{ thirdParty.fullName }}", "")
+                    .replace("{{ thirdParty.documentNumber }}", "")
+                    .replace("{{ thirdParty.email }}", "")
+                    .replace("{{ thirdParty.phone }}", "");
+        }
+
+        // Table Items variables parsing
+        int trIndex = html.indexOf("<tr");
+        if (trIndex != -1 && order.getItems() != null) {
+            StringBuilder tableRows = new StringBuilder();
+            while (trIndex != -1) {
+                int nextTrClose = html.indexOf("</tr>", trIndex);
+                if (nextTrClose == -1) break;
+
+                String trContent = html.substring(trIndex, nextTrClose + 5);
+                if (trContent.contains("{{ item.")) {
+                    for (OrderItemEntity item : order.getItems()) {
+                        String rowHtml = trContent;
+
+                        String productCode = "";
+                        String productName = "";
+
+                        if (order.getType().equals(constants.productTypes.Recipe)) {
+                            productCode = "REC-001";
+                            productName = "Recetario de Control Especial";
+                        } else {
+                            if (item.getInventory() != null && item.getInventory().getProduct() != null) {
+                                productCode = item.getInventory().getProduct().getCode();
+                                productName = item.getInventory().getProduct().getName();
+                            }
+                        }
+
+                        rowHtml = rowHtml.replace("{{ item.product.code }}", productCode != null ? productCode : "")
+                                .replace("{{ item.inventory.product.code }}", productCode != null ? productCode : "")
+                                .replace("{{ item.product.name }}", productName != null ? productName : "")
+                                .replace("{{ item.inventory.product.name }}", productName != null ? productName : "")
+                                .replace("{{ item.units }}", String.valueOf(item.getUnits()))
+                                .replace("{{ item.priceUnit }}", formatCurrency(item.getPriceUnit()))
+                                .replace("{{ item.priceTotal }}", formatCurrency(item.getPriceTotal()));
+
+                        tableRows.append(rowHtml).append("\n");
+                    }
+
+                    html = html.substring(0, trIndex) + tableRows.toString() + html.substring(nextTrClose + 5);
+                    break;
+                }
+                trIndex = html.indexOf("<tr", nextTrClose);
+            }
+        }
+
+        // Generate PDF
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4, 36, 36, 36, 36);
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+            
+            java.util.HashMap<String, Object> providers = new java.util.HashMap<>();
+            providers.put("img_provider", new ImageProvider() {
+                @Override
+                public Image getImage(String src, java.util.HashMap attrs, ChainedProperties chain, DocListener doc) {
+                    try {
+                        String base64Data = src;
+                        if (src.startsWith("data:image")) {
+                            int comma = src.indexOf("base64,");
+                            if (comma != -1) {
+                                base64Data = src.substring(comma + 7);
+                            }
+                        }
+                        byte[] decoded = java.util.Base64.getDecoder().decode(base64Data.trim());
+                        return Image.getInstance(decoded);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+            });
+
+            java.util.List<Element> elements = HTMLWorker.parseToList(new java.io.StringReader(html), null, providers);
+            for (Element element : elements) {
+                document.add(element);
+            }
+            
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al generar el PDF de la venta: " + e.getMessage());
+        }
+
+        byte[] pdfBytes = out.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=venta-" + code + ".pdf");
+        
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadPurchase(Long purchaseId) {
+        // 1. Fetch purchase
+        PurchasingEntity purchase = purchasingRepository.findById(purchaseId)
+                .orElseThrow(() -> new RuntimeException("No se encontró la compra con ID: " + purchaseId));
+
+        // 2. Determine category
+        String templateCategory = switch (purchase.getType()) {
+            case constants.productTypes.Recipe -> "RECETARIOS";
+            case constants.productTypes.SpecialControl -> "MEDICAMENTOS";
+            case constants.productTypes.PublicHealth -> "MEDICAMENTOS_SP";
+            default -> "RECETARIOS";
+        };
+
+        // 3. Fetch template
+        DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COMPRA", templateCategory, true)
+                .orElseThrow(() -> new RuntimeException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo COMPRA"));
+
+        // 4. Fetch company & user info
+        UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
+
+        // 5. Replace variables in template HTML
+        String html = template.getHtmlContent();
+
+        // Company variables
+        html = html.replace("{{ company.name }}", userDTO.getCompany().legalName() != null ? userDTO.getCompany().legalName() : "")
+                .replace("{{ company.nit }}", userDTO.getCompany().nit() != null ? userDTO.getCompany().nit() : "")
+                .replace("{{ company.address }}", userDTO.getCompany().address() != null ? userDTO.getCompany().address() : "")
+                .replace("{{ company.phone }}", userDTO.getCompany().phone() != null ? userDTO.getCompany().phone() : "")
+                .replace("{{ company.logoUrl }}", userDTO.getCompany().logoUrl() != null ? userDTO.getCompany().logoUrl() : "");
+
+        // Purchase variables
+        String code = purchase.getPurchasedCode() != null ? purchase.getPurchasedCode() : "";
+        html = html.replace("{{ purchase.purchasedCode }}", code)
+                .replace("{{ order.orderCode }}", code)
+                .replace("{{ purchase.createdAt }}", purchase.getCreatedAt() != null ? purchase.getCreatedAt().toLocalDate().toString() : "")
+                .replace("{{ order.createdAt }}", purchase.getCreatedAt() != null ? purchase.getCreatedAt().toLocalDate().toString() : "")
+                .replace("{{ purchase.total }}", formatCurrency(purchase.getTotal()))
+                .replace("{{ order.total }}", formatCurrency(purchase.getTotal()))
+                .replace("{{ purchase.observations }}", purchase.getObservations() != null ? purchase.getObservations() : "")
+                .replace("{{ order.observations }}", purchase.getObservations() != null ? purchase.getObservations() : "");
+
+        // Provider/ThirdParty variables
+        if (purchase.getThirdParty() != null) {
+            html = html.replace("{{ thirdParty.fullName }}", purchase.getThirdParty().getFullName() != null ? purchase.getThirdParty().getFullName() : "")
+                    .replace("{{ thirdParty.documentNumber }}", purchase.getThirdParty().getDocumentNumber() != null ? purchase.getThirdParty().getDocumentNumber() : "")
+                    .replace("{{ thirdParty.email }}", purchase.getThirdParty().getEmail() != null ? purchase.getThirdParty().getEmail() : "")
+                    .replace("{{ thirdParty.phone }}", purchase.getThirdParty().getPhoneNumber() != null ? purchase.getThirdParty().getPhoneNumber() : "");
+        } else {
+            html = html.replace("{{ thirdParty.fullName }}", "")
+                    .replace("{{ thirdParty.documentNumber }}", "")
+                    .replace("{{ thirdParty.email }}", "")
+                    .replace("{{ thirdParty.phone }}", "");
+        }
+
+        // Table Items variables parsing
+        int trIndex = html.indexOf("<tr");
+        if (trIndex != -1) {
+            StringBuilder tableRows = new StringBuilder();
+            while (trIndex != -1) {
+                int nextTrClose = html.indexOf("</tr>", trIndex);
+                if (nextTrClose == -1) break;
+
+                String trContent = html.substring(trIndex, nextTrClose + 5);
+                if (trContent.contains("{{ item.")) {
+                    if (purchase.getType().equals(constants.productTypes.Recipe)) {
+                        // For Recipes, we have a single row representing the recipe purchase
+                        if (purchase.getPurchasingRecipe() != null) {
+                            String rowHtml = trContent;
+                            String productCode = "REC-001";
+                            String productName = "Recetario de Control Especial";
+                            
+                            rowHtml = rowHtml.replace("{{ item.product.code }}", productCode)
+                                    .replace("{{ item.inventory.product.code }}", productCode)
+                                    .replace("{{ item.product.name }}", productName)
+                                    .replace("{{ item.inventory.product.name }}", productName)
+                                    .replace("{{ item.units }}", String.valueOf(purchase.getPurchasingRecipe().getUnits()))
+                                    .replace("{{ item.priceUnit }}", formatCurrency(purchase.getPurchasingRecipe().getPriceUnit()))
+                                    .replace("{{ item.priceTotal }}", formatCurrency(purchase.getPurchasingRecipe().getPriceTotal()));
+                            
+                            tableRows.append(rowHtml).append("\n");
+                        }
+                    } else {
+                        // For individual product items
+                        if (purchase.getItems() != null) {
+                            for (PurchasingItemEntity item : purchase.getItems()) {
+                                String rowHtml = trContent;
+
+                                String productCode = "";
+                                String productName = "";
+
+                                if (item.getProduct() != null) {
+                                    productCode = item.getProduct().getCode();
+                                    productName = item.getProduct().getName();
+                                }
+
+                                rowHtml = rowHtml.replace("{{ item.product.code }}", productCode != null ? productCode : "")
+                                        .replace("{{ item.inventory.product.code }}", productCode != null ? productCode : "")
+                                        .replace("{{ item.product.name }}", productName != null ? productName : "")
+                                        .replace("{{ item.inventory.product.name }}", productName != null ? productName : "")
+                                        .replace("{{ item.units }}", String.valueOf(item.getUnits()))
+                                        .replace("{{ item.priceUnit }}", formatCurrency(item.getPriceUnit()))
+                                        .replace("{{ item.priceTotal }}", formatCurrency(item.getPriceTotal()));
+
+                                tableRows.append(rowHtml).append("\n");
+                            }
+                        }
+                    }
+
+                    html = html.substring(0, trIndex) + tableRows.toString() + html.substring(nextTrClose + 5);
+                    break;
+                }
+                trIndex = html.indexOf("<tr", nextTrClose);
+            }
+        }
+
+        // Generate PDF
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4, 36, 36, 36, 36);
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+            
+            java.util.HashMap<String, Object> providers = new java.util.HashMap<>();
+            providers.put("img_provider", new ImageProvider() {
+                @Override
+                public Image getImage(String src, java.util.HashMap attrs, ChainedProperties chain, DocListener doc) {
+                    try {
+                        String base64Data = src;
+                        if (src.startsWith("data:image")) {
+                            int comma = src.indexOf("base64,");
+                            if (comma != -1) {
+                                base64Data = src.substring(comma + 7);
+                            }
+                        }
+                        byte[] decoded = java.util.Base64.getDecoder().decode(base64Data.trim());
+                        return Image.getInstance(decoded);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+            });
+
+            java.util.List<Element> elements = HTMLWorker.parseToList(new java.io.StringReader(html), null, providers);
+            for (Element element : elements) {
+                document.add(element);
+            }
+            
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al generar el PDF de la compra: " + e.getMessage());
+        }
+
+        byte[] pdfBytes = out.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=compra-" + code + ".pdf");
+        
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
 }

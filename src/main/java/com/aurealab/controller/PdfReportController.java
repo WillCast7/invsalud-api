@@ -18,8 +18,20 @@ public class PdfReportController {
         return pdfReportService.downloadOrder(id);
     }
 
+    @GetMapping(value = "/sale/{id}")
+    public ResponseEntity<InputStreamResource> downloadSale(@PathVariable Long id){
+        return pdfReportService.downloadSale(id);
+    }
+
+    @GetMapping(value = "/purchase/{id}")
+    public ResponseEntity<InputStreamResource> downloadPurchase(@PathVariable Long id){
+        return pdfReportService.downloadPurchase(id);
+    }
+
     @GetMapping(value = "/invoice/{id}")
     public ResponseEntity<InputStreamResource> downloadInvoice(@PathVariable Long id){
         return pdfReportService.downloadInvoice(id);
     }
+
+    
 }

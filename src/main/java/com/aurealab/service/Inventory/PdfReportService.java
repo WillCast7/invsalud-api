@@ -7,5 +7,6 @@ import org.springframework.http.ResponseEntity;
 public interface PdfReportService {
     public ResponseEntity<InputStreamResource> downloadOrder(Long sessionId);
     public ResponseEntity<InputStreamResource> downloadInvoice(Long movementId);
-
+    public ResponseEntity<InputStreamResource> downloadSale(Long saleId);
+    public ResponseEntity<InputStreamResource> downloadPurchase(Long purchaseId);
 }
