@@ -29,6 +29,7 @@ import com.aurealab.util.JwtUtils;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -192,5 +193,44 @@ public class PurchasingServiceImpl implements PurchasingService {
 
     public PurchasingEntity savePurchasingEntity(PurchasingEntity purchasingEntity){
         return purchasingRepository.save(purchasingEntity);
+    }
+
+    @Override
+    @Transactional
+    public Page<PrescriptionInventoryTableDTO> getPurchasingReport(
+            int page, int size, String type,
+            LocalDateTime start, LocalDateTime end,
+            String documentNumber, String product, String batch) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Specification<PurchasingEntity> spec = PurchasingSpecs.reportSearch(type, start, end, documentNumber, product, batch);
+        Page<PurchasingEntity> purchasingPage = purchasingRepository.findAll(spec, pageable);
+
+        List<PrescriptionInventoryTableDTO> dtoList = new ArrayList<>();
+        for (PurchasingEntity purchasing : purchasingPage.getContent()) {
+            if (purchasing.getItems() != null) {
+                for (PurchasingItemEntity item : purchasing.getItems()) {
+                    PrescriptionInventoryTableDTO dto = mapPurchasingItemToTableDto(purchasing, item);
+                    dtoList.add(dto);
+                }
+            }
+        }
+
+        return new org.springframework.data.domain.PageImpl<>(dtoList, pageable, purchasingPage.getTotalElements());
+    }
+
+    private PrescriptionInventoryTableDTO mapPurchasingItemToTableDto(PurchasingEntity purchasing, PurchasingItemEntity item) {
+        return PrescriptionInventoryTableDTO.builder()
+                .id(item.getId())
+                .product(item.getProduct() != null ? item.getProduct().getName() : "N/A")
+                .presentation(item.getProduct() != null ? item.getProduct().getPresentation() : "N/A")
+                .pharmaceuticalForm(item.getProduct() != null ? item.getProduct().getPharmaceuticalForm() : "N/A")
+                .batch(item.getBatch() != null ? item.getBatch().getCode() : "N/A")
+                .purchasePrice(item.getPriceUnit())
+                .salePrice(item.getSellPrice())
+                .totalUnits((long) item.getUnits())
+                .availableUnits(item.getInventory() != null ? (long) item.getInventory().getAvailableUnits() : 0L)
+                .expirationDate(item.getExpirationDate())
+                .isActive(purchasing.getIsActive() != null ? purchasing.getIsActive() : true)
+                .build();
     }
 }

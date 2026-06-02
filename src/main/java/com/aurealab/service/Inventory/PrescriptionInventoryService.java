@@ -2,7 +2,10 @@ package com.aurealab.service.Inventory;
 
 import com.aurealab.dto.APIResponseDTO;
 import com.aurealab.dto.PrescriptionInventoryDTO;
+import com.aurealab.dto.PrescriptionInventoryTableDTO;
 import com.aurealab.model.inventory.entity.PrescriptionInventoryEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Set;
@@ -15,4 +18,5 @@ public interface PrescriptionInventoryService {
     public Set<PrescriptionInventoryDTO> getResolutionProductById(Long thirdPartyId);
     public PrescriptionInventoryEntity findByIdEntity(Long id);
     public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPresciptionInventory(Long id);
+    public Page<PrescriptionInventoryTableDTO> findAllToTable(Pageable pageable, String searchValue, String type);
 }

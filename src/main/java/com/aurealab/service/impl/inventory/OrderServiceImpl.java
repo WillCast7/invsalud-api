@@ -319,4 +319,59 @@ public class OrderServiceImpl implements OrderService {
         }
         recipeInventoryService.save(current);
     }
+
+    @Override
+    @Transactional
+    public Page<PrescriptionInventoryTableDTO> getOrdersReport(
+            int page, int size, Boolean isSold, String type,
+            LocalDateTime start, LocalDateTime end,
+            String documentNumber, String product, String batch) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Specification<OrderEntity> spec = OrderSpecs.reportSearch(isSold, type, start, end, documentNumber, product, batch);
+        Page<OrderEntity> ordersPage = orderRepository.findAll(spec, pageable);
+
+        List<PrescriptionInventoryTableDTO> dtoList = new ArrayList<>();
+        for (OrderEntity order : ordersPage.getContent()) {
+            if (order.getItems() != null) {
+                for (OrderItemEntity item : order.getItems()) {
+                    PrescriptionInventoryTableDTO dto = mapOrderItemToTableDto(order, item);
+                    dtoList.add(dto);
+                }
+            }
+        }
+
+        return new org.springframework.data.domain.PageImpl<>(dtoList, pageable, ordersPage.getTotalElements());
+    }
+
+    private PrescriptionInventoryTableDTO mapOrderItemToTableDto(OrderEntity order, OrderItemEntity item) {
+        if (item.getInventory() != null) {
+            return PrescriptionInventoryTableDTO.builder()
+                    .id(item.getId())
+                    .product(item.getInventory().getProduct().getName())
+                    .presentation(item.getInventory().getProduct().getPresentation())
+                    .pharmaceuticalForm(item.getInventory().getProduct().getPharmaceuticalForm())
+                    .batch(item.getInventory().getBatch().getCode())
+                    .purchasePrice(item.getInventory().getPurchasePrice())
+                    .salePrice(item.getPriceUnit())
+                    .totalUnits(item.getUnits())
+                    .availableUnits((long) item.getInventory().getAvailableUnits())
+                    .expirationDate(item.getInventory().getExpirationDate())
+                    .isActive(order.isActive())
+                    .build();
+        } else {
+            return PrescriptionInventoryTableDTO.builder()
+                    .id(item.getId())
+                    .product("Recetarios")
+                    .presentation("N/A")
+                    .pharmaceuticalForm("N/A")
+                    .batch("N/A")
+                    .purchasePrice(BigDecimal.ZERO)
+                    .salePrice(item.getPriceUnit())
+                    .totalUnits(item.getUnits())
+                    .availableUnits(0L)
+                    .expirationDate(null)
+                    .isActive(order.isActive())
+                    .build();
+        }
+    }
 }

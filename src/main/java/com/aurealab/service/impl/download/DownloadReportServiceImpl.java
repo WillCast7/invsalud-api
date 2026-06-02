@@ -1,12 +1,10 @@
-package com.aurealab.service.impl.pdf;
-
-import com.aurealab.dto.APIResponseDTO;
+package com.aurealab.service.impl.download;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
 import com.aurealab.dto.UserDTO;
 import com.aurealab.dto.response.UserTableResponseDTO;
-import com.aurealab.service.Inventory.PdfReportService;
+import com.aurealab.service.DownloadReportService;
 import com.aurealab.service.UserService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.NumberToText;
@@ -40,12 +38,11 @@ import com.aurealab.model.aurea.repository.DocumentTemplateRepository;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
 import java.util.Objects;
 import java.util.Set;
 
 @Service
-public class PdfReportServiceImpl implements PdfReportService {
+public class DownloadReportServiceImpl implements DownloadReportService {
 
     @Autowired
     UserService userService;

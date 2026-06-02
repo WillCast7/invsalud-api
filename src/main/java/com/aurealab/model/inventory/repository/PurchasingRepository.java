@@ -6,10 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-public interface PurchasingRepository extends JpaRepository<PurchasingEntity, Long> {
+public interface PurchasingRepository extends JpaRepository<PurchasingEntity, Long>, JpaSpecificationExecutor<PurchasingEntity> {
 
     @EntityGraph(attributePaths = {"thirdParty", "items", "items.product", "items.batch"})
     Optional<PurchasingEntity> findById(Long id);
