@@ -49,25 +49,6 @@ public class ReportServiceImpl implements ReportService {
             String startDate, String endDate, String documentNumber,
             String product, String batch) {
 
-        // 1. Map Frontend inputs to Backend equivalents
-        String backendType = type;
-        if ("Cotizacion".equalsIgnoreCase(type)) {
-            backendType = "order";
-        } else if ("Salidas".equalsIgnoreCase(type)) {
-            backendType = "sold";
-        } else if ("Ingresos".equalsIgnoreCase(type)) {
-            backendType = "purchasing";
-        }
-
-        String backendCategory = category;
-        if ("Recetarios".equalsIgnoreCase(category)) {
-            backendCategory = "recipe";
-        } else if ("Medicamentos".equalsIgnoreCase(category)) {
-            backendCategory = "special";
-        } else if ("Medicamentos sp".equalsIgnoreCase(category)) {
-            backendCategory = "public";
-        }
-
         // 2. Parse Dates safely
         LocalDateTime start = null;
         if (startDate != null && !startDate.trim().isEmpty()) {
@@ -89,26 +70,26 @@ public class ReportServiceImpl implements ReportService {
         Page<PrescriptionInventoryTableDTO> pageResult;
 
         // 3. Delegate to appropriate service based on logic
-        if ("order".equalsIgnoreCase(backendType)) {
+        if ("order".equalsIgnoreCase(type)) {
             // Quotations
             pageResult = orderService.getOrdersReport(
-                    page, size, false, backendCategory, start, end, documentNumber, product, batch);
-        } else if ("sold".equalsIgnoreCase(backendType)) {
+                    page, size, false, category, start, end, documentNumber, product, batch);
+        } else if ("sold".equalsIgnoreCase(type)) {
             // Sales
             pageResult = orderService.getOrdersReport(
-                    page, size, true, backendCategory, start, end, documentNumber, product, batch);
-        } else if ("purchasing".equalsIgnoreCase(backendType)) {
+                    page, size, true, category, start, end, documentNumber, product, batch);
+        } else if ("purchasing".equalsIgnoreCase(type)) {
             // Purchases
-            if ("recipe".equalsIgnoreCase(backendCategory)) {
+            if ("recipe".equalsIgnoreCase(category)) {
                 pageResult = purchasingRecipeService.getPurchasingRecipeReport(
                         page, size, start, end, documentNumber, product);
             } else {
                 pageResult = purchasingService.getPurchasingReport(
-                        page, size, backendCategory, start, end, documentNumber, product, batch);
+                        page, size, category, start, end, documentNumber, product, batch);
             }
         } else {
             // "Todos" type -> Fallback query using PrescriptionInventoryService
-            if ("recipe".equalsIgnoreCase(backendCategory)) {
+            if ("recipe".equalsIgnoreCase(category)) {
                 RecipeInventoryEntity recipe = recipeInventoryService.findByIdEntity();
                 List<PrescriptionInventoryTableDTO> list = new ArrayList<>();
                 if (recipe != null) {
@@ -131,7 +112,7 @@ public class ReportServiceImpl implements ReportService {
             } else {
                 Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
                 String fallbackSearch = (product != null && !product.isEmpty()) ? product : ((batch != null && !batch.isEmpty()) ? batch : "");
-                pageResult = prescriptionInventoryService.findAllToTable(pageable, fallbackSearch, backendCategory);
+                pageResult = prescriptionInventoryService.findAllToTable(pageable, fallbackSearch, category);
             }
         }
 

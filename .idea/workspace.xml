@@ -5,28 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/PdfReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DownloadReportController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PurchasingRecipeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PurchasingRecipeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DownloadReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DownloadReportController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/authController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/authController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/response/CashSessionSummaryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CashRegister/response/CashSessionSummaryDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CompanyDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/CompanyDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CompanyMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/CompanyMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/CompanyEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/CompanyEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/OrderRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PurchasingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PurchasingRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/OrderSpecs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/OrderSpecs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/PurchasingSpecs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/PurchasingSpecs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/OrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PdfReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DownloadReportService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PrescriptionInventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PrescriptionInventoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PurchasingRecipeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PurchasingRecipeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PurchasingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PurchasingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/OrderServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingRecipeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingRecipeServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/pdf/PdfReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/download/DownloadReportServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/ApiApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/CustomUserDetails.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/SecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DownloadReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DownloadReportService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CompanyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/CompanyServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/DashboardServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/DashboardServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/ReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/ReportServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserDetailServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/download/DownloadReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/download/DownloadReportServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/aurealab/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/aurealab/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +37,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Record" />
         <option value="Interface" />
+        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
@@ -99,11 +100,11 @@
       <recent name="com.aurealab.model.cashRegister.repository" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.aurealab.dto" />
       <recent name="com.aurealab.model.inventory.entity" />
       <recent name="com.aurealab.model.inventory.repository" />
       <recent name="com.aurealab.dto.CashRegister.request" />
       <recent name="com.aurealab.controller" />
-      <recent name="com.aurealab.model.specs" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Api local">

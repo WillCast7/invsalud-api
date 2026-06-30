@@ -18,7 +18,11 @@ public record CompanyDTO(
     String city,
     String website,
     String logoUrl,
+    String logoOrder,
+    String logoSold,
+    String logoPurchasing,
     String subscriptionPlan,
+    String nameApp,
     LocalDateTime createdAt,
     Boolean isActive
 ) {}

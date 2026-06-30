@@ -9,6 +9,7 @@ import com.aurealab.service.UserService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.NumberToText;
 import com.aurealab.util.constants;
+import com.aurealab.util.exceptions.DownloadException;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Image;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.PdfPTable;
 
@@ -41,7 +43,20 @@ import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.ArrayList;
+import java.math.BigDecimal;
+import com.aurealab.dto.PrescriptionInventoryTableDTO;
+import com.aurealab.model.inventory.entity.RecipeInventoryEntity;
+
 @Service
+@Transactional(readOnly = true)
 public class DownloadReportServiceImpl implements DownloadReportService {
 
     @Autowired
@@ -65,10 +80,25 @@ public class DownloadReportServiceImpl implements DownloadReportService {
     @Autowired
     private DocumentTemplateRepository documentTemplateRepository;
 
+    @Autowired
+    private com.aurealab.service.Inventory.OrderService orderService;
+
+    @Autowired
+    private com.aurealab.service.Inventory.PurchasingService purchasingService;
+
+    @Autowired
+    private com.aurealab.service.Inventory.PurchasingRecipeService purchasingRecipeService;
+
+    @Autowired
+    private com.aurealab.service.Inventory.PrescriptionInventoryService prescriptionInventoryService;
+
+    @Autowired
+    private com.aurealab.service.Inventory.RecipeInventoryService recipeInventoryService;
+
     public ResponseEntity<InputStreamResource> downloadOrder(Long orderId) {
         // 1. Fetch order
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("No se encontró la cotización con ID: " + orderId));
+                .orElseThrow(() -> new DownloadException("No se encontró la cotización con ID: " + orderId));
 
         // 2. Determine category
         String templateCategory = switch (order.getType()) {
@@ -78,12 +108,17 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             default -> "RECETARIOS";
         };
 
+        System.out.println("antes de busscar la plantilla");
+
         // 3. Fetch template
         DocumentTemplateEntity template = documentTemplateRepository.findByCategoryAndIsDefault(templateCategory, true)
-                .orElseThrow(() -> new RuntimeException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory));
+                .orElseThrow(() -> new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory));
+
+        System.out.println("depues de busscar la plantilla");
 
         // 4. Fetch company & user info (needed for company headers)
         UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
+        System.out.println("despues de buscar el usuario");
 
         // 5. Replace variables in template HTML
         String html = template.getHtmlContent();
@@ -113,6 +148,8 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                     .replace("{{ thirdParty.email }}", "")
                     .replace("{{ thirdParty.phone }}", "");
         }
+
+        System.out.println("mitad de armar el html");
 
         // Table Items variables parsing
         int trIndex = html.indexOf("<tr");
@@ -158,6 +195,8 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             }
         }
 
+        System.out.println("despues de parsear variables en el html");
+
         // 6. Generate PDF using HTMLWorker
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4, 36, 36, 36, 36);
@@ -193,8 +232,10 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error al generar el PDF de la cotización: " + e.getMessage());
+            throw new DownloadException("Error al generar el PDF de la cotización: " + e.getMessage(), e);
         }
+
+        System.out.println("termino de armar el html");
 
         byte[] pdfBytes = out.toByteArray();
         ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
@@ -399,7 +440,6 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                 .body(new InputStreamResource(bis));
     }
 
-
     public ByteArrayInputStream generateInvoicePdf(CashMovementResponseDTO move, byte[] logoImage, UserDTO userDTO) {
         Document document = new Document(PageSize.A4, 30, 30, 30, 30);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -589,7 +629,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
     public ResponseEntity<InputStreamResource> downloadSale(Long saleId) {
         // 1. Fetch sale (stored in orders table)
         OrderEntity order = orderRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("No se encontró la venta con ID: " + saleId));
+                .orElseThrow(() -> new DownloadException("No se encontró la venta con ID: " + saleId));
 
         // 2. Determine category
         String templateCategory = switch (order.getType()) {
@@ -601,7 +641,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
 
         // 3. Fetch template
         DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("VENTA", templateCategory, true)
-                .orElseThrow(() -> new RuntimeException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo VENTA"));
+                .orElseThrow(() -> new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo VENTA"));
 
         // 4. Fetch company & user info
         UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
@@ -717,7 +757,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error al generar el PDF de la venta: " + e.getMessage());
+            throw new DownloadException("Error al generar el PDF de la venta: " + e.getMessage(), e);
         }
 
         byte[] pdfBytes = out.toByteArray();
@@ -737,7 +777,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
     public ResponseEntity<InputStreamResource> downloadPurchase(Long purchaseId) {
         // 1. Fetch purchase
         PurchasingEntity purchase = purchasingRepository.findById(purchaseId)
-                .orElseThrow(() -> new RuntimeException("No se encontró la compra con ID: " + purchaseId));
+                .orElseThrow(() -> new DownloadException("No se encontró la compra con ID: " + purchaseId));
 
         // 2. Determine category
         String templateCategory = switch (purchase.getType()) {
@@ -749,7 +789,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
 
         // 3. Fetch template
         DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COMPRA", templateCategory, true)
-                .orElseThrow(() -> new RuntimeException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo COMPRA"));
+                .orElseThrow(() -> new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo COMPRA"));
 
         // 4. Fetch company & user info
         UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
@@ -884,7 +924,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error al generar el PDF de la compra: " + e.getMessage());
+            throw new DownloadException("Error al generar el PDF de la compra: " + e.getMessage(), e);
         }
 
         byte[] pdfBytes = out.toByteArray();
@@ -897,6 +937,121 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    //REPORTES//
+
+    private String escapeCsv(Object value) {
+        if (value == null) return "";
+        String str = value.toString();
+        if (str.contains(";") || str.contains("\"") || str.contains("\n") || str.contains("\r")) {
+            str = str.replace("\"", "\"\"");
+            return "\"" + str + "\"";
+        }
+        return str;
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadReport(String type, String category, String startDate, String endDate, String documentNumber, String product, String batch) {
+        // 1. Parse Dates safely
+        LocalDateTime start = null;
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            try {
+                start = LocalDate.parse(startDate).atStartOfDay();
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
+        LocalDateTime end = null;
+        if (endDate != null && !endDate.trim().isEmpty()) {
+            try {
+                end = LocalDate.parse(endDate).atTime(LocalTime.MAX);
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
+
+        Page<PrescriptionInventoryTableDTO> pageResult;
+
+        // 2. Delegate to appropriate service based on logic
+        if ("order".equalsIgnoreCase(type)) {
+            // Quotations
+            pageResult = orderService.getOrdersReport(
+                    0, Integer.MAX_VALUE, false, category, start, end, documentNumber, product, batch);
+        } else if ("sold".equalsIgnoreCase(type)) {
+            // Sales
+            pageResult = orderService.getOrdersReport(
+                    0, Integer.MAX_VALUE, true, category, start, end, documentNumber, product, batch);
+        } else if ("purchasing".equalsIgnoreCase(type)) {
+            // Purchases
+            if ("recipe".equalsIgnoreCase(category)) {
+                pageResult = purchasingRecipeService.getPurchasingRecipeReport(
+                        0, Integer.MAX_VALUE, start, end, documentNumber, product);
+            } else {
+                pageResult = purchasingService.getPurchasingReport(
+                        0, Integer.MAX_VALUE, category, start, end, documentNumber, product, batch);
+            }
+        } else {
+            // "Todos" type -> Fallback query using PrescriptionInventoryService
+            if ("recipe".equalsIgnoreCase(category)) {
+                RecipeInventoryEntity recipe = recipeInventoryService.findByIdEntity();
+                List<PrescriptionInventoryTableDTO> list = new ArrayList<>();
+                if (recipe != null) {
+                    list.add(PrescriptionInventoryTableDTO.builder()
+                            .id(recipe.getId())
+                            .product("Recetarios")
+                            .presentation("N/A")
+                            .pharmaceuticalForm("N/A")
+                            .batch("N/A")
+                            .purchasePrice(BigDecimal.ZERO)
+                            .salePrice(recipe.getPrice())
+                            .totalUnits((long) recipe.getTotalUnits())
+                            .availableUnits((long) recipe.getAvaliableUnits())
+                            .expirationDate(null)
+                            .isActive(true)
+                            .build());
+                }
+                pageResult = new org.springframework.data.domain.PageImpl<>(list, PageRequest.of(0, Integer.MAX_VALUE), list.size());
+            } else {
+                String fallbackSearch = (product != null && !product.isEmpty()) ? product : ((batch != null && !batch.isEmpty()) ? batch : "");
+                pageResult = prescriptionInventoryService.findAllToTable(PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id").descending()), fallbackSearch, category);
+            }
+        }
+
+        // 3. Generate CSV content
+        StringBuilder csv = new StringBuilder();
+        csv.append("\uFEFF"); // UTF-8 BOM so Excel opens it with correct encoding
+
+        // CSV Header
+        csv.append("ID;Producto;Presentación;Forma Farmacéutica;Lote;P. Compra;P. Venta;Unid. Totales;Unid. Disp.;Fecha Venc.;Estado\n");
+
+        if (pageResult != null && pageResult.getContent() != null) {
+            for (PrescriptionInventoryTableDTO item : pageResult.getContent()) {
+                csv.append(escapeCsv(item.id())).append(";")
+                   .append(escapeCsv(item.product())).append(";")
+                   .append(escapeCsv(item.presentation())).append(";")
+                   .append(escapeCsv(item.pharmaceuticalForm())).append(";")
+                   .append(escapeCsv(item.batch())).append(";")
+                   .append(escapeCsv(item.purchasePrice())).append(";")
+                   .append(escapeCsv(item.salePrice())).append(";")
+                   .append(escapeCsv(item.totalUnits())).append(";")
+                   .append(escapeCsv(item.availableUnits())).append(";")
+                   .append(escapeCsv(item.expirationDate())).append(";")
+                   .append(escapeCsv(item.isActive() ? "Activo" : "Inactivo")).append("\n");
+            }
+        }
+
+        byte[] csvBytes = csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        ByteArrayInputStream bis = new ByteArrayInputStream(csvBytes);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=reporte_" + (type != null ? type : "inventario") + ".csv");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(new InputStreamResource(bis));
     }
 }

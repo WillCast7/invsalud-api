@@ -1,6 +1,7 @@
 package com.aurealab.controller;
 
 import com.aurealab.dto.APIResponseDTO;
+import com.aurealab.dto.DashboardResponseDTO;
 import com.aurealab.dto.MenuDTO;
 import com.aurealab.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,12 @@ public class DashboardController {
     DashboardService dashboardService;
 
     @GetMapping(produces = "application/json")
-    public ResponseEntity<APIResponseDTO<Set<MenuDTO>>> getUsersMenu() {
-        return dashboardService.getUsersMenu();
+    public ResponseEntity<APIResponseDTO<DashboardResponseDTO>> getUsersMenu(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Long thirdPartyId,
+            @RequestParam(required = false) Long productId
+    ) {
+        return dashboardService.getUsersMenu(startDate, endDate, thirdPartyId, productId);
     }
 }

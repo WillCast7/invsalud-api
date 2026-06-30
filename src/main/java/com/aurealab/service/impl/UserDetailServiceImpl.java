@@ -3,6 +3,7 @@ package com.aurealab.service.impl;
 import com.aurealab.config.CustomUserDetails;
 import com.aurealab.config.databases.multitenancy.TenantContext;
 import com.aurealab.dto.*;
+import com.aurealab.mapper.CompanyMapper;
 import com.aurealab.model.aurea.entity.PasswordResetTokenEntity;
 import com.aurealab.model.aurea.entity.UserEntity;
 import com.aurealab.model.aurea.repository.TokenRepository;
@@ -10,6 +11,7 @@ import com.aurealab.model.aurea.repository.UserRepository;
 import com.aurealab.model.aurea.entity.MenuItemEntity;
 import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.repository.RoleRepository;
+import com.aurealab.service.CompanyService;
 import com.aurealab.service.EmailService;
 import com.aurealab.util.JwtUtils;
 import com.aurealab.util.constants;
@@ -39,9 +41,6 @@ public class UserDetailServiceImpl {
     UserRepository userRepository;
 
     @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
     TokenRepository tokenRepository;
 
     @Autowired
@@ -55,6 +54,9 @@ public class UserDetailServiceImpl {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * Carga los detalles del usuario incluyendo roles, permisos y menú.
@@ -213,6 +215,10 @@ public class UserDetailServiceImpl {
         }
 
         return ResponseEntity.ok(APIResponseDTO.success("Token válido", "Token válido"));
+    }
+
+    public ResponseEntity<APIResponseDTO<CompanyDTO>> login() {
+        return ResponseEntity.ok(APIResponseDTO.success(CompanyMapper.toLogin(companyService.getCompanyEntity()), constants.success.findedSuccess));
     }
 }
 

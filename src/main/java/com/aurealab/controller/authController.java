@@ -1,10 +1,6 @@
 package com.aurealab.controller;
 
-import com.aurealab.dto.APIResponseDTO;
-import com.aurealab.dto.AuthResponse;
-import com.aurealab.dto.ForgotPasswordRequestDTO;
-import com.aurealab.dto.LoginRequest;
-import com.aurealab.dto.ResetPasswordRequestDTO;
+import com.aurealab.dto.*;
 import com.aurealab.service.impl.UserDetailServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +13,11 @@ public class authController {
 
     @Autowired
     UserDetailServiceImpl userDetailService;
+
+    @GetMapping("/login")
+    ResponseEntity<APIResponseDTO<CompanyDTO>> getEnterpriseData(){
+        return this.userDetailService.login();
+    }
 
     @PostMapping("/login")
     ResponseEntity<APIResponseDTO<AuthResponse>> login(@RequestBody @Valid LoginRequest userRequest){

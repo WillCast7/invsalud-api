@@ -46,8 +46,20 @@ public class CompanyEntity {
     @Column(name = "logo_url")
     private String logoUrl;
 
+    @Column(name = "logo_order")
+    private String logoOrder;
+
+    @Column(name = "logo_sold")
+    private String logoSold;
+
+    @Column(name = "logo_purchasing")
+    private String logoPurchasing;
+
     @Column(name = "subscription_plan")
     private String subscriptionPlan;
+
+    @Column(name = "name_app")
+    private String nameApp;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

@@ -13,8 +13,20 @@ public class DownloadReportController {
     @Autowired
     DownloadReportService pdfReportService;
 
+    @GetMapping
+    public ResponseEntity<InputStreamResource> downloadReports(
+            @RequestParam(required = true) String type,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String documentNumber,
+            @RequestParam(required = false) String product,
+            @RequestParam(required = false) String batch){
+        return pdfReportService.downloadReport(type, category, startDate, endDate, documentNumber, product, batch);
+    }
+
     @GetMapping(value = "/order/{id}")
-    public ResponseEntity<InputStreamResource> downloadReport(@PathVariable Long id){
+    public ResponseEntity<InputStreamResource> downloadOrder(@PathVariable Long id){
         return pdfReportService.downloadOrder(id);
     }
 

@@ -11,6 +11,34 @@ public class CompanyMapper {
     }
 
     /* ===================== Entity -> DTO ===================== */
+    public static CompanyDTO toLogin(CompanyEntity entity) {
+        if (entity == null) return null;
+
+        return new CompanyDTO(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                entity.getLogoUrl(),
+                null,
+                null,
+                null,
+                null,
+                entity.getNameApp(),
+                null,
+                null
+        );
+    }
+
+    /* ===================== Entity -> DTO ===================== */
     public static CompanyDTO toDto(CompanyEntity entity) {
         if (entity == null) return null;
 
@@ -28,7 +56,11 @@ public class CompanyMapper {
                 entity.getCity(),
                 entity.getWebsite(),
                 entity.getLogoUrl(),
+                entity.getLogoOrder(),
+                entity.getLogoSold(),
+                entity.getLogoPurchasing(),
                 entity.getSubscriptionPlan(),
+                entity.getNameApp(),
                 entity.getCreatedAt(),
                 entity.getIsActive()
         );
@@ -52,6 +84,10 @@ public class CompanyMapper {
         entity.setCity(dto.city());
         entity.setWebsite(dto.website());
         entity.setLogoUrl(dto.logoUrl());
+        entity.setLogoOrder(dto.logoOrder());
+        entity.setLogoSold(dto.logoSold());
+        entity.setLogoPurchasing(dto.logoPurchasing());
+        entity.setNameApp(dto.nameApp());
         entity.setSubscriptionPlan(dto.subscriptionPlan());
         entity.setCreatedAt(dto.createdAt());
         entity.setIsActive(dto.isActive());

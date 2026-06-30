@@ -10,6 +10,20 @@ public record CashSessionSummaryDTO(
     BigDecimal totalIncome,
     BigDecimal totalExpense,
     BigDecimal netBalance,
-    BigDecimal netCashBalance
+    BigDecimal netCashBalance,
 
+    // Compras (PurchasingEntity)
+    BigDecimal purchasesMedicines,
+    BigDecimal purchasesMedicinesSp,
+    BigDecimal purchasesRecipes,
+
+    // Cotizaciones (OrderEntity where isSold = false)
+    BigDecimal quotesMedicines,
+    BigDecimal quotesMedicinesSp,
+    BigDecimal quotesRecipes,
+
+    // Ventas (OrderEntity where isSold = true)
+    BigDecimal salesMedicines,
+    BigDecimal salesMedicinesSp,
+    BigDecimal salesRecipes
 ){}
