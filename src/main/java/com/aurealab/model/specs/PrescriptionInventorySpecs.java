@@ -7,10 +7,14 @@ import com.aurealab.model.inventory.entity.PrescriptionInventoryEntity;
 import com.aurealab.model.inventory.entity.ProductEntity;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrescriptionInventorySpecs {
 
@@ -23,8 +27,10 @@ public class PrescriptionInventorySpecs {
                 typePredicate = cb.isFalse(root.join("product").get("isPublicHealth"));
             }
 
+            Predicate activePredicate = cb.isTrue(root.get("isActive"));
+
             if (searchTerm == null || searchTerm.trim().isEmpty()) {
-                return typePredicate != null ? typePredicate : cb.conjunction();
+                return typePredicate != null ? cb.and(typePredicate, activePredicate) : activePredicate;
             }
             String pattern = "%" + searchTerm.toLowerCase() + "%";
 
@@ -49,12 +55,12 @@ public class PrescriptionInventorySpecs {
             );
 
             if ("public".equalsIgnoreCase(type)) {
-                return cb.and(searchPredicate, cb.isTrue(productJoin.get("isPublicHealth")));
+                return cb.and(searchPredicate, cb.isTrue(productJoin.get("isPublicHealth")), activePredicate);
             } else if ("special".equalsIgnoreCase(type)) {
-                return cb.and(searchPredicate, cb.isFalse(productJoin.get("isPublicHealth")));
+                return cb.and(searchPredicate, cb.isFalse(productJoin.get("isPublicHealth")), activePredicate);
             }
 
-            return searchPredicate;
+            return cb.and(searchPredicate, activePredicate);
 
         };
     }
@@ -95,6 +101,73 @@ public class PrescriptionInventorySpecs {
 
             // Retornamos la combinación de la búsqueda con el filtro de tipo
             return typePredicate != null ? cb.and(searchPredicate, typePredicate) : searchPredicate;
+        };
+    }
+
+    public static Specification<PrescriptionInventoryEntity> searchInventoryReport(
+            String status, String units, String product, String batch, String documentNumber) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. Status Filter
+            if (status != null && !status.trim().isEmpty()) {
+                if ("vigente".equalsIgnoreCase(status)) {
+                    predicates.add(cb.isTrue(root.get("isActive")));
+                    predicates.add(cb.isFalse(root.get("isDrawal")));
+                    predicates.add(cb.or(
+                            cb.isNull(root.get("expirationDate")),
+                            cb.greaterThanOrEqualTo(root.get("expirationDate"), LocalDate.now())
+                    ));
+                } else if ("vencido".equalsIgnoreCase(status)) {
+                    predicates.add(cb.isFalse(root.get("isDrawal")));
+                    predicates.add(cb.lessThan(root.get("expirationDate"), LocalDate.now()));
+                } else if ("retirado".equalsIgnoreCase(status)) {
+                    predicates.add(cb.isTrue(root.get("isDrawal")));
+                }
+            }
+
+            // 2. Units Filter
+            if (units != null && !units.trim().isEmpty()) {
+                if ("available".equalsIgnoreCase(units)) {
+                    predicates.add(cb.greaterThan(root.get("availableUnits"), 0));
+                } else if ("unavailable".equalsIgnoreCase(units)) {
+                    predicates.add(cb.lessThanOrEqualTo(root.get("availableUnits"), 0));
+                } else if ("some_but_not_available".equalsIgnoreCase(units)) {
+                    predicates.add(cb.greaterThan(root.get("totalUnits"), 0));
+                    predicates.add(cb.lessThanOrEqualTo(root.get("availableUnits"), 0));
+                }
+            }
+
+            // 3. Product Filter
+            if (product != null && !product.trim().isEmpty()) {
+                Join<PrescriptionInventoryEntity, ProductEntity> productJoin = root.join("product");
+                String pattern = "%" + product.toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(productJoin.get("name")), pattern),
+                        cb.like(cb.lower(productJoin.get("code")), pattern)
+                ));
+            }
+
+            // 4. Batch Filter
+            if (batch != null && !batch.trim().isEmpty()) {
+                Join<PrescriptionInventoryEntity, BatchEntity> batchJoin = root.join("batch");
+                String pattern = "%" + batch.toLowerCase() + "%";
+                predicates.add(cb.like(cb.lower(batchJoin.get("code")), pattern));
+            }
+
+            // 5. Third Party (Tercero) Filter
+            if (documentNumber != null && !documentNumber.trim().isEmpty()) {
+                Subquery<Integer> subquery = query.subquery(Integer.class);
+                Root<com.aurealab.model.inventory.entity.PurchasingItemEntity> subRoot = subquery.from(com.aurealab.model.inventory.entity.PurchasingItemEntity.class);
+                subquery.select(cb.literal(1));
+                subquery.where(
+                        cb.equal(subRoot.get("inventory"), root),
+                        cb.equal(subRoot.join("purchasing").join("thirdParty").get("documentNumber"), documentNumber)
+                );
+                predicates.add(cb.exists(subquery));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

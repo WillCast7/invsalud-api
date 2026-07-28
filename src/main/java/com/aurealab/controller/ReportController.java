@@ -26,7 +26,9 @@ public class ReportController {
             @RequestParam(required = false) String endDate,
             @RequestParam(required = false) String documentNumber,
             @RequestParam(required = false) String product,
-            @RequestParam(required = false) String batch) {
-        return reportService.getReport(page, size, type, category, startDate, endDate, documentNumber, product, batch);
+            @RequestParam(required = false) String batch,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String units) {
+        return reportService.getReport(page, size, type, category, startDate, endDate, documentNumber, product, batch, status, units);
     }
 }

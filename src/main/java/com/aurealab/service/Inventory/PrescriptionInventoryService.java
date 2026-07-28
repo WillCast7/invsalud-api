@@ -17,6 +17,10 @@ public interface PrescriptionInventoryService {
     public PrescriptionInventoryEntity processPrescriptionInventory(PrescriptionInventoryDTO dto);
     public Set<PrescriptionInventoryDTO> getResolutionProductById(Long thirdPartyId);
     public PrescriptionInventoryEntity findByIdEntity(Long id);
-    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPresciptionInventory(Long id);
+    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPresciptionInventory(Long id, String observation);
     public Page<PrescriptionInventoryTableDTO> findAllToTable(Pageable pageable, String searchValue, String type);
+    public Page<PrescriptionInventoryTableDTO> getInventoryReport(
+            int page, int size, String status, String units,
+            String product, String batch, String documentNumber);
+    public ResponseEntity<APIResponseDTO<Set<PrescriptionInventoryDTO>>> getPublicHealthInventory();
 }

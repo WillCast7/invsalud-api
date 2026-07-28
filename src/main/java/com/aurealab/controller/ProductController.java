@@ -19,10 +19,11 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping(produces = "application/json")
-    public ResponseEntity<APIResponseDTO<String>> getProducts(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<APIResponseDTO<String>> getAllProducts(@RequestParam(defaultValue = "1") int page,
                                                               @RequestParam(defaultValue = "10") int size,
-                                                              @RequestParam(defaultValue = "") String searchValue) {
-        return productService.findPaginatedProducts(page, size, searchValue);
+                                                              @RequestParam(defaultValue = "") String searchValue,
+                                                              @RequestParam(required = false) Boolean isPublicHealth) {
+        return productService.findPaginatedProducts(page, size, searchValue, isPublicHealth);
     }
 
     @GetMapping(produces = "application/json", value = "/{id}")

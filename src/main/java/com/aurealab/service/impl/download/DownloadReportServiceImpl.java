@@ -953,7 +953,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
     }
 
     @Override
-    public ResponseEntity<InputStreamResource> downloadReport(String type, String category, String startDate, String endDate, String documentNumber, String product, String batch) {
+    public ResponseEntity<InputStreamResource> downloadReport(String type, String category, String startDate, String endDate, String documentNumber, String product, String batch, String status, String units) {
         // 1. Parse Dates safely
         LocalDateTime start = null;
         if (startDate != null && !startDate.trim().isEmpty()) {
@@ -992,6 +992,10 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                 pageResult = purchasingService.getPurchasingReport(
                         0, Integer.MAX_VALUE, category, start, end, documentNumber, product, batch);
             }
+        } else if ("inventory".equalsIgnoreCase(type)) {
+            // Inventory
+            pageResult = prescriptionInventoryService.getInventoryReport(
+                    0, Integer.MAX_VALUE, status, units, product, batch, documentNumber);
         } else {
             // "Todos" type -> Fallback query using PrescriptionInventoryService
             if ("recipe".equalsIgnoreCase(category)) {
@@ -1022,6 +1026,75 @@ public class DownloadReportServiceImpl implements DownloadReportService {
         // 3. Generate CSV content
         StringBuilder csv = new StringBuilder();
         csv.append("\uFEFF"); // UTF-8 BOM so Excel opens it with correct encoding
+
+        // Título del reporte
+        String typeLabel = "Reporte de ";
+        if ("order".equalsIgnoreCase(type)) {
+            typeLabel += "Cotizaciones";
+        } else if ("purchasing".equalsIgnoreCase(type)) {
+            typeLabel += "Ingresos";
+        } else if ("sold".equalsIgnoreCase(type)) {
+            typeLabel += "Salidas";
+        } else if ("inventory".equalsIgnoreCase(type)) {
+            typeLabel += "Inventario";
+        } else {
+            typeLabel += "General";
+        }
+        csv.append("\"").append(typeLabel.toUpperCase()).append("\"\n\n");
+
+        // Sección de filtros
+        csv.append("\"Filtros Seleccionados:\"\n");
+        if (category != null && !category.trim().isEmpty()) {
+            String catLabel = category;
+            if ("recipe".equalsIgnoreCase(category)) {
+                catLabel = "Recetarios";
+            } else if ("special".equalsIgnoreCase(category)) {
+                catLabel = "Medicamentos";
+            } else if ("public".equalsIgnoreCase(category)) {
+                catLabel = "Medicamentos de Salud Pública";
+            }
+            csv.append("\"Categoría:\";\"").append(catLabel).append("\"\n");
+        }
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            csv.append("\"Fecha Inicio:\";\"").append(startDate).append("\"\n");
+        }
+        if (endDate != null && !endDate.trim().isEmpty()) {
+            csv.append("\"Fecha Fin:\";\"").append(endDate).append("\"\n");
+        }
+        if (documentNumber != null && !documentNumber.trim().isEmpty()) {
+            csv.append("\"Tercero (Documento):\";\"").append(documentNumber).append("\"\n");
+        }
+        if (product != null && !product.trim().isEmpty()) {
+            csv.append("\"Medicamento / Producto:\";\"").append(product).append("\"\n");
+        }
+        if (batch != null && !batch.trim().isEmpty()) {
+            csv.append("\"Lote:\";\"").append(batch).append("\"\n");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            String statLabel = status;
+            if ("vigente".equalsIgnoreCase(status)) {
+                statLabel = "Vigente";
+            } else if ("vencido".equalsIgnoreCase(status)) {
+                statLabel = "Vencido";
+            } else if ("retirado".equalsIgnoreCase(status)) {
+                statLabel = "Retirado";
+            }
+            csv.append("\"Estado:\";\"").append(statLabel).append("\"\n");
+        }
+        if (units != null && !units.trim().isEmpty()) {
+            String unitLabel = units;
+            if ("available".equalsIgnoreCase(units)) {
+                unitLabel = "Con unidades disponibles";
+            } else if ("unavailable".equalsIgnoreCase(units)) {
+                unitLabel = "Sin unidades disponibles";
+            } else if ("some_but_not_available".equalsIgnoreCase(units)) {
+                unitLabel = "Con unidades pero sin disponibles";
+            } else if ("all".equalsIgnoreCase(units)) {
+                unitLabel = "Todo";
+            }
+            csv.append("\"Unidades:\";\"").append(unitLabel).append("\"\n");
+        }
+        csv.append("\n"); // Línea en blanco antes de la tabla
 
         // CSV Header
         csv.append("ID;Producto;Presentación;Forma Farmacéutica;Lote;P. Compra;P. Venta;Unid. Totales;Unid. Disp.;Fecha Venc.;Estado\n");

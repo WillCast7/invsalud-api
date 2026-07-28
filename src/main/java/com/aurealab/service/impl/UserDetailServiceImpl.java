@@ -114,7 +114,7 @@ public class UserDetailServiceImpl {
 
 
             AuthResponse authResponse = new AuthResponse(userLogin.username(), userEntity.getPerson().getNames()
-                    , accessToken, menuList);
+                    , accessToken, menuList, userEntity.getRole().getId());
 
 
             return ResponseEntity.ok(APIResponseDTO.success(authResponse, constants.success.loginSuccess)); // Enviar cookie en la respuesta

@@ -80,6 +80,23 @@ public class DashboardServiceImpl implements DashboardService {
             // Fallback in case company doesn't exist
         }
 
+        Long roleId = user.getRole().getId();
+        if (roleId != 1L && roleId != 2L && roleId != 3L) {
+            DashboardResponseDTO dashboardResponse = new DashboardResponseDTO(
+                menu,
+                logoUrl,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                null
+            );
+            return ResponseEntity.ok(
+                APIResponseDTO.success(
+                    dashboardResponse,
+                    constants.success.findedSuccess
+                )
+            );
+        }
+
         // Parse Dates safely for summary box
         LocalDateTime start = null;
         if (startDate != null && !startDate.trim().isEmpty()) {

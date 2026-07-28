@@ -11,7 +11,6 @@ public record AuditLogDTO(
         LocalDateTime actionTimestamp,
         String performedBy,
         Map<String, Object> oldValues,
-        Map<String, Object> newValues,
-        String ipAddress
+        Map<String, Object> newValues
 ) {
 }

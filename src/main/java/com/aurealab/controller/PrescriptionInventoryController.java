@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/prescription-inventory")
 public class PrescriptionInventoryController {
@@ -36,7 +38,15 @@ public class PrescriptionInventoryController {
     }
 
     @PutMapping(produces = "application/json", value = "/expired/drawal/{id}")
-    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPrescriptionInventory(@PathVariable Long id) {
-        return prescriptionInventory.drawalPresciptionInventory(id);
+    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPrescriptionInventory(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
+        String observation = body != null ? body.get("observation") : null;
+        return prescriptionInventory.drawalPresciptionInventory(id, observation);
+    }
+
+    @GetMapping(produces = "application/json", value = "/public-health")
+    public ResponseEntity<APIResponseDTO<java.util.Set<PrescriptionInventoryDTO>>> getPublicHealthInventory() {
+        return prescriptionInventory.getPublicHealthInventory();
     }
 }

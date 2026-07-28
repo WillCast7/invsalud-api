@@ -47,7 +47,7 @@ public class ReportServiceImpl implements ReportService {
     public ResponseEntity<APIResponseDTO<String>> getReport(
             int page, int size, String type, String category,
             String startDate, String endDate, String documentNumber,
-            String product, String batch) {
+            String product, String batch, String status, String units) {
 
         // 2. Parse Dates safely
         LocalDateTime start = null;
@@ -87,6 +87,10 @@ public class ReportServiceImpl implements ReportService {
                 pageResult = purchasingService.getPurchasingReport(
                         page, size, category, start, end, documentNumber, product, batch);
             }
+        } else if ("inventory".equalsIgnoreCase(type)) {
+            // Inventory
+            pageResult = prescriptionInventoryService.getInventoryReport(
+                    page, size, status, units, product, batch, documentNumber);
         } else {
             // "Todos" type -> Fallback query using PrescriptionInventoryService
             if ("recipe".equalsIgnoreCase(category)) {

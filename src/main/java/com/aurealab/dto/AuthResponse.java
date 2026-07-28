@@ -8,6 +8,7 @@ import java.util.Set;
 public record AuthResponse(String username,
                       String names,
                       String jwt,
-                      Set<MenuDTO> menus) {
+                      Set<MenuDTO> menus,
+                      Long rid) {
 
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 
 public interface ProductService {
     public ResponseEntity<APIResponseDTO<ProductWithParamsResponseDTO>> findProductById(Long id);
-    public ResponseEntity<APIResponseDTO<String>> findPaginatedProducts(int page, int size, String searchValue);
+    public ResponseEntity<APIResponseDTO<String>> findPaginatedProducts(int page, int size, String searchValue, Boolean isPublicHealth);
     public ResponseEntity<APIResponseDTO<ProductDTO>> changeStatus(Long id);
     public ResponseEntity<APIResponseDTO<ProductDTO>> saveProduct(ProductDTO product);
     public ResponseEntity<APIResponseDTO<Set<PrescriptionInventoryDTO>>> getResolutionProductById(Long id);

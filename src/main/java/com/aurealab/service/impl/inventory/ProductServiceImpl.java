@@ -71,12 +71,12 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseEntity<APIResponseDTO<String>> findPaginatedProducts(int page, int size, String searchValue){
+    public ResponseEntity<APIResponseDTO<String>> findPaginatedProducts(int page, int size, String searchValue, Boolean isPublicHealth){
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
         return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess,
-             productRepository.findAll(ProductSpecs.search(searchValue), pageable).map(ProductMapper::toDto)));
+             productRepository.findAll(ProductSpecs.search(searchValue, isPublicHealth), pageable).map(ProductMapper::toDto)));
     };
 
     public ResponseEntity<APIResponseDTO<ProductDTO>> changeStatus(Long id){

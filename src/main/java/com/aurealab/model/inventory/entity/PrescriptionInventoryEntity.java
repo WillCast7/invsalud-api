@@ -71,6 +71,9 @@ public class PrescriptionInventoryEntity {
     @Column(name = "withdrawal_type")
     private String withdrawalType;
 
+    @Column(name = "withdrawal_observation")
+    private String withdrawalObservation;
+
     public PrescriptionInventoryEntity(Long id) {
         this.id = id;
     }

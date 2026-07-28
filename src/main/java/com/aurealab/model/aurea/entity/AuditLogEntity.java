@@ -1,4 +1,4 @@
-package com.aurealab.model.inventory.entity;
+package com.aurealab.model.aurea.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -35,7 +35,4 @@ public class AuditLogEntity {
 
         @Column(name = "new_values", columnDefinition = "jsonb")
         private String newValues;
-
-        @Column(name = "ip_address", length = 45)
-        private String ipAddress;
 }

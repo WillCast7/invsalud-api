@@ -78,7 +78,7 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     }
 
     @Transactional
-    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPresciptionInventory(Long id){
+    public ResponseEntity<APIResponseDTO<PrescriptionInventoryDTO>> drawalPresciptionInventory(Long id, String observation){
 
         PrescriptionInventoryEntity prescriptionInventory =  findByIdEntity(id);
 
@@ -89,6 +89,7 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
         prescriptionInventory.setWithdrawalBy(jwtUtils.getCurrentUserId());
         prescriptionInventory.setWithdrawnAt(LocalDateTime.now());
         prescriptionInventory.setWithdrawalCode(documentSequenceService.getNextInvoiceNumber(constants.configParam.drawalMedicine));
+        prescriptionInventory.setWithdrawalObservation(observation);
         return ResponseEntity.ok(
                 APIResponseDTO.success(
                     PrescriptionInventoryMapper.toDto(
@@ -144,4 +145,31 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
         return  prescriptionInventoryRepository.findByThirdPartyIdGranted(thirdPartyId);
     }
 
+    @Override
+    @Transactional
+    public Page<PrescriptionInventoryTableDTO> getInventoryReport(
+            int page, int size, String status, String units,
+            String product, String batch, String documentNumber) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Specification<PrescriptionInventoryEntity> spec = PrescriptionInventorySpecs.searchInventoryReport(
+                status, units, product, batch, documentNumber);
+        return prescriptionInventoryRepository.findAll(spec, pageable).map(PrescriptionInventoryMapper::toTableDto);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<APIResponseDTO<Set<PrescriptionInventoryDTO>>> getPublicHealthInventory() {
+        Set<PrescriptionInventoryDTO> prescriptionInventories = new HashSet<>();
+        Specification<PrescriptionInventoryEntity> spec = (root, query, cb) -> {
+            jakarta.persistence.criteria.Predicate isPublic = cb.isTrue(root.join("product").get("isPublicHealth"));
+            jakarta.persistence.criteria.Predicate isActive = cb.isTrue(root.get("isActive"));
+            jakarta.persistence.criteria.Predicate isNotDrawal = cb.isFalse(root.get("isDrawal"));
+            jakarta.persistence.criteria.Predicate notExpired = cb.greaterThanOrEqualTo(root.get("expirationDate"), java.time.LocalDate.now());
+            return cb.and(isPublic, isActive, isNotDrawal, notExpired);
+        };
+        prescriptionInventoryRepository.findAll(spec).forEach(entity -> 
+            prescriptionInventories.add(PrescriptionInventoryMapper.toDto(entity))
+        );
+        return ResponseEntity.ok(APIResponseDTO.success(prescriptionInventories, constants.success.findedSuccess));
+    }
 }

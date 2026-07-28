@@ -7,5 +7,5 @@ public interface ReportService {
     ResponseEntity<APIResponseDTO<String>> getReport(
             int page, int size, String type, String category,
             String startDate, String endDate, String documentNumber,
-            String product, String batch);
+            String product, String batch, String status, String units);
 }

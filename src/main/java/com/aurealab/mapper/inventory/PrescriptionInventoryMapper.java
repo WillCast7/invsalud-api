@@ -34,6 +34,7 @@ public class PrescriptionInventoryMapper {
                 .withdrawnAt(entity.getWithdrawnAt())
                 .withdrawalCode(entity.getWithdrawalCode())
                 .withdrawalType(entity.getWithdrawalType())
+                .withdrawalObservation(entity.getWithdrawalObservation())
                 .build();
     }
     /* ===================== Entity -> DTO ===================== */
@@ -81,6 +82,7 @@ public class PrescriptionInventoryMapper {
         entity.setWithdrawnAt(dto.withdrawnAt());
         entity.setWithdrawalCode(dto.withdrawalCode());
         entity.setWithdrawalType(dto.withdrawalType());
+        entity.setWithdrawalObservation(dto.withdrawalObservation());
 
         return entity;
     }

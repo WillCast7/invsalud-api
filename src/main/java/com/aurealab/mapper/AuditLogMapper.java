@@ -1,7 +1,7 @@
 package com.aurealab.mapper;
 
 import com.aurealab.dto.AuditLogDTO;
-import com.aurealab.model.inventory.entity.AuditLogEntity;
+import com.aurealab.model.aurea.entity.AuditLogEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,8 +38,7 @@ public class AuditLogMapper {
                 entity.getActionTimestamp(),
                 entity.getPerformedBy(),
                 oldValues,
-                newValues,
-                entity.getIpAddress()
+                newValues
         );
     }
 
@@ -69,7 +68,6 @@ public class AuditLogMapper {
 
         auditLog.setOldValues(oldValues);
         auditLog.setNewValues(newValues);
-        auditLog.setIpAddress(dto.ipAddress());
 
         return auditLog;
     }

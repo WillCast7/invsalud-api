@@ -26,6 +26,7 @@ public record PrescriptionInventoryDTO(
         Long withdrawalBy,
         LocalDateTime withdrawnAt,
         String withdrawalCode,
-        String withdrawalType
+        String withdrawalType,
+        String withdrawalObservation
 ) {
 }
