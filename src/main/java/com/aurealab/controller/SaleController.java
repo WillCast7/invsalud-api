@@ -37,9 +37,17 @@ public class SaleController {
         return orderService.getOrders(page, size, searchValue, true, constants.productTypes.Recipe);
     }
 
+    @Autowired
+    private com.aurealab.service.DownloadReportService downloadReportService;
+
     @PostMapping(produces = "application/json")
     public ResponseEntity<APIResponseDTO<OrderDTO>> savePublicSale(@RequestBody OrderRequestDTO orderRequestDTO) {
         return orderService.savePublicSale(orderRequestDTO);
+    }
+
+    @GetMapping(value = "/{id}/excel")
+    public ResponseEntity<org.springframework.core.io.InputStreamResource> exportSaleExcel(@PathVariable Long id) {
+        return downloadReportService.downloadSaleExcel(id);
     }
 
 }

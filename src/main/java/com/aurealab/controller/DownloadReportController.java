@@ -37,6 +37,11 @@ public class DownloadReportController {
         return pdfReportService.downloadSale(id);
     }
 
+    @GetMapping(value = "/sale/{id}/excel")
+    public ResponseEntity<InputStreamResource> downloadSaleExcel(@PathVariable Long id){
+        return pdfReportService.downloadSaleExcel(id);
+    }
+
     @GetMapping(value = "/purchase/{id}")
     public ResponseEntity<InputStreamResource> downloadPurchase(@PathVariable Long id){
         return pdfReportService.downloadPurchase(id);

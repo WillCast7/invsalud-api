@@ -10,4 +10,5 @@ public interface DownloadReportService {
     public ResponseEntity<InputStreamResource> downloadInvoice(Long movementId);
     public ResponseEntity<InputStreamResource> downloadSale(Long saleId);
     public ResponseEntity<InputStreamResource> downloadPurchase(Long purchaseId);
+    public ResponseEntity<InputStreamResource> downloadSaleExcel(Long saleId);
 }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 
+import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 import java.util.Set;
@@ -35,4 +36,11 @@ public interface PrescriptionInventoryRepository extends JpaRepository<Prescript
             "AND pis.expirationDate >= CURRENT_DATE " +
             "AND pis.isDrawal = false")
     Set<PrescriptionInventoryEntity> findByThirdPartyIdGranted(@Param("thirdPartyId") Long thirdPartyId);
+
+    @EntityGraph(attributePaths = {"batch", "product"})
+    @Query("SELECT pis FROM PrescriptionInventoryEntity pis " +
+            "JOIN pis.product p " +
+            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) " +
+            "AND pis.isDrawal = false")
+    List<PrescriptionInventoryEntity> findByProductNameContainingIgnoreCase(@Param("name") String name);
 }

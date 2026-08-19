@@ -1,4 +1,10 @@
 package com.aurealab.service.impl.download;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.InputStream;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
@@ -1127,4 +1133,245 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(new InputStreamResource(bis));
     }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadSaleExcel(Long saleId) {
+        // 1. Fetch sale (stored in orders table)
+        OrderEntity order = orderRepository.findById(saleId)
+                .orElseThrow(() -> new DownloadException("No se encontró la orden de salida con ID: " + saleId));
+
+        // 2. Fetch company & user info
+        UserDTO userDTO = null;
+        try {
+            userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
+        } catch (Exception ignored) {
+        }
+
+        // 3. Load template from classpath
+        try (InputStream is = getClass().getResourceAsStream("/templates/ordensalida_saludpublica.xlsx")) {
+            if (is == null) {
+                throw new DownloadException("No se encontró la plantilla de Excel en /templates/ordensalida_saludpublica.xlsx");
+            }
+
+            Workbook workbook = new XSSFWorkbook(is);
+            Sheet sheet = workbook.getSheetAt(0);
+
+            // 4. Header & General Info
+            String code = order.getSoldCode() != null ? order.getSoldCode() : (order.getOrderCode() != null ? order.getOrderCode() : "");
+            
+            // Header Title B1
+            Row row1 = sheet.getRow(0);
+            if (row1 != null) {
+                Cell cellB1 = row1.getCell(1);
+                if (cellB1 != null && !code.isEmpty()) {
+                    cellB1.setCellValue("ACTA Nº " + code + " ENTREGA DE BIOLOGICOS, MEDICAMENTOS E INSUMOS");
+                }
+            }
+
+            // Institution & Municipality & Date (Row 6 -> index 5)
+            Row row6 = sheet.getRow(5);
+            if (row6 != null) {
+                // A6: Institucion
+                Cell cellA6 = row6.getCell(0);
+                if (cellA6 != null && userDTO != null && userDTO.getCompany() != null && userDTO.getCompany().legalName() != null) {
+                    cellA6.setCellValue(userDTO.getCompany().legalName().toUpperCase());
+                }
+
+                // F6: Municipio
+                Cell cellF6 = row6.getCell(5);
+                if (cellF6 != null && userDTO != null && userDTO.getCompany() != null && userDTO.getCompany().address() != null) {
+                    cellF6.setCellValue(userDTO.getCompany().address().toUpperCase());
+                }
+
+                // Date
+                LocalDateTime date = order.getSoldAt() != null ? order.getSoldAt() : (order.getCreatedAt() != null ? order.getCreatedAt() : LocalDateTime.now());
+                String day = String.format("%02d", date.getDayOfMonth());
+                String month = String.format("%02d", date.getMonthValue());
+                String year = String.valueOf(date.getYear());
+
+                Cell cellH6 = row6.getCell(7);
+                if (cellH6 != null) {
+                    cellH6.setCellFormula(null);
+                    cellH6.setCellValue("DÍA: " + day);
+                }
+
+                Cell cellI6 = row6.getCell(8);
+                if (cellI6 != null) {
+                    cellI6.setCellFormula(null);
+                    cellI6.setCellValue("MES: " + month);
+                }
+
+                Cell cellJ6 = row6.getCell(9);
+                if (cellJ6 != null) {
+                    cellJ6.setCellFormula(null);
+                    cellJ6.setCellValue("AÑO: " + year);
+                }
+            }
+
+            // 5. Items dynamic list
+            List<OrderItemEntity> items = order.getItems() != null ? order.getItems() : new ArrayList<>();
+            int extraRows = Math.max(0, items.size() - 1);
+
+            if (items.size() > 1) {
+                int lastRow = sheet.getLastRowNum();
+                if (lastRow >= 10) {
+                    sheet.shiftRows(10, lastRow, extraRows, true, false);
+                }
+            }
+
+            Row templateRow = sheet.getRow(9);
+
+            for (int i = 0; i < items.size(); i++) {
+                OrderItemEntity item = items.get(i);
+                int currentRowIdx = 9 + i;
+                Row row = sheet.getRow(currentRowIdx);
+                if (row == null) {
+                    row = sheet.createRow(currentRowIdx);
+                }
+                if (templateRow != null) {
+                    row.setHeight(templateRow.getHeight());
+                }
+
+                String productCode = "";
+                String productName = "";
+                String presentation = "";
+                String batchCode = "";
+                String expirationDate = "";
+
+                if (item.getInventory() != null) {
+                    if (item.getInventory().getProduct() != null) {
+                        productCode = item.getInventory().getProduct().getCode() != null ? item.getInventory().getProduct().getCode() : "";
+                        productName = item.getInventory().getProduct().getName() != null ? item.getInventory().getProduct().getName() : "";
+                        presentation = item.getInventory().getProduct().getPresentation() != null ? item.getInventory().getProduct().getPresentation() : "";
+                    }
+                    if (item.getInventory().getBatch() != null) {
+                        batchCode = item.getInventory().getBatch().getCode() != null ? item.getInventory().getBatch().getCode() : "";
+                    }
+                    if (item.getInventory().getExpirationDate() != null) {
+                        expirationDate = item.getInventory().getExpirationDate().toString();
+                    }
+                }
+
+                // Col 0: Product code / name
+                Cell c0 = getOrCreateCell(row, 0, templateRow);
+                c0.setCellValue(productName.isEmpty() ? productCode : productName);
+
+                // Col 1: Dosis autorizada
+                Cell c1 = getOrCreateCell(row, 1, templateRow);
+                if (item.getUnits() != null) {
+                    c1.setCellValue(item.getUnits());
+                } else {
+                    c1.setCellValue(0);
+                }
+
+                // Col 2: Dosis entregada
+                Cell c2 = getOrCreateCell(row, 2, templateRow);
+                if (item.getUnits() != null) {
+                    c2.setCellValue(item.getUnits());
+                } else {
+                    c2.setCellValue(0);
+                }
+
+                // Col 3: Presentación
+                Cell c3 = getOrCreateCell(row, 3, templateRow);
+                c3.setCellValue(presentation);
+
+                // Col 4: Valor unitario
+                Cell c4 = getOrCreateCell(row, 4, templateRow);
+                if (item.getPriceUnit() != null) {
+                    c4.setCellValue(item.getPriceUnit().doubleValue());
+                } else {
+                    c4.setCellValue(0.0);
+                }
+
+                // Col 5: Valor total
+                Cell c5 = getOrCreateCell(row, 5, templateRow);
+                if (item.getPriceTotal() != null) {
+                    c5.setCellValue(item.getPriceTotal().doubleValue());
+                } else {
+                    c5.setCellValue(0.0);
+                }
+
+                // Col 6: Lote
+                Cell c6 = getOrCreateCell(row, 6, templateRow);
+                c6.setCellValue(batchCode);
+
+                // Col 7: Fecha de vencimiento
+                Cell c7 = getOrCreateCell(row, 7, templateRow);
+                c7.setCellValue(expirationDate);
+            }
+
+            // 6. Update Footer (Signature & ThirdParty)
+            int footerRow12Idx = 11 + extraRows;
+            Row footerRow12 = sheet.getRow(footerRow12Idx);
+            if (footerRow12 != null) {
+                Cell b12 = footerRow12.getCell(1);
+                if (b12 != null) {
+                    String name = order.getThirdParty() != null && order.getThirdParty().getFullName() != null ? order.getThirdParty().getFullName() : "";
+                    b12.setCellValue("NOMBRE: " + name);
+                }
+            }
+
+            int footerRow13Idx = 12 + extraRows;
+            Row footerRow13 = sheet.getRow(footerRow13Idx);
+            if (footerRow13 != null) {
+                Cell b13 = footerRow13.getCell(1);
+                if (b13 != null && order.getThirdParty() != null) {
+                    String docType = order.getThirdParty().getDocumentType() != null ? order.getThirdParty().getDocumentType() : "CC";
+                    String docNum = order.getThirdParty().getDocumentNumber() != null ? order.getThirdParty().getDocumentNumber() : "";
+                    b13.setCellValue(docType + ": " + docNum);
+                }
+            }
+
+            int footerRow14Idx = 13 + extraRows;
+            Row footerRow14 = sheet.getRow(footerRow14Idx);
+            if (footerRow14 != null) {
+                Cell b14 = footerRow14.getCell(1);
+                if (b14 != null) {
+                    String roleName = "";
+                    if (order.getThirdParty() != null && order.getThirdParty().getRoles() != null && !order.getThirdParty().getRoles().isEmpty()) {
+                        roleName = order.getThirdParty().getRoles().iterator().next().getRoleName();
+                    }
+                    b14.setCellValue("CARGO: " + roleName);
+                }
+            }
+
+            // 7. Write to ByteArrayOutputStream
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            workbook.close();
+
+            byte[] excelBytes = out.toByteArray();
+            ByteArrayInputStream bis = new ByteArrayInputStream(excelBytes);
+
+            HttpHeaders headers = new HttpHeaders();
+            String filename = "orden_salida_salud_publica_" + saleId + ".xlsx";
+            headers.add("Content-Disposition", "attachment; filename=" + filename);
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(bis));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DownloadException("Error al generar el Excel de la orden de salida: " + e.getMessage(), e);
+        }
+    }
+
+    private Cell getOrCreateCell(Row targetRow, int colIndex, Row templateRow) {
+        Cell cell = targetRow.getCell(colIndex);
+        if (cell == null) {
+            cell = targetRow.createCell(colIndex);
+        }
+        if (templateRow != null) {
+            Cell templateCell = templateRow.getCell(colIndex);
+            if (templateCell != null && templateCell.getCellStyle() != null) {
+                cell.setCellStyle(templateCell.getCellStyle());
+            }
+        }
+        return cell;
+    }
+
 }
