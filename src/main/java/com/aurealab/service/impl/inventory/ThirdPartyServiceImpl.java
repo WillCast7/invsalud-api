@@ -7,6 +7,7 @@ import com.aurealab.dto.response.ThirdPartyWithParamsResponseDTO;
 import com.aurealab.mapper.inventory.ThirdPartyMapper;
 import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import com.aurealab.model.inventory.repository.ThirdPartyRepository;
+import com.aurealab.model.specs.ThirdPartySpecs;
 import com.aurealab.service.Inventory.ThirdPartyRoleService;
 import com.aurealab.service.Inventory.ThirdPartyService;
 import com.aurealab.service.ConfigParamService;
@@ -22,6 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.aurealab.util.constants;
 
+import com.aurealab.model.inventory.entity.ResolutionEntity;
+import com.aurealab.model.inventory.repository.ResolutionRepository;
+import com.aurealab.service.Inventory.DocumentSequenceService;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -30,6 +35,11 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     @Autowired
     ThirdPartyRepository thirdPartyRepository;
 
+    @Autowired
+    ResolutionRepository resolutionRepository;
+
+    @Autowired
+    DocumentSequenceService documentSequenceService;
 
     @Autowired
     ConfigParamService configParamsService;
@@ -114,6 +124,33 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                         jwtUtils.getCurrentUserId() : thirdPartyEntity.getCreatedBy()
         );
 
+        if (thirdPartyEntity.getResolutions() != null) {
+            for (ResolutionEntity res : thirdPartyEntity.getResolutions()) {
+                // Si la resolución ya existía en BD, preservamos su código y fecha de creación
+                if (res.getId() != null) {
+                    resolutionRepository.findById(res.getId()).ifPresent(existingRes -> {
+                        if (existingRes.getCode() != null && !existingRes.getCode().trim().isEmpty()) {
+                            res.setCode(existingRes.getCode());
+                        }
+                        if (res.getCreatedAt() == null) {
+                            res.setCreatedAt(existingRes.getCreatedAt());
+                        }
+                    });
+                }
+                // Si es nueva o no tiene código, se genera automáticamente usando el prefijo RES
+                if (res.getCode() == null || res.getCode().trim().isEmpty()) {
+                    res.setCode(documentSequenceService.getNextInvoiceNumber(constants.configParam.resolutionPrefix));
+                }
+                if (res.getCreatedAt() == null) {
+                    res.setCreatedAt(LocalDateTime.now());
+                }
+                if (res.getCreatedBy() == null) {
+                    Long currentUserId = jwtUtils.getCurrentUserId();
+                    res.setCreatedBy(currentUserId != null ? String.valueOf(currentUserId) : "1");
+                }
+            }
+        }
+
         return ThirdPartyMapper.toDto(
                 thirdPartyRepository.save(
                         thirdPartyEntity
@@ -156,7 +193,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
     }
 
     public Page<ThirdPartyDTO> findAll(Pageable pageable, String searchValue) {
-        Page<ThirdPartyEntity> thirdPartyEntities = thirdPartyRepository.findAll(pageable);
+        Page<ThirdPartyEntity> thirdPartyEntities = thirdPartyRepository.findAll(ThirdPartySpecs.search(searchValue), pageable);
         return thirdPartyEntities.map(ThirdPartyMapper::toDtoList);
     }
 

@@ -20,7 +20,10 @@ public class WebConfig {
                 "http://localhost:4200",         // Para pruebas locales
                 "http://auealab.com",         // Tu dominio final
                 "https://auealab.com",        // Si usas SSL/HTTPS
-                "http://76.13.30.238"           // La IP de tu VPS de Hostinger
+                "http://76.13.30.238",           // La IP de tu VPS de Hostinger
+                "http://190.6.176.222:4200",
+                "http://190.6.176.222:9090",
+                "http://190.6.176.222"
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");

@@ -98,6 +98,8 @@ public class constants {
         public static final String saleRecipePrefix = "SR"; //salida recetarios
 
         public static final String drawalMedicine = "RM"; //retiro medicamento
+        public static final String resolutionPrefix = "RES"; //resoluciones
+
     }
 
     public static class colors{

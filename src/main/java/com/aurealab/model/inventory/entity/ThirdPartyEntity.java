@@ -53,7 +53,7 @@ public class ThirdPartyEntity {
     private Set<TPRoleEntity> roles = new HashSet<>();
 
     // Dentro de ThirdPartyEntity
-    @OneToMany(mappedBy = "thirdParty", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "thirdParty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ResolutionEntity> resolutions = new HashSet<>();
 
     public ThirdPartyEntity(Long id) {

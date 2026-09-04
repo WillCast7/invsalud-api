@@ -33,6 +33,15 @@ public class RecipeInventoryServiceImpl implements RecipeInventoryService {
     }
 
     public RecipeInventoryEntity findByIdEntity(){
-        return recipeInventoryRepository.findById(1L).get();
+        return recipeInventoryRepository.findById(1L)
+                .or(() -> recipeInventoryRepository.findAll().stream().findFirst())
+                .orElseGet(() -> {
+                    RecipeInventoryEntity initial = RecipeInventoryEntity.builder()
+                            .price(java.math.BigDecimal.valueOf(2000))
+                            .totalUnits(1000)
+                            .avaliableUnits(1000)
+                            .build();
+                    return recipeInventoryRepository.save(initial);
+                });
     }
 }

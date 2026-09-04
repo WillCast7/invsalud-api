@@ -22,4 +22,14 @@ public class CompanyController {
         return ResponseEntity.ok(APIResponseDTO.success(companyService.getCompany(), constants.success.findedSuccess));
     }
 
+    @org.springframework.web.bind.annotation.PutMapping
+    public ResponseEntity<APIResponseDTO<CompanyDTO>> updateCompany(@org.springframework.web.bind.annotation.RequestBody CompanyDTO companyDTO) {
+        return ResponseEntity.ok(APIResponseDTO.success(companyService.updateCompany(companyDTO), constants.success.updatedSuccess));
+    }
+
+    @org.springframework.web.bind.annotation.PatchMapping
+    public ResponseEntity<APIResponseDTO<CompanyDTO>> patchCompany(@org.springframework.web.bind.annotation.RequestBody CompanyDTO companyDTO) {
+        return ResponseEntity.ok(APIResponseDTO.success(companyService.updateCompany(companyDTO), constants.success.updatedSuccess));
+    }
+
 }

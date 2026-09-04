@@ -19,5 +19,6 @@ public class AiChatRequestDTO implements Serializable {
     private String content;      // Texto del mensaje
     private String message;      // Alias alternativo para content
     private String moduleFilter; // Filtro RAG: 'NORMATIVA', 'MANUALES', 'INVENTARIO', 'RESOLUCIONES', etc.
+    private String searchMode;   // Modo de búsqueda: 'API' (datos del aplicativo) o 'DOCUMENTOS' (RAG)
     private Map<String, Object> context;
 }

@@ -35,6 +35,9 @@ public class ProductEntity {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "units_alert")
+    private Integer unitsAlert;
+
     @Column(name = "is_publichealth")
     private Boolean isPublicHealth;
 

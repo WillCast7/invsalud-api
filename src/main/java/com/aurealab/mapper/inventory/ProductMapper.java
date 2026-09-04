@@ -18,6 +18,7 @@ public class ProductMapper {
                 entity.getConcentration(),
                 entity.getPresentation(),
                 entity.getPharmaceuticalForm(),
+                entity.getUnitsAlert() != null ? entity.getUnitsAlert() : 0,
                 entity.getIsActive(),
                 entity.getIsPublicHealth(),
                 entity.getDetails(),
@@ -37,6 +38,7 @@ public class ProductMapper {
         entity.setConcentration(dto.concentration());
         entity.setPresentation(dto.presentation());
         entity.setPharmaceuticalForm(dto.pharmaceuticalForm());
+        entity.setUnitsAlert(dto.unitsAlert() != null ? dto.unitsAlert() : 0);
         entity.setIsActive(dto.isActive());
         entity.setIsPublicHealth(dto.isPublicHealth());
         entity.setDetails(dto.details());

@@ -62,4 +62,11 @@ public class OrderEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItemEntity> items;
+
+    private int iva;
+
+    @Column(name = "price_iva")
+    private BigDecimal priceIva;
+
+    private BigDecimal subtotal;
 }

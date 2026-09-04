@@ -34,7 +34,11 @@ public class CompanyMapper {
                 null,
                 entity.getNameApp(),
                 null,
-                null
+                null,
+                0,
+                false,
+                null,
+                0
         );
     }
 
@@ -62,7 +66,11 @@ public class CompanyMapper {
                 entity.getSubscriptionPlan(),
                 entity.getNameApp(),
                 entity.getCreatedAt(),
-                entity.getIsActive()
+                entity.getIsActive(),
+                entity.getIva(),
+                entity.getUseIva(),
+                entity.getFooter(),
+                entity.getDaysLimitResolution()
         );
     }
 
@@ -91,6 +99,10 @@ public class CompanyMapper {
         entity.setSubscriptionPlan(dto.subscriptionPlan());
         entity.setCreatedAt(dto.createdAt());
         entity.setIsActive(dto.isActive());
+        entity.setIva(dto.iva());
+        entity.setUseIva(dto.useIva());
+        entity.setFooter(dto.footer());
+        entity.setDaysLimitResolution(dto.daysLimitResolution());
         return entity;
     }
 }

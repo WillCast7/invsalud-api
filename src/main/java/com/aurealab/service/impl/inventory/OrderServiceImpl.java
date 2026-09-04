@@ -47,6 +47,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    com.aurealab.service.notification.NotificationService notificationService;
+
     public ResponseEntity<APIResponseDTO<String>> getOrders(int page, int size, String searchValue, boolean isSold, String type) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return ResponseEntity.ok(APIResponseDTO.withPageable(constants.success.findedSuccess, constants.success.findedSuccess, findAllToTable(pageable, searchValue, isSold, type)));
@@ -104,24 +107,39 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderItemEntity> items = new ArrayList<>();
 
+        int ivaVal = request.iva() != null ? request.iva() : 0;
+        BigDecimal priceIvaVal = request.priceIva() != null ? request.priceIva() : BigDecimal.ZERO;
+        order.setIva(ivaVal);
+        order.setPriceIva(priceIvaVal);
+
         if(prefix.equals(constants.configParam.orderRecipePrefix)) {
 
             RecipeInventoryEntity recipeInventory = recipeInventoryService.findByIdEntity();
+            BigDecimal unitPrice = recipeInventory.getPrice();
+            BigDecimal subtotalVal = request.subtotal() != null ? request.subtotal() : BigDecimal.valueOf(request.units()).multiply(unitPrice);
+            if (request.priceIva() == null && ivaVal > 0) {
+                priceIvaVal = subtotalVal.multiply(BigDecimal.valueOf(ivaVal)).divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                order.setPriceIva(priceIvaVal);
+            }
+            BigDecimal totalVal = request.total() != null ? request.total() : subtotalVal.add(priceIvaVal);
 
-            items.add(new OrderItemEntity().builder()
+            order.setSubtotal(subtotalVal);
+            order.setTotal(totalVal);
+
+            items.add(OrderItemEntity.builder()
                 .order(order)
-                //.inventory(inventory)
-                .priceUnit(recipeInventory.getPrice())
+                .priceUnit(unitPrice)
                 .units(request.units())
-                .priceTotal(BigDecimal.valueOf(request.units()).multiply(recipeInventory.getPrice()))
+                .priceTotal(totalVal)
                 .build()
             );
-
-
 
             updateRecipeInventory(Math.toIntExact(request.units()), "order");
 
         }else {
+            BigDecimal subtotalVal = request.subtotal() != null ? request.subtotal() : request.total();
+            order.setSubtotal(subtotalVal);
+
             if (request.items() != null) {
                 for (OrderItemRequestDTO itemDto : request.items()) {
                     OrderItemEntity item = new OrderItemEntity();
@@ -133,6 +151,9 @@ public class OrderServiceImpl implements OrderService {
 
                     // Descontar inventario
                     inventory.setAvailableUnits((int) (inventory.getAvailableUnits() - itemDto.units()));
+
+                    // Verificar alerta de stock mínimo según product.unitsAlert
+                    checkAndTriggerLowStockAlert(inventory);
 
                     item.setOrder(order);
                     item.setInventory(inventory);
@@ -159,12 +180,15 @@ public class OrderServiceImpl implements OrderService {
 
         order.setThirdParty(thirdParty);
         order.setTotal(request.total());
+        order.setSubtotal(request.subtotal() != null ? request.subtotal() : request.total());
         order.setType(request.type());
         order.setStatus("SOLD");
         order.setSold(true);
         order.setSoldAt(LocalDateTime.now());
         order.setExpirateAt(LocalDateTime.now().plusDays(15));
         order.setCreatedBy(jwtUtils.getCurrentUserId());
+        order.setIva(request.iva() != null ? request.iva() : 0);
+        order.setPriceIva(request.priceIva() != null ? request.priceIva() : BigDecimal.ZERO);
 
         // Generar código de salida/venta
         String prefix = switch (request.type()) {
@@ -191,6 +215,9 @@ public class OrderServiceImpl implements OrderService {
                 // Descontar inventario (disponible y físico)
                 inventory.setAvailableUnits((int) (inventory.getAvailableUnits() - itemDto.units()));
                 inventory.setTotalUnits((int) (inventory.getTotalUnits() - itemDto.units()));
+
+                // Verificar alerta de stock mínimo según product.unitsAlert
+                checkAndTriggerLowStockAlert(inventory);
 
                 item.setOrder(order);
                 item.setInventory(inventory);
@@ -372,6 +399,43 @@ public class OrderServiceImpl implements OrderService {
                     .expirationDate(null)
                     .isActive(order.isActive())
                     .build();
+        }
+    }
+
+    private void checkAndTriggerLowStockAlert(PrescriptionInventoryEntity inventory) {
+        if (inventory == null || inventory.getProduct() == null) return;
+
+        ProductEntity product = inventory.getProduct();
+        Integer unitsAlert = product.getUnitsAlert();
+        int availableUnits = inventory.getAvailableUnits();
+
+        // Disparar alerta si el umbral está configurado y el stock disponible es menor o igual
+        if (unitsAlert != null && unitsAlert > 0 && availableUnits <= unitsAlert) {
+            try {
+                String productName = product.getName() != null ? product.getName() : "Medicamento";
+                String productCode = product.getCode() != null ? product.getCode() : "";
+                String batchCode = (inventory.getBatch() != null && inventory.getBatch().getCode() != null)
+                        ? inventory.getBatch().getCode() : "N/A";
+
+                String title = "⚠️ Stock Bajo: " + productName;
+                String message = String.format(
+                        "El medicamento %s (Código: %s, Lote: %s) ha alcanzado el nivel de alerta. Quedan %d unidades disponibles (Umbral configurado: %d).",
+                        productName, productCode, batchCode, availableUnits, unitsAlert
+                );
+                String priority = availableUnits == 0 ? "CRITICAL" : "WARNING";
+
+                notificationService.createNotification(com.aurealab.dto.notification.CreateNotificationRequestDTO.builder()
+                        .title(title)
+                        .message(message)
+                        .category("INVENTORY_ALERT")
+                        .priority(priority)
+                        .targetUrl("/inventory/medicines")
+                        .userIds(null) // Notificar a todos los usuarios
+                        .build());
+            } catch (Exception e) {
+                // Prevenir que un fallo en el envío de notificación interrumpa la transacción de la orden
+                e.printStackTrace();
+            }
         }
     }
 }

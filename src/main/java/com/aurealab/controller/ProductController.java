@@ -22,7 +22,7 @@ public class ProductController {
     public ResponseEntity<APIResponseDTO<String>> getAllProducts(@RequestParam(defaultValue = "1") int page,
                                                               @RequestParam(defaultValue = "10") int size,
                                                               @RequestParam(defaultValue = "") String searchValue,
-                                                              @RequestParam(required = false) Boolean isPublicHealth) {
+                                                              @RequestParam(defaultValue = "false") Boolean isPublicHealth) {
         return productService.findPaginatedProducts(page, size, searchValue, isPublicHealth);
     }
 

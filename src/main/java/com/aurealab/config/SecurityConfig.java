@@ -40,6 +40,9 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/forgot-password").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/reset-password").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/confirm-token").permitAll();
+                    http.requestMatchers("/ai/chat/**").permitAll();
+                    http.requestMatchers("/ws/**").permitAll();
+                    http.requestMatchers("/notifications/trigger-test", "/notifications/test").permitAll();
                     http.requestMatchers(HttpMethod.GET).hasAuthority("CREATE");
                     http.requestMatchers(HttpMethod.POST).hasAuthority("CREATE");
                     http.requestMatchers(HttpMethod.PATCH).hasAuthority("UPDATE");

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/resolutions")
+@RequestMapping({"/resolutions", "/resolution"})
 public class ResolutionController {
 
     @Autowired
@@ -24,5 +24,20 @@ public class ResolutionController {
     @GetMapping(produces = "application/json", value = "/{id}")
     public ResponseEntity<APIResponseDTO<ResolutionDTO>> getResolutionById(@PathVariable Long id) {
         return resolutionService.getResolutionById(id);
+    }
+
+    @PostMapping(produces = "application/json")
+    public ResponseEntity<APIResponseDTO<ResolutionDTO>> saveResolution(@RequestBody ResolutionDTO resolutionDTO) {
+        return resolutionService.saveResolution(resolutionDTO);
+    }
+
+    @PutMapping(produces = "application/json", value = "/{id}")
+    public ResponseEntity<APIResponseDTO<ResolutionDTO>> updateResolution(@PathVariable Long id, @RequestBody ResolutionDTO resolutionDTO) {
+        return resolutionService.updateResolution(id, resolutionDTO);
+    }
+
+    @PutMapping(produces = "application/json", value = "/changestatus/{id}")
+    public ResponseEntity<APIResponseDTO<ResolutionDTO>> changeStatus(@PathVariable Long id) {
+        return resolutionService.changeStatus(id);
     }
 }

@@ -69,4 +69,15 @@ public class CompanyEntity {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+    private int iva;
+
+    @Column(name = "use_iva")
+    private Boolean useIva;
+
+    private String footer;
+
+    @Column(name = "days_limit_resolution")
+    private int daysLimitResolution;
+
 }

@@ -4,12 +4,9 @@ import com.aurealab.config.CustomUserDetails;
 import com.aurealab.config.databases.multitenancy.TenantContext;
 import com.aurealab.dto.*;
 import com.aurealab.mapper.CompanyMapper;
-import com.aurealab.model.aurea.entity.PasswordResetTokenEntity;
-import com.aurealab.model.aurea.entity.UserEntity;
+import com.aurealab.model.aurea.entity.*;
 import com.aurealab.model.aurea.repository.TokenRepository;
 import com.aurealab.model.aurea.repository.UserRepository;
-import com.aurealab.model.aurea.entity.MenuItemEntity;
-import com.aurealab.model.aurea.entity.RoleEntity;
 import com.aurealab.model.aurea.repository.RoleRepository;
 import com.aurealab.service.CompanyService;
 import com.aurealab.service.EmailService;
@@ -218,6 +215,10 @@ public class UserDetailServiceImpl {
     }
 
     public ResponseEntity<APIResponseDTO<CompanyDTO>> login() {
+        CompanyEntity company = companyService.getCompanyEntity();
+        CompanyDTO companyDTO =CompanyMapper.toLogin(company);
+        log.info("company entity: {}", company);
+        log.info("company DTO: {}", companyDTO);
         return ResponseEntity.ok(APIResponseDTO.success(CompanyMapper.toLogin(companyService.getCompanyEntity()), constants.success.findedSuccess));
     }
 }

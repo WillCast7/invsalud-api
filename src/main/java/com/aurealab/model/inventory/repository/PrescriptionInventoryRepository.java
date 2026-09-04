@@ -33,9 +33,17 @@ public interface PrescriptionInventoryRepository extends JpaRepository<Prescript
             "JOIN ResolutionAllowedProductEntity rap ON rap.product = p " +
             "JOIN rap.resolution r " +
             "WHERE r.thirdParty.id = :thirdPartyId " +
-            "AND pis.expirationDate >= CURRENT_DATE " +
+            "AND pis.expirationDate >= :minExpirationDate " +
+            "AND (r.expirationDate IS NULL OR r.expirationDate >= :minExpirationDate) " +
             "AND pis.isDrawal = false")
-    Set<PrescriptionInventoryEntity> findByThirdPartyIdGranted(@Param("thirdPartyId") Long thirdPartyId);
+    Set<PrescriptionInventoryEntity> findByThirdPartyIdGranted(
+            @Param("thirdPartyId") Long thirdPartyId,
+            @Param("minExpirationDate") LocalDate minExpirationDate
+    );
+
+    default Set<PrescriptionInventoryEntity> findByThirdPartyIdGranted(Long thirdPartyId) {
+        return findByThirdPartyIdGranted(thirdPartyId, LocalDate.now());
+    }
 
     @EntityGraph(attributePaths = {"batch", "product"})
     @Query("SELECT pis FROM PrescriptionInventoryEntity pis " +
@@ -43,4 +51,12 @@ public interface PrescriptionInventoryRepository extends JpaRepository<Prescript
             "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) " +
             "AND pis.isDrawal = false")
     List<PrescriptionInventoryEntity> findByProductNameContainingIgnoreCase(@Param("name") String name);
+
+    @EntityGraph(attributePaths = {"batch", "product"})
+    @Query("SELECT pis FROM PrescriptionInventoryEntity pis " +
+            "JOIN FETCH pis.product p " +
+            "LEFT JOIN FETCH pis.batch b " +
+            "WHERE pis.isDrawal = false AND pis.availableUnits > 0 " +
+            "ORDER BY pis.expirationDate ASC")
+    List<PrescriptionInventoryEntity> findAllActiveStock();
 }

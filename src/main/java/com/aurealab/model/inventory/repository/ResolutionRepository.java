@@ -7,8 +7,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ResolutionRepository extends JpaRepository<ResolutionEntity, Long> {
 
     @EntityGraph(attributePaths = {"thirdParty"})
     Page<ResolutionEntity> findAll(Specification<ResolutionEntity> spec, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"thirdParty"})
+    List<ResolutionEntity> findByIsActiveTrue();
 }

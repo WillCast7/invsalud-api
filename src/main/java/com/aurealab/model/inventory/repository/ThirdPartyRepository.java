@@ -2,12 +2,13 @@ package com.aurealab.model.inventory.repository;
 
 import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
-public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Long> {
+public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Long>, JpaSpecificationExecutor<ThirdPartyEntity> {
 
     @Query("SELECT tp " +
             "FROM ThirdPartyEntity tp " +

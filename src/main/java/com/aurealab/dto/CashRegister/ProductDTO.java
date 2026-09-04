@@ -9,6 +9,7 @@ public record ProductDTO(
         String concentration,
         String presentation,
         String pharmaceuticalForm,
+        Integer unitsAlert,
         Boolean isActive,
         Boolean isPublicHealth,
         String details,

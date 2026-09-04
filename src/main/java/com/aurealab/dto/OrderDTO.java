@@ -21,6 +21,9 @@ public record OrderDTO(
         boolean isActive,
         boolean isSold,
         String type,
-        List<OrderItemDTO> items
+        List<OrderItemDTO> items,
+        int iva,
+        BigDecimal priceIva,
+        BigDecimal subtotal
 ) {
 }

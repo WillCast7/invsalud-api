@@ -40,6 +40,9 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
     @Autowired
     DocumentSequenceServiceImpl documentSequenceService;
 
+    @Autowired
+    private com.aurealab.model.aurea.repository.CompanyRepository companyRepository;
+
 
     @Transactional
     public ResponseEntity<APIResponseDTO<String>> getPrescriptionInventory(int page, int size, String searchValue, String type) {
@@ -142,7 +145,16 @@ public class PrescriptionInventoryServiceImpl implements PrescriptionInventorySe
 
     @Transactional
     public Set<PrescriptionInventoryEntity> getResolutionProductEntityById(Long thirdPartyId){
-        return  prescriptionInventoryRepository.findByThirdPartyIdGranted(thirdPartyId);
+        int daysLimit = 0;
+        try {
+            com.aurealab.model.aurea.entity.CompanyEntity company = companyRepository.findById(1L).orElse(null);
+            if (company != null) {
+                daysLimit = company.getDaysLimitResolution();
+            }
+        } catch (Exception ignored) {}
+
+        java.time.LocalDate minExpirationDate = java.time.LocalDate.now().plusDays(daysLimit);
+        return prescriptionInventoryRepository.findByThirdPartyIdGranted(thirdPartyId, minExpirationDate);
     }
 
     @Override

@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
 
+
 public record CompanyDTO(
     Long id,
     String nit,
@@ -24,5 +25,9 @@ public record CompanyDTO(
     String subscriptionPlan,
     String nameApp,
     LocalDateTime createdAt,
-    Boolean isActive
+    Boolean isActive,
+    int iva,
+    Boolean useIva,
+    String footer,
+    int daysLimitResolution
 ) {}
