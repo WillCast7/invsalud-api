@@ -28,7 +28,7 @@ public class ProductEntity {
     private String concentration;
 
     private String presentation;
-
+    
     @Column(name = "pharmaceutical_form")
     private String pharmaceuticalForm;
 

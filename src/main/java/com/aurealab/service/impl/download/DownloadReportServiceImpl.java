@@ -131,9 +131,13 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             html = template.getHtmlContent();
             if (templateCategory.equals("RECETARIOS") && (html.contains("orderTotal") || html.contains("Señor. (A):") || !html.contains("width=\"65%\""))) {
                 html = getStandardRecipeQuoteTemplate();
+            } else if ((templateCategory.equals("MEDICAMENTOS") || templateCategory.equals("MEDICAMENTOS_SP")) && (html.contains("recipe-quote-preview") || html.contains("quote-table") || html.contains("RECIPE_QUOTE_CSS") || !html.contains("width=\"65%\""))) {
+                html = getStandardMedicineQuoteTemplate();
             }
         } else if (templateCategory.equals("RECETARIOS")) {
             html = getStandardRecipeQuoteTemplate();
+        } else if (templateCategory.equals("MEDICAMENTOS") || templateCategory.equals("MEDICAMENTOS_SP")) {
+            html = getStandardMedicineQuoteTemplate();
         } else {
             throw new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory);
         }
@@ -768,6 +772,87 @@ public class DownloadReportServiceImpl implements DownloadReportService {
   <p style="margin: 1.5px 0;">I. Cotización válida por 08 días. Después de esta fecha no se responde por cantidades ni por precios. Pasado este lapso de tiempo antes de consignar solicitar reconfirmación de esta cotización.</p>
   <p style="margin: 1.5px 0;">J. Rut actualizado</p>
   <p style="margin: 4px 0 1px 0;"><b>Atentamente,</b></p>
+  <p style="margin: 1px 0; font-weight: bold; color: #111;">Fondo Rotatorio de Estupefacientes del Valle del Cauca</p>
+  <p style="margin: 1px 0; color: #333;">Secretaría Departamental de Salud del Valle</p>
+</div>
+        """;
+    }
+
+    private String getStandardMedicineQuoteTemplate() {
+        return """
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; font-family: Arial, sans-serif;">
+  <tr>
+    <td width="65%" valign="top" style="width: 65%; vertical-align: top; text-align: left;">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td valign="middle" style="vertical-align: middle; padding-right: 12px;">
+            <img src="{{ companyEntity.logoOrder }}" width="220" alt="Logo Institucional" style="max-height: 75px; max-width: 220px; object-fit: contain;" />
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="35%" valign="top" align="right" style="width: 35%; text-align: right; vertical-align: top; font-size: 11px; color: #222; line-height: 1.4;">
+      <div style="font-weight: bold; letter-spacing: 0.5px;">FO-M9-P3-02- V04</div>
+      <div style="color: #555; font-size: 10px;">1.220.30 - 27.39</div>
+      <div style="font-weight: bold; font-size: 13px; color: #000; margin-top: 4px;">{{ order.orderCode }}</div>
+      <div style="margin-top: 2px; color: #333;">Santiago de Cali, {{ order.createdAt }}</div>
+    </td>
+  </tr>
+</table>
+
+<div style="margin-top: 10px; font-size: 10px; font-family: Arial, sans-serif; color: #222; line-height: 1.3;">
+  <div style="font-weight: bold;">Señor(s):</div>
+  <div style="font-size: 11px; font-weight: bold; color: #000; margin-bottom: 3px;">{{ thirdParty.fullName }}</div>
+  <div style="font-weight: bold;">Asunto: Cotización.</div>
+  <div style="margin-top: 4px; text-align: justify;">De acuerdo a su solicitud, remitimos cotización acorde a la disponibilidad del Fondo Rotatorio de Estupefacientes FRE Valle:</div>
+</div>
+
+<div style="margin-top: 10px; font-family: Arial, sans-serif; width: 100%; box-sizing: border-box;">
+  <table width="100%" border="1" cellpadding="3" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #333; table-layout: fixed;">
+    <thead>
+      <tr style="background-color: #f2f2f2;">
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: center; width: 14%;">Lote</th>
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: left; width: 26%;">Nombre</th>
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: left; width: 18%;">Presentación</th>
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: center; width: 14%;">Vencimiento</th>
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: center; width: 8%;">Cant.</th>
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: right; width: 10%;">V. Unit.</th>
+        <th style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: right; width: 10%;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: center;">{{ item.inventory.batch.code }}</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: left;">{{ item.inventory.product.name }}</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: left;">{{ item.inventory.product.presentation }}</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: center;">{{ item.inventory.expirationDate }}</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: center;">{{ item.units }}</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: right;">{{ item.priceUnit }}</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: right; font-weight: bold;">{{ item.priceTotal }}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr style="background-color: #fafafa; font-weight: bold;">
+        <td colspan="6" style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: right;">TOTAL</td>
+        <td style="border: 1px solid #333; padding: 3px; font-size: 8px; text-align: right; color: #000;">{{ order.total }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div style="margin-top: 8px; font-family: Arial, sans-serif; font-size: 7pt; color: #333; line-height: 1.15;">
+  <p style="margin: 2px 0; font-weight: bold; color: #111;">Nota:</p>
+  <p style="margin: 1.5px 0;"><b>1. Con el fin de legalizar la cuenta, favor:</b></p>
+  <p style="margin: 1.5px 0;">a) Realice el pago en el Banco DAVIVIENDA, cuenta de ahorros # 379400001804, Departamento del Valle del Cauca-Fondo Rotatorio de Estupefacientes NIT 890399029-5.</p>
+  <p style="margin: 1.5px 0;">b) Entregue a la oficina del Fondo Rotatorio de Estupefacientes FRE Valle, un original y una copia del recibo de consignación con firma y sello del cajero, el mismo día en que se hace la consignación. Este recibo debe llevar el NIT de la institución.</p>
+  <p style="margin: 1.5px 0;">c) Para los casos de Transferencia entregar impresión a color y en estado debitado o aprobado a nombre de la Gobernación del Valle de acuerdo a la cuenta relacionada en el ítem No 1 (hoja membretada por la entidad bancaria).</p>
+  <p style="margin: 1.5px 0;">d) El pago no debe tener fecha superior a una (1) semana.</p>
+  <p style="margin: 1.5px 0;">2. Cotización válida por 08 días. Después de esta fecha no se responde por cantidades ni por precios. Pasado este lapso de tiempo antes de consignar solicitar reconfirmación de esta cotización.</p>
+  <p style="margin: 1.5px 0;">3. Para la entrega de los medicamentos se requiere autorización escrita, firmada por el Representante Legal, el Director de la Institución o el Jefe del Servicio Farmacéutico y fotocopia de la cédula de la persona que vaya a reclamarlos.</p>
+  <p style="margin: 1.5px 0;">4. La entrega de medicamentos se realiza con cita previa asignada por correo electrónico.</p>
+  <p style="margin: 1.5px 0;">5. La dispensación de los Medicamentos Monopolio del Estado y los recetarios oficiales para la prescripción de Medicamentos de Control Especial en el Complejo Integral de Servicios de Salud Pública Aníbal Patiño Rodríguez - Carrera 76 No 4-30 B/ Nápoles.</p>
+  <p style="margin: 3px 0 1px 0;">Gracias por su atención.</p>
+  <p style="margin: 3px 0 1px 0;"><b>Atentamente,</b></p>
   <p style="margin: 1px 0; font-weight: bold; color: #111;">Fondo Rotatorio de Estupefacientes del Valle del Cauca</p>
   <p style="margin: 1px 0; color: #333;">Secretaría Departamental de Salud del Valle</p>
 </div>
