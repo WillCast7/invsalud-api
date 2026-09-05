@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,8 +62,19 @@ public class DocumentTemplateServiceImpl implements DocumentTemplateService {
         entity.setIsActive(true);
         entity.setCreatedBy(jwtUtils.getCurrentUserId());
 
-        // Si es el primero, podría ser default (opcional)
-        // Por ahora mantenemos la lógica base
+        boolean isDefault = Boolean.TRUE.equals(dto.isDefault());
+        entity.setIsDefault(isDefault);
+
+        if (isDefault) {
+            // Quitar default a las demás de la misma categoría y tipo de documento
+            List<DocumentTemplateEntity> similarTemplates = documentTemplateRepository
+                    .findByDocumentTypeAndCategory(entity.getDocumentType(), entity.getCategory());
+            for (DocumentTemplateEntity template : similarTemplates) {
+                template.setIsDefault(false);
+            }
+            documentTemplateRepository.saveAll(similarTemplates);
+        }
+
         entity = documentTemplateRepository.save(entity);
         return DocumentTemplateMapper.toDto(entity);
     }
@@ -79,6 +93,21 @@ public class DocumentTemplateServiceImpl implements DocumentTemplateService {
         entity.setSectionsState(dto.sectionsState());
         entity.setIsActive(dto.isActive() != null ? dto.isActive() : entity.getIsActive());
         entity.setUpdatedAt(LocalDateTime.now());
+
+        boolean isDefault = Boolean.TRUE.equals(dto.isDefault());
+        entity.setIsDefault(isDefault);
+
+        if (isDefault) {
+            // Quitar default a todas las demás de la misma categoría y tipo de documento
+            List<DocumentTemplateEntity> similarTemplates = documentTemplateRepository
+                    .findByDocumentTypeAndCategory(entity.getDocumentType(), entity.getCategory());
+            for (DocumentTemplateEntity template : similarTemplates) {
+                if (!template.getId().equals(id)) {
+                    template.setIsDefault(false);
+                }
+            }
+            documentTemplateRepository.saveAll(similarTemplates);
+        }
         
         entity = documentTemplateRepository.save(entity);
         return DocumentTemplateMapper.toDto(entity);
@@ -103,5 +132,28 @@ public class DocumentTemplateServiceImpl implements DocumentTemplateService {
         // Asignar default a la seleccionada
         newDefault.setIsDefault(true);
         documentTemplateRepository.save(newDefault);
+    }
+
+    @Override
+    public Map<String, Object> checkDefault(String documentType, String category, UUID excludeId) {
+        List<DocumentTemplateEntity> templates = documentTemplateRepository
+                .findByDocumentTypeAndCategory(documentType, category);
+
+        Optional<DocumentTemplateEntity> defaultTemplate = templates.stream()
+                .filter(t -> Boolean.TRUE.equals(t.getIsDefault()))
+                .filter(t -> excludeId == null || !t.getId().equals(excludeId))
+                .findFirst();
+
+        Map<String, Object> result = new HashMap<>();
+        if (defaultTemplate.isPresent()) {
+            result.put("hasDefault", true);
+            result.put("defaultTemplateName", defaultTemplate.get().getName());
+            result.put("defaultTemplateId", defaultTemplate.get().getId());
+        } else {
+            result.put("hasDefault", false);
+            result.put("defaultTemplateName", null);
+            result.put("defaultTemplateId", null);
+        }
+        return result;
     }
 }

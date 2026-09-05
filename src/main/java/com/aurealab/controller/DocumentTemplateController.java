@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -16,6 +17,20 @@ public class DocumentTemplateController {
 
     @Autowired
     private DocumentTemplateService documentTemplateService;
+
+    @GetMapping(value = "/check-default")
+    public ResponseEntity<Map<String, Object>> checkDefault(
+            @RequestParam String documentType,
+            @RequestParam String category,
+            @RequestParam(required = false) String excludeId){
+        UUID excludeUuid = null;
+        if (excludeId != null && !excludeId.trim().isEmpty() && !"null".equalsIgnoreCase(excludeId.trim()) && !"undefined".equalsIgnoreCase(excludeId.trim())) {
+            try {
+                excludeUuid = UUID.fromString(excludeId.trim());
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return ResponseEntity.ok(documentTemplateService.checkDefault(documentType, category, excludeUuid));
+    }
 
     @PutMapping(value = "/{id}/set-default")
     public ResponseEntity<Void> setTemplateDefaultId(@PathVariable UUID id){

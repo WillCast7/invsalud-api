@@ -4,6 +4,7 @@ import com.aurealab.dto.DocumentTemplateDTO;
 import com.aurealab.dto.tables.DocumentTemplateTableDTO;
 import org.springframework.data.domain.Page;
 
+import java.util.Map;
 import java.util.UUID;
 
 public interface DocumentTemplateService {
@@ -12,4 +13,5 @@ public interface DocumentTemplateService {
     DocumentTemplateDTO createTemplate(DocumentTemplateDTO dto);
     DocumentTemplateDTO updateTemplate(UUID id, DocumentTemplateDTO dto);
     void setTemplateDefaultId(UUID id);
+    Map<String, Object> checkDefault(String documentType, String category, UUID excludeId);
 }
