@@ -18,12 +18,8 @@ public class WebConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList( // Origen específico permitido
                 "http://localhost:4200",         // Para pruebas locales
-                "http://auealab.com",         // Tu dominio final
-                "https://auealab.com",        // Si usas SSL/HTTPS
-                "http://76.13.30.238",           // La IP de tu VPS de Hostinger
-                "http://190.6.176.222:4200",
-                "http://190.6.176.222:9090",
-                "http://190.6.176.222"
+                "http://190.6.176.222",           // La IP de tu VPS de Ho
+                "http://190.6.176.222:4200"
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
