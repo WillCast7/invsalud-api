@@ -43,6 +43,13 @@ public class DocumentTemplateController {
         return ResponseEntity.ok(documentTemplateService.getTemplateById(id));
     }
 
+    @GetMapping(value = "/list")
+    public ResponseEntity<java.util.List<DocumentTemplateTableDTO>> getTemplateList(
+            @RequestParam(required = false) String documentType,
+            @RequestParam(required = false) String category){
+        return ResponseEntity.ok(documentTemplateService.getTemplateList(documentType, category));
+    }
+
     @GetMapping
     public ResponseEntity<Page<DocumentTemplateTableDTO>> getTemplates(
             @RequestParam(defaultValue = "1") int page,

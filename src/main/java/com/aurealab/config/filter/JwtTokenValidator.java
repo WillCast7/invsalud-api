@@ -54,13 +54,14 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 // 2. Extraemos la información incluyendo el ID
                 String userName = jwtUtils.extractUsername(decodedJWT);
                 Long userId = jwtUtils.extractUserId(decodedJWT);
+                Long roleId = jwtUtils.extractRoleId(decodedJWT);
                 String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
 
                 Collection<? extends GrantedAuthority> authorities =
                         AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
 
                 // 3. RECONSTRUIMOS EL CustomUserDetails
-                CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", authorities);
+                CustomUserDetails userDetails = new CustomUserDetails(userId, roleId, userName, "", authorities);
 
                 // 4. Seteamos la autenticación
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

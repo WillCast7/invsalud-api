@@ -156,4 +156,36 @@ public class DocumentTemplateServiceImpl implements DocumentTemplateService {
         }
         return result;
     }
+
+    @Override
+    public List<DocumentTemplateTableDTO> getTemplateList(String documentType, String category) {
+        List<DocumentTemplateEntity> list;
+        if (documentType != null && !documentType.isEmpty() && category != null && !category.isEmpty()) {
+            if ("COMPRA".equalsIgnoreCase(documentType)) {
+                list = documentTemplateRepository.findByDocumentTypeAndCategory("COMPRA", category);
+                if (list.isEmpty()) {
+                    list = documentTemplateRepository.findByDocumentTypeAndCategory("INGRESO", category);
+                }
+            } else if ("MEDICAMENTOS_SP".equalsIgnoreCase(category)) {
+                list = documentTemplateRepository.findByDocumentTypeAndCategory(documentType, "MEDICAMENTOS_SP");
+                if (list.isEmpty()) {
+                    list = documentTemplateRepository.findByDocumentTypeAndCategory(documentType, "MEDICAMENTOS");
+                }
+            } else {
+                list = documentTemplateRepository.findByDocumentTypeAndCategory(documentType, category);
+            }
+        } else if (documentType != null && !documentType.isEmpty()) {
+            if ("COMPRA".equalsIgnoreCase(documentType)) {
+                list = documentTemplateRepository.findByDocumentTypeIn(List.of("COMPRA", "INGRESO"));
+            } else {
+                list = documentTemplateRepository.findByDocumentType(documentType);
+            }
+        } else {
+            list = documentTemplateRepository.findAll();
+        }
+
+        return list.stream()
+                .map(DocumentTemplateMapper::toTableDto)
+                .toList();
+    }
 }

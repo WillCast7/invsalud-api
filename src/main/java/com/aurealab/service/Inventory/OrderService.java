@@ -21,4 +21,5 @@ public interface OrderService {
             int page, int size, Boolean isSold, String type,
             LocalDateTime start, LocalDateTime end,
             String documentNumber, String product, String batch);
+    public ResponseEntity<APIResponseDTO<Void>> updateTemplate(Long id, java.util.UUID templateId, String type);
 }

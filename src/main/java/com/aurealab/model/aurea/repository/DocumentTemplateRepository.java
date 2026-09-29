@@ -12,7 +12,11 @@ public interface DocumentTemplateRepository extends JpaRepository<DocumentTempla
     
     Page<DocumentTemplateEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
     
+    List<DocumentTemplateEntity> findByDocumentType(String documentType);
+
     List<DocumentTemplateEntity> findByDocumentTypeAndCategory(String documentType, String category);
+
+    List<DocumentTemplateEntity> findByDocumentTypeIn(List<String> documentTypes);
 
     java.util.Optional<DocumentTemplateEntity> findByCategoryAndIsDefault(String category, Boolean isDefault);
 

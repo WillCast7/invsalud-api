@@ -30,6 +30,7 @@ public class ProductController {
     public ResponseEntity<APIResponseDTO<ProductWithParamsResponseDTO>> getProduct(@PathVariable Long id) {
         return productService.findProductById(id);
     }
+
     @GetMapping(produces = "application/json", value = "/byresolution/{id}")
     public ResponseEntity<APIResponseDTO<Set<PrescriptionInventoryDTO>>> getProductsByResolution(@PathVariable Long id) {
         return productService.getResolutionProductById(id);

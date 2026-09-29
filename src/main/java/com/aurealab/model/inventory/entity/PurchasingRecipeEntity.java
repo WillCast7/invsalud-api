@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -36,4 +37,7 @@ public class PurchasingRecipeEntity {
 
     @Column(name = "final_serial")
     private Long finalSerial;
+
+    @Column(name = "quote_template_id")
+    private UUID quoteTemplateId;
 }

@@ -51,12 +51,13 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                     DecodedJWT decodedJWT = jwtUtils.validateToken(token);
                     String userName = jwtUtils.extractUsername(decodedJWT);
                     Long userId = jwtUtils.extractUserId(decodedJWT);
+                    Long roleId = jwtUtils.extractRoleId(decodedJWT);
                     String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
 
                     Collection<? extends GrantedAuthority> authorities =
                             AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities != null ? stringAuthorities : "");
 
-                    CustomUserDetails userDetails = new CustomUserDetails(userId, userName, "", authorities);
+                    CustomUserDetails userDetails = new CustomUserDetails(userId, roleId, userName, "", authorities);
                     Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                     accessor.setUser(auth);

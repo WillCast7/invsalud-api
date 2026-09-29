@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Size;
 
 public record PasswordRequestDTO(
         @NotBlank(message = "La contraseña actual es obligatoria")
-        @Size(min = 8, message = "La contraseña actual debe tener al menos 8 caracteres")
         String oldPassword,
 
         @NotBlank(message = "La nueva contraseña no puede estar vacía")

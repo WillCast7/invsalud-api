@@ -25,12 +25,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import com.aurealab.model.aurea.entity.DocumentTemplateEntity;
+import com.aurealab.model.aurea.repository.DocumentTemplateRepository;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    DocumentTemplateRepository documentTemplateRepository;
 
     @Autowired
     DocumentSequenceService documentSequenceService;
@@ -80,6 +86,28 @@ public class OrderServiceImpl implements OrderService {
         return prescriptionInventory.map(OrderMapper::toDto).orElse(null);
     }
 
+    private UUID findDefaultTemplateId(String documentType, String orderType) {
+        if (orderType == null) {
+            orderType = constants.productTypes.SpecialControl;
+        }
+
+        String category = "MEDICAMENTOS";
+        if (constants.productTypes.Recipe.equalsIgnoreCase(orderType)) {
+            category = "RECETARIOS";
+        } else if (constants.productTypes.PublicHealth.equalsIgnoreCase(orderType)) {
+            Optional<DocumentTemplateEntity> spTemplate = documentTemplateRepository
+                    .findByDocumentTypeAndCategoryAndIsDefault(documentType, "MEDICAMENTOS_SP", true);
+            if (spTemplate.isPresent()) {
+                return spTemplate.get().getId();
+            }
+            category = "MEDICAMENTOS";
+        }
+
+        return documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault(documentType, category, true)
+                .map(DocumentTemplateEntity::getId)
+                .orElse(null);
+    }
+
     @Override
     @Transactional
     public ResponseEntity<APIResponseDTO<OrderDTO>> saveOrder(OrderRequestDTO request) {
@@ -95,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
         order.setSold(false);
         order.setExpirateAt(LocalDateTime.now().plusDays(15));
         order.setCreatedBy(jwtUtils.getCurrentUserId());
+        order.setQuoteTemplateOrderId(findDefaultTemplateId("COTIZACION", request.type()));
 
         // Generar código
         String prefix = switch (request.type()) {
@@ -189,6 +218,7 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedBy(jwtUtils.getCurrentUserId());
         order.setIva(request.iva() != null ? request.iva() : 0);
         order.setPriceIva(request.priceIva() != null ? request.priceIva() : BigDecimal.ZERO);
+        order.setQuoteTemplateSoldId(findDefaultTemplateId("VENTA", request.type()));
 
         // Generar código de salida/venta
         String prefix = switch (request.type()) {
@@ -273,6 +303,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus("SOLD");
         order.setSold(true);
         order.setSoldAt(LocalDateTime.now());
+        order.setQuoteTemplateSoldId(findDefaultTemplateId("VENTA", order.getType()));
 
         // Generar código de salida/venta
         String prefix = switch (order.getType()) {
@@ -313,6 +344,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus("SOLD");
         order.setSold(true);
         order.setSoldAt(LocalDateTime.now());
+        order.setQuoteTemplateSoldId(findDefaultTemplateId("VENTA", constants.productTypes.Recipe));
 
         String prefix = constants.configParam.saleRecipePrefix;
         order.setSoldCode(documentSequenceService.getNextInvoiceNumber(prefix));
@@ -437,5 +469,21 @@ public class OrderServiceImpl implements OrderService {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<APIResponseDTO<Void>> updateTemplate(Long id, UUID templateId, String type) {
+        OrderEntity order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+
+        if ("sold".equalsIgnoreCase(type) || (type == null && order.isSold())) {
+            order.setQuoteTemplateSoldId(templateId);
+        } else {
+            order.setQuoteTemplateOrderId(templateId);
+        }
+
+        orderRepository.save(order);
+        return ResponseEntity.ok(APIResponseDTO.success(null, "Plantilla actualizada correctamente"));
     }
 }

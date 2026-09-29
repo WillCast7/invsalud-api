@@ -6,6 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -49,4 +50,7 @@ public class PurchasingEntity {
 
     @OneToOne(mappedBy = "purchasing", cascade = CascadeType.ALL)
     private PurchasingRecipeEntity purchasingRecipe;
+
+    @Column(name = "quote_template_id")
+    private UUID quoteTemplateId;
 }

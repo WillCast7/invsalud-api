@@ -41,6 +41,9 @@ public class ResolutionEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "number_resolution")
+    private String numberResolution;
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 

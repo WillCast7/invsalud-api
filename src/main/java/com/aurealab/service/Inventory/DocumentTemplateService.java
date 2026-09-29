@@ -14,4 +14,5 @@ public interface DocumentTemplateService {
     DocumentTemplateDTO updateTemplate(UUID id, DocumentTemplateDTO dto);
     void setTemplateDefaultId(UUID id);
     Map<String, Object> checkDefault(String documentType, String category, UUID excludeId);
+    java.util.List<DocumentTemplateTableDTO> getTemplateList(String documentType, String category);
 }

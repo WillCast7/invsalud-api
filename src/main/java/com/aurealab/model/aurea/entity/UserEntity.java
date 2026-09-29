@@ -43,6 +43,7 @@ UserEntity {
     @JoinColumn(name = "role_id")
     private RoleEntity role;
 
+    @Builder.Default
     @Column(name = "is_enable")
     private boolean isEnable = true;
 
@@ -57,4 +58,8 @@ UserEntity {
 
     @Column(name = "login_attempt")
     private Long loginAttempt;
+
+    @Builder.Default
+    @Column(name = "must_change_password")
+    private Boolean mustChangePassword = true;
 }

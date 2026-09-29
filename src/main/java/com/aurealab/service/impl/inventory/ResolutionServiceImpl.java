@@ -118,6 +118,7 @@ public class ResolutionServiceImpl implements ResolutionService {
             existing.setExpirationDate(resolutionDTO.expirationDate());
         }
         existing.setDescription(resolutionDTO.description());
+        existing.setNumberResolution(resolutionDTO.numberResolution());
         if (resolutionDTO.isActive() != null) {
             existing.setIsActive(resolutionDTO.isActive());
         }

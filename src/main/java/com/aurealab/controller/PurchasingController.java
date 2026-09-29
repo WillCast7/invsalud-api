@@ -33,4 +33,11 @@ public class PurchasingController {
     public ResponseEntity<APIResponseDTO<String>> savePurchasing(@RequestBody PurchasingRequestDTO purchasingDTO) {
         return purchasingService.savePurchasing(purchasingDTO);
     }
+
+    @PutMapping(produces = "application/json", value = "/{id}/template")
+    public ResponseEntity<APIResponseDTO<Void>> updatePurchasingTemplate(
+            @PathVariable Long id,
+            @RequestParam(required = false) java.util.UUID templateId) {
+        return purchasingService.updateTemplate(id, templateId);
+    }
 }

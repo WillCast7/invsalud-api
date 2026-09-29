@@ -6,6 +6,7 @@ import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record PurchasingDTO(
     Long id,
@@ -19,5 +20,6 @@ public record PurchasingDTO(
     String purchasedCode,
     Boolean isActive,
     List<PurchasingItemDTO> items,
-    PurchasingRecipeDTO purchasingRecipe
+    PurchasingRecipeDTO purchasingRecipe,
+    UUID quoteTemplateId
     ) {}

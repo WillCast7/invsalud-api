@@ -7,7 +7,6 @@ import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.entity.ResolutionAllowedProductEntity;
 import com.aurealab.model.inventory.entity.ResolutionEntity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +19,7 @@ public class ResolutionMapper {
     public static ResolutionDTO toDto(ResolutionEntity entity) {
         if (entity == null) return null;
 
-        Set<ProductDTO> products = new HashSet<ProductDTO>();
+        Set<ProductDTO> products = new HashSet<>();
         if (entity.getAllowedProduct() != null) {
             entity.getAllowedProduct().forEach(item -> products.add(ProductMapper.toDto(item.getProduct())));
         }
@@ -35,7 +34,8 @@ public class ResolutionMapper {
                 entity.getIsActive(),
                 entity.getCreatedAt(),
                 entity.getCreatedBy(),
-                products
+                products,
+                entity.getNumberResolution()
         );
     }
 
@@ -45,8 +45,9 @@ public class ResolutionMapper {
 
         return new ResolutionTableDTO(
                 entity.getId(),
-                entity.getThirdParty().getFullName(),
+                entity.getThirdParty() != null ? entity.getThirdParty().getFullName() : null,
                 entity.getCode(),
+                entity.getNumberResolution(),
                 entity.getStartDate(),
                 entity.getExpirationDate(),
                 entity.getDescription(),
@@ -71,6 +72,7 @@ public class ResolutionMapper {
         entity.setIsActive(dto.isActive());
         entity.setCreatedAt(dto.createdAt());
         entity.setCreatedBy(dto.createdBy());
+        entity.setNumberResolution(dto.numberResolution());
         
         if (dto.products() != null && !dto.products().isEmpty()) {
             Set<ResolutionAllowedProductEntity> items = new HashSet<>();

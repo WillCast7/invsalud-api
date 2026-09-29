@@ -6,6 +6,7 @@ import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record PurchasingTableDTO(
     Long id,
@@ -15,5 +16,6 @@ public record PurchasingTableDTO(
     LocalDateTime createdAt,
     String purchasedBy,
     String purchasedCode,
-    Boolean isActive
+    Boolean isActive,
+    UUID quoteTemplateId
     ) {}

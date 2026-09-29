@@ -6,6 +6,7 @@ import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record OrderTableDTO(
         Long id,
@@ -20,6 +21,8 @@ public record OrderTableDTO(
         LocalDateTime soldAt,
         boolean isActive,
         boolean isSold,
-        String type
+        String type,
+        UUID quoteTemplateOrderId,
+        UUID quoteTemplateSoldId
 ) {
 }

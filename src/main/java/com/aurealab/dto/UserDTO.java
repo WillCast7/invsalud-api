@@ -30,4 +30,5 @@ public class UserDTO {
     private CompanyDTO company;
 
     private boolean isEnable;
+    private Boolean mustChangePassword;
 }

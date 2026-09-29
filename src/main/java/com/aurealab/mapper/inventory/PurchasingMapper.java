@@ -40,13 +40,19 @@ public class PurchasingMapper {
                 entity.getPurchasedCode(),
                 entity.getIsActive(),
                 items,
-                entity.getPurchasingRecipe()==null?null:PurchasingRecipeMapper.toDTO(entity.getPurchasingRecipe())
+                entity.getPurchasingRecipe()==null?null:PurchasingRecipeMapper.toDTO(entity.getPurchasingRecipe()),
+                entity.getQuoteTemplateId()
         );
     }
 
     /* ===================== Entity -> DTO ===================== */
     public static PurchasingTableDTO toTableDto(PurchasingEntity entity) {
         if (entity == null) return null;
+
+        java.util.UUID templateId = entity.getQuoteTemplateId();
+        if (templateId == null && entity.getPurchasingRecipe() != null) {
+            templateId = entity.getPurchasingRecipe().getQuoteTemplateId();
+        }
 
         return new PurchasingTableDTO(
                 entity.getId(),
@@ -56,7 +62,8 @@ public class PurchasingMapper {
                 entity.getCreatedAt(),
                 entity.getPurchasedBy(),
                 entity.getPurchasedCode(),
-                entity.getIsActive()
+                entity.getIsActive(),
+                templateId
         );
     }
 
@@ -64,7 +71,9 @@ public class PurchasingMapper {
     public static PurchasingEntity toEntity(PurchasingDTO dto) {
         if (dto == null) return null;
         List<PurchasingItemEntity> items = new ArrayList<>();
-        dto.items().forEach(item -> items.add(PurchasingItemMapper.toEntity(item)));
+        if (dto.items() != null) {
+            dto.items().forEach(item -> items.add(PurchasingItemMapper.toEntity(item)));
+        }
 
         PurchasingEntity entity = new PurchasingEntity();
         entity.setId(dto.id());
@@ -77,6 +86,7 @@ public class PurchasingMapper {
         entity.setPurchasedCode(dto.purchasedCode());
         entity.setIsActive(dto.isActive());
         entity.setItems(items);
+        entity.setQuoteTemplateId(dto.quoteTemplateId());
 
         return entity;
     }

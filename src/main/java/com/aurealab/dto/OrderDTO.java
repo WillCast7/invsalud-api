@@ -4,6 +4,7 @@ import com.aurealab.dto.CashRegister.ThirdPartyDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record OrderDTO(
         Long id,
@@ -24,6 +25,8 @@ public record OrderDTO(
         List<OrderItemDTO> items,
         int iva,
         BigDecimal priceIva,
-        BigDecimal subtotal
+        BigDecimal subtotal,
+        UUID quoteTemplateOrderId,
+        UUID quoteTemplateSoldId
 ) {
 }

@@ -17,4 +17,5 @@ public interface PurchasingService {
             int page, int size, String type,
             LocalDateTime start, LocalDateTime end,
             String documentNumber, String product, String batch);
+    public ResponseEntity<APIResponseDTO<Void>> updateTemplate(Long id, java.util.UUID templateId);
 }

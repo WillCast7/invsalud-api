@@ -66,4 +66,12 @@ public class OrderController {
     public ResponseEntity<APIResponseDTO<OrderDTO>> sellOrderRecipe(@PathVariable Long id, @RequestBody SellRecipeRequestDTO request) {
         return orderService.sellOrderRecipe(id, request);
     }
+
+    @PutMapping(produces = "application/json", value = "/{id}/template")
+    public ResponseEntity<APIResponseDTO<Void>> updateOrderTemplate(
+            @PathVariable Long id,
+            @RequestParam(required = false) java.util.UUID templateId,
+            @RequestParam(required = false) String type) {
+        return orderService.updateTemplate(id, templateId, type);
+    }
 }

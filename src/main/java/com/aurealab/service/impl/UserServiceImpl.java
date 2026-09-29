@@ -19,6 +19,7 @@ import com.aurealab.util.constants;
 import com.aurealab.util.exceptions.BaseException;
 import com.aurealab.util.exceptions.DataPersistenceException;
 import lombok.extern.slf4j.Slf4j;
+import com.aurealab.mapper.RoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -31,10 +32,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,6 +79,7 @@ public class UserServiceImpl implements UserService {
         }
 
         currentUser.setPassword(passwordEncoder.encode(passwords.newPassword()));
+        currentUser.setMustChangePassword(false);
 
         userRepository.save(currentUser);
 
@@ -115,12 +119,47 @@ public class UserServiceImpl implements UserService {
     public APIResponseDTO<String> saveUser(UserDTO user) {
         APIResponseDTO<String> response;
         try {
-            UserEntity userEntity = UserMapper.toEntity(user);
-            userEntity.setCompany(Objects.equals(user.getCompany(), null) ?
-                    getUserEntityById(jwtUtils.getCurrentUserId()).getCompany(): userEntity.getCompany());
-            userEntity.setCreatedBy(jwtUtils.getCurrentUserId());
+            if (user.getId() != null) {
+                UserEntity existingUser = userRepository.findById(user.getId())
+                        .orElseThrow(() -> new BaseException(constants.errors.invalidUser, "Usuario no encontrado") {});
 
-            userRepository.save(userEntity);
+                existingUser.setEmail(user.getEmail());
+                existingUser.setUserName(user.getUserName());
+                if (user.getRole() != null) {
+                    existingUser.setRole(RoleMapper.toEntity(user.getRole()));
+                }
+                if (user.getPerson() != null) {
+                    PersonEntity person = existingUser.getPerson();
+                    if (person == null) {
+                        person = new PersonEntity();
+                    }
+                    person.setDocumentType(user.getPerson().getDocumentType());
+                    person.setDocumentNumber(user.getPerson().getDocumentNumber());
+                    person.setNames(user.getPerson().getNames());
+                    person.setSurnames(user.getPerson().getSurnames());
+                    person.setPhoneNumber(user.getPerson().getPhoneNumber());
+                    person.setBirthDate(user.getPerson().getBirthDate());
+                    person.setAddress(user.getPerson().getAddress());
+                    existingUser.setPerson(person);
+                }
+                existingUser.setUpdatedAt(LocalDateTime.now());
+                userRepository.save(existingUser);
+            } else {
+                UserEntity userEntity = UserMapper.toEntity(user);
+                userEntity.setCompany(Objects.equals(user.getCompany(), null) ?
+                        getUserEntityById(jwtUtils.getCurrentUserId()).getCompany(): userEntity.getCompany());
+                userEntity.setCreatedBy(jwtUtils.getCurrentUserId());
+                userEntity.setCreatedAt(LocalDateTime.now());
+
+                String docNumber = user.getPerson() != null && user.getPerson().getDocumentNumber() != null
+                        ? user.getPerson().getDocumentNumber().trim()
+                        : "";
+                String base64Password = Base64.getEncoder().encodeToString(docNumber.getBytes(StandardCharsets.UTF_8));
+                userEntity.setPassword(passwordEncoder.encode(base64Password));
+                userEntity.setMustChangePassword(true);
+
+                userRepository.save(userEntity);
+            }
 
             response = APIResponseDTO.success(constants.success.savedSuccess, constants.success.savedSuccess);
 

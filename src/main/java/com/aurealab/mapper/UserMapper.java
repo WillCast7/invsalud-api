@@ -25,48 +25,51 @@ public class UserMapper {
     public static UserDTO toDto(UserEntity entity) {
         if (entity == null) return null;
 
-        return new UserDTO(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getUserName(),
-                null,
-                PersonMapper.toDto(entity.getPerson()),
-                RoleMapper.toDto(entity.getRole()),
-                CompanyMapper.toDto(entity.getCompany()),
-                entity.isEnable()
-        );
+        return UserDTO.builder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .userName(entity.getUserName())
+                .password(null)
+                .person(PersonMapper.toDto(entity.getPerson()))
+                .role(RoleMapper.toDto(entity.getRole()))
+                .company(CompanyMapper.toDto(entity.getCompany()))
+                .isEnable(entity.isEnable())
+                .mustChangePassword(entity.getMustChangePassword())
+                .build();
     }
 
     /* ===================== Entity -> DTO ===================== */
     public static UserDTO toDtoWithPassword(UserEntity entity) {
         if (entity == null) return null;
 
-        return new UserDTO(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getUserName(),
-                entity.getPassword(),
-                PersonMapper.toDto(entity.getPerson()),
-                RoleMapper.toDto(entity.getRole()),
-                CompanyMapper.toDto(entity.getCompany()),
-                entity.isEnable()
-        );
+        return UserDTO.builder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .userName(entity.getUserName())
+                .password(entity.getPassword())
+                .person(PersonMapper.toDto(entity.getPerson()))
+                .role(RoleMapper.toDto(entity.getRole()))
+                .company(CompanyMapper.toDto(entity.getCompany()))
+                .isEnable(entity.isEnable())
+                .mustChangePassword(entity.getMustChangePassword())
+                .build();
     }
 
     /* ===================== Entity -> DTO ===================== */
     public static UserDTO toDtoResponse(UserEntity entity) {
         if (entity == null) return null;
 
-        return new UserDTO(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getUserName(),
-                null,
-                PersonMapper.toDto(entity.getPerson()),
-                null,
-                CompanyMapper.toDto(entity.getCompany()),
-                entity.isEnable()
-        );
+        return UserDTO.builder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .userName(entity.getUserName())
+                .password(null)
+                .person(PersonMapper.toDto(entity.getPerson()))
+                .role(null)
+                .company(CompanyMapper.toDto(entity.getCompany()))
+                .isEnable(entity.isEnable())
+                .mustChangePassword(entity.getMustChangePassword())
+                .build();
     }
 
     public static UserTableResponseDTO toDtoSimplyResponse(UserEntity entity) {
@@ -96,7 +99,7 @@ public class UserMapper {
         entity.setPerson(PersonMapper.toEntity(dto.getPerson()));
         entity.setRole(RoleMapper.toEntity(dto.getRole()));
         entity.setCompany(CompanyMapper.toEntity(dto.getCompany()));
-        entity.setPassword("$2a$10$U48O/d.mXdpH2IGU8tqCLO/z0/VrylEOQqB66mkJi1S2GqXwiAR/G");
+        entity.setMustChangePassword(dto.getMustChangePassword() != null ? dto.getMustChangePassword() : true);
 
         return entity;
     }

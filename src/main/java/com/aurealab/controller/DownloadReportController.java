@@ -6,6 +6,8 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/report")
 public class DownloadReportController {
@@ -28,13 +30,31 @@ public class DownloadReportController {
     }
 
     @GetMapping(value = "/order/{id}")
-    public ResponseEntity<InputStreamResource> downloadOrder(@PathVariable Long id){
-        return pdfReportService.downloadOrder(id);
+    public ResponseEntity<InputStreamResource> downloadOrder(
+            @PathVariable Long id,
+            @RequestParam(required = false) UUID templateId){
+        return pdfReportService.downloadOrder(id, templateId);
+    }
+
+    @GetMapping(value = "/order/{id}/preview", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> previewOrder(
+            @PathVariable Long id,
+            @RequestParam(required = false) UUID templateId){
+        return ResponseEntity.ok(pdfReportService.getOrderHtml(id, templateId));
     }
 
     @GetMapping(value = "/sale/{id}")
-    public ResponseEntity<InputStreamResource> downloadSale(@PathVariable Long id){
-        return pdfReportService.downloadSale(id);
+    public ResponseEntity<InputStreamResource> downloadSale(
+            @PathVariable Long id,
+            @RequestParam(required = false) UUID templateId){
+        return pdfReportService.downloadSale(id, templateId);
+    }
+
+    @GetMapping(value = "/sale/{id}/preview", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> previewSale(
+            @PathVariable Long id,
+            @RequestParam(required = false) UUID templateId){
+        return ResponseEntity.ok(pdfReportService.getSaleHtml(id, templateId));
     }
 
     @GetMapping(value = "/sale/{id}/excel")
@@ -43,8 +63,17 @@ public class DownloadReportController {
     }
 
     @GetMapping(value = "/purchase/{id}")
-    public ResponseEntity<InputStreamResource> downloadPurchase(@PathVariable Long id){
-        return pdfReportService.downloadPurchase(id);
+    public ResponseEntity<InputStreamResource> downloadPurchase(
+            @PathVariable Long id,
+            @RequestParam(required = false) UUID templateId){
+        return pdfReportService.downloadPurchase(id, templateId);
+    }
+
+    @GetMapping(value = "/purchase/{id}/preview", produces = "text/html;charset=UTF-8")
+    public ResponseEntity<String> previewPurchase(
+            @PathVariable Long id,
+            @RequestParam(required = false) UUID templateId){
+        return ResponseEntity.ok(pdfReportService.getPurchaseHtml(id, templateId));
     }
 
     @GetMapping(value = "/invoice/{id}")

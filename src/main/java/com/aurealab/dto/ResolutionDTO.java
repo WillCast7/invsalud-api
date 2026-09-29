@@ -20,7 +20,7 @@ public record ResolutionDTO(
     Boolean isActive,
     LocalDateTime createdAt,
     String createdBy,
-    Set<ProductDTO> products
-
+    Set<ProductDTO> products,
+    String numberResolution
 ) {
 }

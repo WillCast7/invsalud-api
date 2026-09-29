@@ -68,7 +68,7 @@ public class constants {
 
     public static class configParam{
         public static final String documentType = "documentType";
-        public static final String pharmaceuticForm = "pharmaceuticForm";
+        public static final String pharmaceuticForm = "pharmaceuticalForm";
         public static final String incomeTransaction = "INCOME";
         public static final String incomeTransactionPdf = "RECIBO DE CAJA";
         public static final String expenseTransactionPdf = "COMPROBANTE DE EGRESO";
@@ -99,6 +99,9 @@ public class constants {
 
         public static final String drawalMedicine = "RM"; //retiro medicamento
         public static final String resolutionPrefix = "RES"; //resoluciones
+
+        public static final String publicedicinePrefix = "PM"; //resoluciones
+        public static final String medicinePrefix = "M"; //resoluciones
 
     }
 

@@ -42,7 +42,9 @@ public class OrderMapper {
                 items,
                 entity.getIva(),
                 entity.getPriceIva(),
-                entity.getSubtotal()
+                entity.getSubtotal(),
+                entity.getQuoteTemplateOrderId(),
+                entity.getQuoteTemplateSoldId()
         );
     }
 
@@ -74,7 +76,9 @@ public class OrderMapper {
                 entity.getSoldAt(),
                 entity.isActive(),
                 entity.isSold(),
-                entity.getType()
+                entity.getType(),
+                entity.getQuoteTemplateOrderId(),
+                entity.getQuoteTemplateSoldId()
         );
     }
 
@@ -101,6 +105,8 @@ public class OrderMapper {
         entity.setIva(dto.iva());
         entity.setPriceIva(dto.priceIva());
         entity.setSubtotal(dto.subtotal());
+        entity.setQuoteTemplateOrderId(dto.quoteTemplateOrderId());
+        entity.setQuoteTemplateSoldId(dto.quoteTemplateSoldId());
         
         List<OrderItemEntity> items = new ArrayList<>();
         if (dto.items() != null) {

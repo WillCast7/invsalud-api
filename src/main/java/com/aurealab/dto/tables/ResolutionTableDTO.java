@@ -7,6 +7,7 @@ public record ResolutionTableDTO(
     Long id,
     String thirdParty,
     String code,
+    String numberResolution,
     LocalDate startDate,
     LocalDate expirationDate,
     String description,

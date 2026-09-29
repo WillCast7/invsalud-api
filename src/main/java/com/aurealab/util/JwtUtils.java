@@ -46,11 +46,13 @@ public class JwtUtils {
             // Obtén el username e id desde el principal
             String username;
             Long userId = null;
+            Long roleId = null;
 
             if (authentication.getPrincipal() instanceof CustomUserDetails) {
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 username = userDetails.getUsername();
                 userId = userDetails.getId(); // Extraemos el ID
+                roleId = userDetails.getRoleId(); // Extraemos el Role ID
             } else {
                 username = authentication.getPrincipal().toString();
             }
@@ -65,6 +67,7 @@ public class JwtUtils {
                     .withIssuer(this.userGenerator)
                     .withSubject(username)
                     .withClaim("userId", userId) // <--- AGREGAMOS EL ID AL JWT
+                    .withClaim("roleId", roleId) // <--- AGREGAMOS EL ROLE ID AL JWT
                     .withClaim("authorities", authorities) // Añade las autoridades
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + 10800000)) // 3 horas de expiración
@@ -107,6 +110,11 @@ public class JwtUtils {
         return decodedJWT.getClaim("userId").asLong();
     }
 
+    public Long extractRoleId(DecodedJWT decodedJWT) {
+        Claim claim = decodedJWT.getClaim("roleId");
+        return claim != null && !claim.isNull() ? claim.asLong() : null;
+    }
+
     public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName){
         return decodedJWT.getClaim(claimName);
     }
@@ -119,6 +127,14 @@ public class JwtUtils {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
             return user.getId();
+        }
+        return null;
+    }
+
+    public Long getCurrentUserRoleId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails user) {
+            return user.getRoleId();
         }
         return null;
     }

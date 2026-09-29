@@ -34,12 +34,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import com.aurealab.model.aurea.entity.DocumentTemplateEntity;
+import com.aurealab.model.aurea.repository.DocumentTemplateRepository;
 
 @Service
 public class PurchasingServiceImpl implements PurchasingService {
 
     @Autowired
     PurchasingRepository purchasingRepository;
+
+    @Autowired
+    DocumentTemplateRepository documentTemplateRepository;
 
     @Autowired
     DocumentSequenceService documentSequenceService;
@@ -91,6 +97,27 @@ public class PurchasingServiceImpl implements PurchasingService {
         return prescriptionInventory.map(PurchasingMapper::toDto).orElse(null);
     }
 
+    private UUID findDefaultPurchaseTemplateId(String type) {
+        String category = "MEDICAMENTOS";
+        if (constants.productTypes.Recipe.equalsIgnoreCase(type)) {
+            category = "RECETARIOS";
+        } else if (constants.productTypes.PublicHealth.equalsIgnoreCase(type)) {
+            Optional<DocumentTemplateEntity> spTemplate = documentTemplateRepository
+                    .findByDocumentTypeAndCategoryAndIsDefault("COMPRA", "MEDICAMENTOS_SP", true)
+                    .or(() -> documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("INGRESO", "MEDICAMENTOS_SP", true));
+            if (spTemplate.isPresent()) {
+                return spTemplate.get().getId();
+            }
+            category = "MEDICAMENTOS";
+        }
+
+        final String finalCategory = category;
+        return documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COMPRA", finalCategory, true)
+                .or(() -> documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("INGRESO", finalCategory, true))
+                .map(DocumentTemplateEntity::getId)
+                .orElse(null);
+    }
+
     @Transactional
     public ResponseEntity<APIResponseDTO<String>> savePurchasing(PurchasingRequestDTO purchasingDTO) {
         // 1. Identificar el prefijo y obtener datos del contexto
@@ -126,6 +153,8 @@ public class PurchasingServiceImpl implements PurchasingService {
             // --- FLUJO A: RECETARIOS ---
             if (purchasingDTO.recipe() == null) throw new RuntimeException("Faltan datos del recetario.");
 
+            UUID templateId = findDefaultPurchaseTemplateId(constants.productTypes.Recipe);
+
             // Preparar el detalle de la receta
             PurchasingRecipeEntity recipeDetail = new PurchasingRecipeEntity();
             recipeDetail.setPurchasing(entityToSave); // Vínculo bidireccional
@@ -134,7 +163,9 @@ public class PurchasingServiceImpl implements PurchasingService {
             recipeDetail.setPriceTotal(purchasingDTO.recipe().priceTotal());
             recipeDetail.setStartSerial(purchasingDTO.recipe().startSerial());
             recipeDetail.setFinalSerial(purchasingDTO.recipe().finalSerial());
+            recipeDetail.setQuoteTemplateId(templateId);
 
+            entityToSave.setQuoteTemplateId(templateId);
             entityToSave.setPurchasingRecipe(recipeDetail);
             entityToSave.setItems(new ArrayList<>()); // Recetas no suelen llevar items de inventario individual
 
@@ -147,6 +178,9 @@ public class PurchasingServiceImpl implements PurchasingService {
             if (purchasingDTO.items() == null || purchasingDTO.items().isEmpty()) {
                 throw new RuntimeException("La lista de ítems es obligatoria.");
             }
+
+            UUID templateId = findDefaultPurchaseTemplateId(purchasingDTO.type());
+            entityToSave.setQuoteTemplateId(templateId);
 
             List<PurchasingItemEntity> items = new ArrayList<>();
             purchasingDTO.items().forEach(itemDto -> {
@@ -232,5 +266,20 @@ public class PurchasingServiceImpl implements PurchasingService {
                 .expirationDate(item.getExpirationDate())
                 .isActive(purchasing.getIsActive() != null ? purchasing.getIsActive() : true)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<APIResponseDTO<Void>> updateTemplate(Long id, UUID templateId) {
+        PurchasingEntity purchasing = purchasingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Compra no encontrada"));
+
+        purchasing.setQuoteTemplateId(templateId);
+        if (purchasing.getPurchasingRecipe() != null) {
+            purchasing.getPurchasingRecipe().setQuoteTemplateId(templateId);
+        }
+        purchasingRepository.save(purchasing);
+
+        return ResponseEntity.ok(APIResponseDTO.success(null, "Plantilla actualizada correctamente"));
     }
 }

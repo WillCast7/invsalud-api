@@ -67,7 +67,7 @@ public class UserDetailServiceImpl {
         authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRole())));
 
         log.info("Detalles del usuario cargados correctamente");
-        return new CustomUserDetails(id, username, "password", authorityList);
+        return new CustomUserDetails(id, role != null ? role.getId() : null, username, "password", authorityList);
     }
 
     /**
@@ -110,8 +110,14 @@ public class UserDetailServiceImpl {
             );
 
 
-            AuthResponse authResponse = new AuthResponse(userLogin.username(), userEntity.getPerson().getNames()
-                    , accessToken, menuList, userEntity.getRole().getId());
+            AuthResponse authResponse = new AuthResponse(
+                    userLogin.username(),
+                    userEntity.getPerson().getNames(),
+                    accessToken,
+                    menuList,
+                    userEntity.getRole().getId(),
+                    Boolean.TRUE.equals(userEntity.getMustChangePassword())
+            );
 
 
             return ResponseEntity.ok(APIResponseDTO.success(authResponse, constants.success.loginSuccess)); // Enviar cookie en la respuesta
@@ -191,6 +197,7 @@ public class UserDetailServiceImpl {
                 .orElseThrow(() -> new BaseException(constants.errors.invalidUser, "Usuario no encontrado", HttpStatus.NOT_FOUND) {});
 
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setMustChangePassword(false);
         userRepository.save(user);
 
         resetToken.setUsed(true);

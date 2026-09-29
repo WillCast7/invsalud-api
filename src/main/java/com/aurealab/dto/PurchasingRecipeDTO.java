@@ -6,6 +6,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record PurchasingRecipeDTO(
         Long id,
@@ -13,6 +14,7 @@ public record PurchasingRecipeDTO(
         int units,
         BigDecimal priceTotal,
         Long startSerial,
-        Long finalSerial
+        Long finalSerial,
+        UUID quoteTemplateId
 ) {
 }

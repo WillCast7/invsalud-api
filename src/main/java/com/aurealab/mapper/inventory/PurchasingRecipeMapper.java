@@ -16,7 +16,8 @@ public class PurchasingRecipeMapper {
                 entity.getUnits(),
                 entity.getPriceTotal(),
                 entity.getStartSerial(),
-                entity.getFinalSerial()
+                entity.getFinalSerial(),
+                entity.getQuoteTemplateId()
         );
     }
 
@@ -32,6 +33,7 @@ public class PurchasingRecipeMapper {
         entity.setPriceTotal(dto.priceTotal());
         entity.setStartSerial(dto.startSerial());
         entity.setFinalSerial(dto.finalSerial());
+        entity.setQuoteTemplateId(dto.quoteTemplateId());
 
         return entity;
     }

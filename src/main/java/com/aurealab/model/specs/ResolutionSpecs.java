@@ -19,12 +19,14 @@ public class ResolutionSpecs {
             Predicate documentNumberPredicate = cb.like(cb.lower(thirdPartyJoin.get("documentNumber")), pattern);
             Predicate fullNamePredicate = cb.like(cb.lower(thirdPartyJoin.get("fullName")), pattern);
             Predicate codePredicate = cb.like(cb.lower(root.get("code")), pattern);
+            Predicate numberResolutionPredicate = cb.like(cb.lower(root.get("numberResolution")), pattern);
             Predicate descriptionPredicate = cb.like(cb.lower(root.get("description")), pattern);
 
             return cb.or(
                     documentNumberPredicate,
                     fullNamePredicate,
                     codePredicate,
+                    numberResolutionPredicate,
                     descriptionPredicate
             );
 

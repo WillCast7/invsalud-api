@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -69,4 +70,10 @@ public class OrderEntity {
     private BigDecimal priceIva;
 
     private BigDecimal subtotal;
+    
+    @Column(name = "quote_template_order_id")
+    private UUID quoteTemplateOrderId;
+
+    @Column(name = "quote_template_sold_id")
+    private UUID quoteTemplateSoldId;
 }

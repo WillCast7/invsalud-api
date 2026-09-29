@@ -9,6 +9,7 @@ import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.repository.ProductRepository;
 import com.aurealab.model.specs.ProductSpecs;
 import com.aurealab.service.ConfigParamService;
+import com.aurealab.service.Inventory.DocumentSequenceService;
 import com.aurealab.service.Inventory.PrescriptionInventoryService;
 import com.aurealab.service.Inventory.ProductService;
 import com.aurealab.util.JwtUtils;
@@ -37,6 +38,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     PrescriptionInventoryService prescriptionInventoryService;
+
+    @Autowired
+    DocumentSequenceService documentSequenceService;
+
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -93,6 +98,14 @@ public class ProductServiceImpl implements ProductService {
 
     public ResponseEntity<APIResponseDTO<ProductDTO>> saveProduct(ProductDTO product){
         ProductEntity productEntity = ProductMapper.toEntity(product);
+        productEntity.setCode(
+                productEntity.getCode()== null ?
+                        documentSequenceService.getNextInvoiceNumber(
+                                product.isPublicHealth() ?
+                                    constants.configParam.publicedicinePrefix :constants.configParam.medicinePrefix
+                        ) : product.code()
+        );
+
         productEntity.setCreatedBy(jwtUtils.getCurrentUserId());
         return ResponseEntity.ok(
             APIResponseDTO.success(

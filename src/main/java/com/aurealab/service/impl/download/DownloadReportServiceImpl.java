@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
 import com.aurealab.dto.CashRegister.response.CashMovementResponseDTO;
 import com.aurealab.dto.CashRegister.response.CashSessionSummaryDTO;
@@ -36,6 +37,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.html.simpleparser.StyleSheet;
 import java.awt.Color;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -106,7 +108,13 @@ public class DownloadReportServiceImpl implements DownloadReportService {
     @Autowired
     private com.aurealab.service.Inventory.RecipeInventoryService recipeInventoryService;
 
+    @Override
     public ResponseEntity<InputStreamResource> downloadOrder(Long orderId) {
+        return downloadOrder(orderId, null);
+    }
+
+    @Override
+    public String getOrderHtml(Long orderId, UUID templateId) {
         // 1. Fetch order
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new DownloadException("No se encontró la cotización con ID: " + orderId));
@@ -119,52 +127,62 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             default -> "RECETARIOS";
         };
 
-        System.out.println("antes de busscar la plantilla");
-
         // 3. Fetch template
-        DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COTIZACION", templateCategory, true)
-                .or(() -> documentTemplateRepository.findByCategoryAndIsDefault(templateCategory, true))
-                .orElse(null);
+        DocumentTemplateEntity template = null;
+        UUID targetTemplateId = templateId != null ? templateId : order.getQuoteTemplateOrderId();
+        if (targetTemplateId != null) {
+            template = documentTemplateRepository.findById(targetTemplateId).orElse(null);
+        }
+        if (template == null) {
+            template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COTIZACION", templateCategory, true)
+                    .or(() -> documentTemplateRepository.findByCategoryAndIsDefault(templateCategory, true))
+                    .orElse(null);
+        }
 
         String html;
         if (template != null && template.getHtmlContent() != null && !template.getHtmlContent().trim().isEmpty()) {
             html = template.getHtmlContent();
-            if (templateCategory.equals("RECETARIOS") && (html.contains("orderTotal") || html.contains("Señor. (A):") || !html.contains("width=\"65%\""))) {
-                html = getStandardRecipeQuoteTemplate();
-            } else if ((templateCategory.equals("MEDICAMENTOS") || templateCategory.equals("MEDICAMENTOS_SP")) && (html.contains("recipe-quote-preview") || html.contains("quote-table") || html.contains("RECIPE_QUOTE_CSS") || !html.contains("width=\"65%\""))) {
-                html = getStandardMedicineQuoteTemplate();
-            }
         } else if (templateCategory.equals("RECETARIOS")) {
             html = getStandardRecipeQuoteTemplate();
         } else if (templateCategory.equals("MEDICAMENTOS") || templateCategory.equals("MEDICAMENTOS_SP")) {
             html = getStandardMedicineQuoteTemplate();
         } else {
-            throw new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory);
+            throw new DownloadException("Esta cotización no tiene ningún template asignado");
         }
 
         // 4. Fetch company & user info (needed for company headers)
         UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
 
         // 5. Replace variables in template HTML
-        html = replaceCompanyVariables(html, userDTO.getCompany());
-        html = replaceOrderVariables(html, order);
+        html = replaceCompanyVariables(html, userDTO != null ? userDTO.getCompany() : null);
         html = replaceThirdPartyVariables(html, order.getThirdParty());
         html = parseOrderTableRows(html, order);
+        html = replaceOrderVariables(html, order);
 
-        System.out.println("despues de parsear variables en el html");
+        html = wrapHtmlDocument(html, template != null ? template.getCssContent() : null);
 
-        // 6. Generate PDF using centralized helper
-        byte[] pdfBytes = generatePdfFromHtml(html, "la cotización");
-        ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
+        return html;
+    }
 
-        // 7. Configure response headers
+    @Override
+    public ResponseEntity<InputStreamResource> downloadOrder(Long orderId, UUID templateId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new DownloadException("No se encontró la cotización con ID: " + orderId));
+
+        String html = getOrderHtml(orderId, templateId);
+        String printableHtml = injectPrintScript(html);
+
+        byte[] htmlBytes = printableHtml.getBytes(StandardCharsets.UTF_8);
+        ByteArrayInputStream bis = new ByteArrayInputStream(htmlBytes);
+
+        // Configure response headers
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=cotizacion-" + order.getOrderCode() + ".pdf");
+        headers.add("Content-Disposition", "inline; filename=cotizacion-" + order.getOrderCode() + ".html");
         
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
+                .contentType(MediaType.valueOf("text/html;charset=UTF-8"))
                 .body(new InputStreamResource(bis));
     }
 
@@ -349,7 +367,7 @@ public class DownloadReportServiceImpl implements DownloadReportService {
     private String replaceCurrencyVar(String html, String varName, String value) {
         if (html == null) return "";
         if (value == null) value = "";
-        String regex = "(?i)\\$?\\s*\\{\\{\\s*" + Pattern.quote(varName) + "\\s*\\}\\}";
+        String regex = "(?i)\\\\?\\$?\\s*\\{\\{\\s*" + Pattern.quote(varName) + "\\s*\\}\\}";
         return html.replaceAll(regex, Matcher.quoteReplacement(value));
     }
 
@@ -493,17 +511,17 @@ public class DownloadReportServiceImpl implements DownloadReportService {
             if (nextTrClose == -1) break;
 
             String trContent = html.substring(trIndex, nextTrClose + 5);
-            if (trContent.toLowerCase().contains("item.") || trContent.toLowerCase().contains("order.")) {
+            if (trContent.toLowerCase().contains("item.")) {
                 StringBuilder tableRows = new StringBuilder();
 
                 boolean isRecipe = order.getType() != null && order.getType().equals(constants.productTypes.Recipe);
 
                 if (isRecipe) {
                     // Recetarios: solo 1 item (no recorre bucle for de múltiples medicamentos)
-                    OrderItemEntity item = !order.getItems().isEmpty() ? order.getItems().get(0) : null;
-                    long units = item != null ? item.getUnits() : 1L;
-                    BigDecimal priceUnit = item != null ? item.getPriceUnit() : BigDecimal.valueOf(2000);
-                    BigDecimal priceTotal = item != null ? item.getPriceTotal() : order.getTotal();
+                    OrderItemEntity item = (order.getItems() != null && !order.getItems().isEmpty()) ? order.getItems().get(0) : null;
+                    long units = item != null && item.getUnits() != null ? item.getUnits() : 1L;
+                    BigDecimal priceUnit = item != null && item.getPriceUnit() != null ? item.getPriceUnit() : BigDecimal.valueOf(2000);
+                    BigDecimal priceTotal = item != null && item.getPriceTotal() != null ? item.getPriceTotal() : order.getTotal();
                     BigDecimal subtotalVal = order.getSubtotal() != null ? order.getSubtotal() : order.getTotal();
                     BigDecimal priceIvaVal = order.getPriceIva() != null ? order.getPriceIva() : BigDecimal.ZERO;
 
@@ -558,7 +576,8 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                         rowHtml = replaceVar(rowHtml, "item.product.concentration", concentration != null ? concentration : "");
                         rowHtml = replaceVar(rowHtml, "item.inventory.expirationDate", expirationDate != null ? expirationDate : "");
                         rowHtml = replaceVar(rowHtml, "item.expirationDate", expirationDate != null ? expirationDate : "");
-                        rowHtml = replaceVar(rowHtml, "item.units", String.valueOf(item.getUnits()));
+                        rowHtml = replaceVar(rowHtml, "item.units", String.valueOf(item.getUnits() != null ? item.getUnits() : 0));
+                        rowHtml = replaceVar(rowHtml, "item.quantity", String.valueOf(item.getUnits() != null ? item.getUnits() : 0));
                         rowHtml = replaceCurrencyVar(rowHtml, "item.priceUnit", formatCurrency(item.getPriceUnit()));
                         rowHtml = replaceCurrencyVar(rowHtml, "item.priceTotal", formatCurrency(item.getPriceTotal()));
 
@@ -919,6 +938,121 @@ public class DownloadReportServiceImpl implements DownloadReportService {
   </div>
 </div>
         """;
+    }
+
+    private String getStandardMedicineSaleTemplate() {
+        return getStandardMedicineQuoteTemplate()
+                .replace("COTIZACION", "ORDEN DE SALIDA")
+                .replace("Cotización", "Orden de Salida")
+                .replace("{{ order.orderCode }}", "ORDEN DE SALIDA Nº {{ order.soldCode }}")
+                .replace("{{ order.createdAt }}", "{{ order.soldAt }}");
+    }
+
+    private String wrapHtmlDocument(String html, String cssContent) {
+        if (html == null) return "";
+        if (html.toLowerCase().contains("<!doctype html>") || html.toLowerCase().contains("<html")) {
+            return html;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
+        sb.append("  <meta charset=\"UTF-8\" />\n");
+        sb.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n");
+        sb.append("  <title>Documento</title>\n");
+        sb.append("  <style>\n");
+        sb.append("""
+@page {
+  size: Letter;
+  margin: 0;
+}
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #525659;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.page {
+  position: relative;
+  width: 8.5in;
+  min-width: 8.5in;
+  max-width: 8.5in;
+  height: 11in;
+  min-height: 11in;
+  max-height: 11in;
+  overflow: hidden;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  color: #000;
+  box-sizing: border-box;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  margin: 15px auto;
+  page-break-after: always;
+}
+.page:last-child {
+  page-break-after: auto;
+}
+.a4-document-print {
+  background: #fff;
+  padding: 20mm;
+  margin: 15px auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+@media print {
+  html, body {
+    background-color: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  .page {
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always !important;
+  }
+  .page:last-child {
+    page-break-after: auto !important;
+  }
+  .a4-document-print {
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+""");
+
+        if (cssContent != null && !cssContent.trim().isEmpty()) {
+            sb.append("\n").append(cssContent.trim()).append("\n");
+        }
+        sb.append("  </style>\n</head>\n<body>\n");
+        sb.append(html);
+        sb.append("\n</body>\n</html>");
+
+        return sb.toString();
+    }
+
+    private String injectPrintScript(String html) {
+        String script = """
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        window.print();
+    }, 400);
+});
+</script>
+""";
+        if (html.contains("</body>")) {
+            return html.replace("</body>", script + "</body>");
+        } else {
+            return html + script;
+        }
     }
 
     private String prepareHtmlForPdf(String html) {
@@ -1315,6 +1449,11 @@ public class DownloadReportServiceImpl implements DownloadReportService {
 
     @Override
     public ResponseEntity<InputStreamResource> downloadSale(Long saleId) {
+        return downloadSale(saleId, null);
+    }
+
+    @Override
+    public String getSaleHtml(Long saleId, UUID templateId) {
         // 1. Fetch sale (stored in orders table)
         OrderEntity order = orderRepository.findById(saleId)
                 .orElseThrow(() -> new DownloadException("No se encontró la venta con ID: " + saleId));
@@ -1328,48 +1467,72 @@ public class DownloadReportServiceImpl implements DownloadReportService {
         };
 
         // 3. Fetch template
-        DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("VENTA", templateCategory, true)
-                .or(() -> documentTemplateRepository.findByCategoryAndIsDefault(templateCategory, true))
-                .orElse(null);
+        DocumentTemplateEntity template = null;
+        UUID targetTemplateId = templateId != null ? templateId : order.getQuoteTemplateSoldId();
+        if (targetTemplateId != null) {
+            template = documentTemplateRepository.findById(targetTemplateId).orElse(null);
+        }
+        if (template == null) {
+            template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("VENTA", templateCategory, true)
+                    .or(() -> documentTemplateRepository.findByCategoryAndIsDefault(templateCategory, true))
+                    .orElse(null);
+        }
 
         String html;
         if (template != null && template.getHtmlContent() != null && !template.getHtmlContent().trim().isEmpty()) {
             html = template.getHtmlContent();
-            if (templateCategory.equals("RECETARIOS") && (html.contains("orderTotal") || !html.contains("width=\"65%\""))) {
-                html = getStandardRecipeSaleTemplate();
-            }
         } else if (templateCategory.equals("RECETARIOS")) {
             html = getStandardRecipeSaleTemplate();
+        } else if (templateCategory.equals("MEDICAMENTOS") || templateCategory.equals("MEDICAMENTOS_SP")) {
+            html = getStandardMedicineSaleTemplate();
         } else {
-            throw new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo VENTA");
+            throw new DownloadException("Esta venta no tiene ningún template asignado");
         }
 
         // 4. Fetch company & user info
         UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
 
         // 5. Replace variables in template HTML
-        String code = order.getSoldCode() != null ? order.getSoldCode() : (order.getOrderCode() != null ? order.getOrderCode() : String.valueOf(saleId));
-        html = replaceCompanyVariables(html, userDTO.getCompany());
-        html = replaceOrderVariables(html, order);
+        html = replaceCompanyVariables(html, userDTO != null ? userDTO.getCompany() : null);
         html = replaceThirdPartyVariables(html, order.getThirdParty());
         html = parseOrderTableRows(html, order);
+        html = replaceOrderVariables(html, order);
 
-        // Generate PDF
-        byte[] pdfBytes = generatePdfFromHtml(html, "la venta");
-        ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
+        html = wrapHtmlDocument(html, template != null ? template.getCssContent() : null);
+
+        return html;
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadSale(Long saleId, UUID templateId) {
+        OrderEntity order = orderRepository.findById(saleId)
+                .orElseThrow(() -> new DownloadException("No se encontró la venta con ID: " + saleId));
+
+        String html = getSaleHtml(saleId, templateId);
+        String printableHtml = injectPrintScript(html);
+
+        String code = order.getSoldCode() != null ? order.getSoldCode() : (order.getOrderCode() != null ? order.getOrderCode() : String.valueOf(saleId));
+
+        byte[] htmlBytes = printableHtml.getBytes(StandardCharsets.UTF_8);
+        ByteArrayInputStream bis = new ByteArrayInputStream(htmlBytes);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=venta-" + code + ".pdf");
+        headers.add("Content-Disposition", "inline; filename=venta-" + code + ".html");
         
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
+                .contentType(MediaType.valueOf("text/html;charset=UTF-8"))
                 .body(new InputStreamResource(bis));
     }
 
     @Override
     public ResponseEntity<InputStreamResource> downloadPurchase(Long purchaseId) {
+        return downloadPurchase(purchaseId, null);
+    }
+
+    @Override
+    public String getPurchaseHtml(Long purchaseId, UUID templateId) {
         // 1. Fetch purchase
         PurchasingEntity purchase = purchasingRepository.findById(purchaseId)
                 .orElseThrow(() -> new DownloadException("No se encontró la compra con ID: " + purchaseId));
@@ -1383,31 +1546,58 @@ public class DownloadReportServiceImpl implements DownloadReportService {
         };
 
         // 3. Fetch template
-        DocumentTemplateEntity template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COMPRA", templateCategory, true)
-                .orElseThrow(() -> new DownloadException("No se encontró una plantilla predeterminada para la categoría: " + templateCategory + " y tipo COMPRA"));
+        DocumentTemplateEntity template = null;
+        UUID targetTemplateId = templateId != null ? templateId : purchase.getQuoteTemplateId();
+        if (targetTemplateId == null && purchase.getPurchasingRecipe() != null) {
+            targetTemplateId = purchase.getPurchasingRecipe().getQuoteTemplateId();
+        }
+        if (targetTemplateId != null) {
+            template = documentTemplateRepository.findById(targetTemplateId).orElse(null);
+        }
+        if (template == null) {
+            template = documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("COMPRA", templateCategory, true)
+                    .or(() -> documentTemplateRepository.findByDocumentTypeAndCategoryAndIsDefault("INGRESO", templateCategory, true))
+                    .orElse(null);
+        }
+        if (template == null) {
+            throw new DownloadException("Esta compra no tiene ningún template asignado");
+        }
 
         // 4. Fetch company & user info
         UserDTO userDTO = userService.getUserById(jwtUtils.getCurrentUserId());
 
         // 5. Replace variables in template HTML
-        String code = purchase.getPurchasedCode() != null ? purchase.getPurchasedCode() : String.valueOf(purchaseId);
         String html = template.getHtmlContent();
-        html = replaceCompanyVariables(html, userDTO.getCompany());
+        html = replaceCompanyVariables(html, userDTO != null ? userDTO.getCompany() : null);
         html = replaceThirdPartyVariables(html, purchase.getThirdParty());
         html = replacePurchaseVariables(html, purchase);
         html = parsePurchaseTableRows(html, purchase);
 
-        // Generate PDF
-        byte[] pdfBytes = generatePdfFromHtml(html, "la compra");
-        ByteArrayInputStream bis = new ByteArrayInputStream(pdfBytes);
+        html = wrapHtmlDocument(html, template != null ? template.getCssContent() : null);
+
+        return html;
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadPurchase(Long purchaseId, UUID templateId) {
+        PurchasingEntity purchase = purchasingRepository.findById(purchaseId)
+                .orElseThrow(() -> new DownloadException("No se encontró la compra con ID: " + purchaseId));
+
+        String html = getPurchaseHtml(purchaseId, templateId);
+        String printableHtml = injectPrintScript(html);
+
+        String code = purchase.getPurchasedCode() != null ? purchase.getPurchasedCode() : String.valueOf(purchaseId);
+
+        byte[] htmlBytes = printableHtml.getBytes(StandardCharsets.UTF_8);
+        ByteArrayInputStream bis = new ByteArrayInputStream(htmlBytes);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=compra-" + code + ".pdf");
+        headers.add("Content-Disposition", "inline; filename=compra-" + code + ".html");
         
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
+                .contentType(MediaType.valueOf("text/html;charset=UTF-8"))
                 .body(new InputStreamResource(bis));
     }
 

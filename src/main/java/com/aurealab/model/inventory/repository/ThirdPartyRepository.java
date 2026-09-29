@@ -13,8 +13,9 @@ public interface ThirdPartyRepository extends JpaRepository<ThirdPartyEntity, Lo
     @Query("SELECT tp " +
             "FROM ThirdPartyEntity tp " +
             "JOIN FETCH tp.roles r " +
-            "WHERE tp.documentNumber like CONCAT('%', :documentNumber, '%')")
-    Set<ThirdPartyEntity> findByDniNumberContaining(String documentNumber);
+            "WHERE tp.documentNumber LIKE CONCAT('%', :documentNumber, '%') " +
+            "OR LOWER(tp.fullName) LIKE LOWER(CONCAT('%', :documentNumber, '%'))")
+    Set<ThirdPartyEntity> findByDniNumberContaining(@Param("documentNumber") String documentNumber);
 
     @Query("SELECT tp " +
             "FROM ThirdPartyEntity tp " +

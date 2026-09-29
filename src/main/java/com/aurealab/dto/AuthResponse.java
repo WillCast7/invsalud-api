@@ -9,6 +9,7 @@ public record AuthResponse(String username,
                       String names,
                       String jwt,
                       Set<MenuDTO> menus,
-                      Long rid) {
+                      Long rid,
+                      Boolean mustChangePassword) {
 
 }
