@@ -98,10 +98,12 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         // Parse Dates safely for summary box
+        boolean customDateRange = false;
         LocalDateTime start = null;
         if (startDate != null && !startDate.trim().isEmpty()) {
             try {
                 start = LocalDate.parse(startDate).atStartOfDay();
+                customDateRange = true;
             } catch (Exception e) {
                 // Ignore or log date parsing error
             }
@@ -110,29 +112,52 @@ public class DashboardServiceImpl implements DashboardService {
         if (endDate != null && !endDate.trim().isEmpty()) {
             try {
                 end = LocalDate.parse(endDate).atTime(LocalTime.MAX);
+                customDateRange = true;
             } catch (Exception e) {
                 // Ignore or log date parsing error
             }
         }
 
         // Default to today if no dates are provided
-        if (start == null || end == null) {
+        if (start == null && end == null) {
             LocalDate today = LocalDate.now();
             start = today.atStartOfDay();
             end = today.atTime(LocalTime.MAX);
+        } else if (start != null && end == null) {
+            end = start.with(LocalTime.MAX);
+        } else if (start == null && end != null) {
+            start = end.with(LocalTime.MIN);
         }
 
-        // 3. Calculate 6-month historical list for charting (ultimo semestre)
-        LocalDateTime semesterEnd = LocalDateTime.now();
-        LocalDateTime semesterStart = semesterEnd.minusMonths(5).withDayOfMonth(1).toLocalDate().atStartOfDay();
+        // 3. Calculate historical list for charting
+        LocalDateTime chartStart;
+        LocalDateTime chartEnd;
+        if (customDateRange) {
+            chartStart = start;
+            chartEnd = end;
+        } else {
+            chartEnd = LocalDateTime.now();
+            chartStart = chartEnd.minusMonths(5).withDayOfMonth(1).toLocalDate().atStartOfDay();
+        }
 
         List<MonthlyIncomeDTO> monthlyIncomes = new ArrayList<>();
 
-        // Generate the template of the last 6 months to guarantee exactly 6 entries
-        List<java.time.YearMonth> last6Months = new ArrayList<>();
-        java.time.YearMonth currentMonth = java.time.YearMonth.from(semesterEnd);
-        for (int i = 5; i >= 0; i--) {
-            last6Months.add(currentMonth.minusMonths(i));
+        // Generate the template of months between chartStart and chartEnd
+        List<java.time.YearMonth> chartMonths = new ArrayList<>();
+        java.time.YearMonth startYm = java.time.YearMonth.from(chartStart);
+        java.time.YearMonth endYm = java.time.YearMonth.from(chartEnd);
+        if (startYm.isAfter(endYm)) {
+            java.time.YearMonth temp = startYm;
+            startYm = endYm;
+            endYm = temp;
+        }
+        java.time.YearMonth curr = startYm;
+        while (!curr.isAfter(endYm)) {
+            chartMonths.add(curr);
+            curr = curr.plusMonths(1);
+        }
+        if (chartMonths.isEmpty()) {
+            chartMonths.add(java.time.YearMonth.from(chartEnd));
         }
 
         // Determine if third party is a client or provider
@@ -148,9 +173,9 @@ public class DashboardServiceImpl implements DashboardService {
 
         if (thirdPartyId == null && productId == null) {
             // Case 1: Both are empty -> Current monthly sales incomes
-            List<OrderEntity> salesList = orderRepository.findSalesByDateRange(semesterStart, semesterEnd);
+            List<OrderEntity> salesList = orderRepository.findSalesByDateRange(chartStart, chartEnd);
             Map<java.time.YearMonth, BigDecimal> monthlyMap = new LinkedHashMap<>();
-            for (java.time.YearMonth ym : last6Months) {
+            for (java.time.YearMonth ym : chartMonths) {
                 monthlyMap.put(ym, BigDecimal.ZERO);
             }
             for (OrderEntity o : salesList) {
@@ -165,11 +190,11 @@ public class DashboardServiceImpl implements DashboardService {
                 .collect(Collectors.toList());
 
         } else if (thirdPartyId != null && productId == null) {
-            // Case 2: Only thirdParty -> Monthly history (compras del tercero)
+            // Case 2: Only thirdParty -> Monthly history (compras/ventas del tercero)
             if (isCliente) {
-                List<OrderEntity> salesList = orderRepository.findSalesByThirdPartyAndDateRange(thirdPartyId, semesterStart, semesterEnd);
+                List<OrderEntity> salesList = orderRepository.findSalesByThirdPartyAndDateRange(thirdPartyId, chartStart, chartEnd);
                 Map<java.time.YearMonth, BigDecimal> monthlyMap = new LinkedHashMap<>();
-                for (java.time.YearMonth ym : last6Months) {
+                for (java.time.YearMonth ym : chartMonths) {
                     monthlyMap.put(ym, BigDecimal.ZERO);
                 }
                 for (OrderEntity o : salesList) {
@@ -183,9 +208,9 @@ public class DashboardServiceImpl implements DashboardService {
                     .map(entry -> createMonthlyIncomeDTO(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
             } else {
-                List<PurchasingEntity> purchasesList = purchasingRepository.findPurchasesByThirdPartyAndDateRange(thirdPartyId, semesterStart, semesterEnd);
+                List<PurchasingEntity> purchasesList = purchasingRepository.findPurchasesByThirdPartyAndDateRange(thirdPartyId, chartStart, chartEnd);
                 Map<java.time.YearMonth, BigDecimal> monthlyMap = new LinkedHashMap<>();
-                for (java.time.YearMonth ym : last6Months) {
+                for (java.time.YearMonth ym : chartMonths) {
                     monthlyMap.put(ym, BigDecimal.ZERO);
                 }
                 for (PurchasingEntity p : purchasesList) {
@@ -202,9 +227,9 @@ public class DashboardServiceImpl implements DashboardService {
 
         } else if (thirdPartyId == null && productId != null) {
             // Case 3: Only product -> Monthly sales of this product
-            List<OrderEntity> salesList = orderRepository.findSalesByProductAndDateRange(productId, semesterStart, semesterEnd);
+            List<OrderEntity> salesList = orderRepository.findSalesByProductAndDateRange(productId, chartStart, chartEnd);
             Map<java.time.YearMonth, BigDecimal> monthlyMap = new LinkedHashMap<>();
-            for (java.time.YearMonth ym : last6Months) {
+            for (java.time.YearMonth ym : chartMonths) {
                 monthlyMap.put(ym, BigDecimal.ZERO);
             }
             for (OrderEntity o : salesList) {
@@ -224,11 +249,11 @@ public class DashboardServiceImpl implements DashboardService {
                 .collect(Collectors.toList());
 
         } else {
-            // Case 4: Both thirdParty and product -> Monthly sales of this product for this third party
+            // Case 4: Both thirdParty and product -> Monthly sales/purchases of this product for this third party
             if (isCliente) {
-                List<OrderEntity> salesList = orderRepository.findSalesByThirdPartyAndProductAndDateRange(thirdPartyId, productId, semesterStart, semesterEnd);
+                List<OrderEntity> salesList = orderRepository.findSalesByThirdPartyAndProductAndDateRange(thirdPartyId, productId, chartStart, chartEnd);
                 Map<java.time.YearMonth, BigDecimal> monthlyMap = new LinkedHashMap<>();
-                for (java.time.YearMonth ym : last6Months) {
+                for (java.time.YearMonth ym : chartMonths) {
                     monthlyMap.put(ym, BigDecimal.ZERO);
                 }
                 for (OrderEntity o : salesList) {
@@ -247,9 +272,9 @@ public class DashboardServiceImpl implements DashboardService {
                     .map(entry -> createMonthlyIncomeDTO(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
             } else {
-                List<PurchasingEntity> purchasesList = purchasingRepository.findPurchasesByThirdPartyAndProductAndDateRange(thirdPartyId, productId, semesterStart, semesterEnd);
+                List<PurchasingEntity> purchasesList = purchasingRepository.findPurchasesByThirdPartyAndProductAndDateRange(thirdPartyId, productId, chartStart, chartEnd);
                 Map<java.time.YearMonth, BigDecimal> monthlyMap = new LinkedHashMap<>();
-                for (java.time.YearMonth ym : last6Months) {
+                for (java.time.YearMonth ym : chartMonths) {
                     monthlyMap.put(ym, BigDecimal.ZERO);
                 }
                 for (PurchasingEntity p : purchasesList) {
@@ -270,18 +295,102 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
 
-        // 4. Generate payment method breakdown for sales in the date range
-        BigDecimal rangeSalesTotal = orderRepository.sumSalesTotalByDate(start, end);
+        // 4. Generate payment method breakdown for sales in the date range (filtered by thirdParty and product)
+        BigDecimal rangeSalesTotal;
+        if (thirdPartyId == null && productId == null) {
+            rangeSalesTotal = orderRepository.sumSalesTotalByDate(start, end);
+        } else if (thirdPartyId != null && productId == null) {
+            rangeSalesTotal = orderRepository.sumSalesTotalByDateAndThirdParty(thirdPartyId, start, end);
+        } else if (thirdPartyId == null && productId != null) {
+            rangeSalesTotal = orderRepository.sumSalesTotalByDateAndProduct(productId, start, end);
+        } else {
+            rangeSalesTotal = orderRepository.sumSalesTotalByDateAndThirdPartyAndProduct(thirdPartyId, productId, start, end);
+        }
 
         List<PaymentMethodBreakdownDTO> paymentMethods = new ArrayList<>();
         paymentMethods.add(new PaymentMethodBreakdownDTO("PSE", rangeSalesTotal.multiply(new BigDecimal("0.60"))));
         paymentMethods.add(new PaymentMethodBreakdownDTO("Efectivo", rangeSalesTotal.multiply(new BigDecimal("0.30"))));
         paymentMethods.add(new PaymentMethodBreakdownDTO("Transferencia Bancaria", rangeSalesTotal.multiply(new BigDecimal("0.10"))));
 
-        // 5. Calculate purchases total in the date range
-        BigDecimal rangePurchasesTotal = purchasingRepository.sumPurchasesTotalByDate(start, end);
+        // 5. Calculate purchases total in the date range (filtered by thirdParty and product)
+        BigDecimal rangePurchasesTotal;
+        if (thirdPartyId == null && productId == null) {
+            rangePurchasesTotal = purchasingRepository.sumPurchasesTotalByDate(start, end);
+        } else if (thirdPartyId != null && productId == null) {
+            rangePurchasesTotal = purchasingRepository.sumPurchasesTotalByDateAndThirdParty(thirdPartyId, start, end);
+        } else if (thirdPartyId == null && productId != null) {
+            rangePurchasesTotal = purchasingRepository.sumPurchasesTotalByDateAndProduct(productId, start, end);
+        } else {
+            rangePurchasesTotal = purchasingRepository.sumPurchasesTotalByDateAndThirdPartyAndProduct(thirdPartyId, productId, start, end);
+        }
 
         // 6. Calculate 3x3 statistics for Compras, Cotizaciones, Ventas by product type in the date range
+        // Compras
+        BigDecimal purchasesMedicines;
+        BigDecimal purchasesMedicinesSp;
+        BigDecimal purchasesRecipes;
+        if (thirdPartyId == null && productId == null) {
+            purchasesMedicines = purchasingRepository.sumTotalByTypeAndDate(constants.productTypes.SpecialControl, start, end);
+            purchasesMedicinesSp = purchasingRepository.sumTotalByTypeAndDate(constants.productTypes.PublicHealth, start, end);
+            purchasesRecipes = purchasingRepository.sumTotalByTypeAndDate(constants.productTypes.Recipe, start, end);
+        } else if (thirdPartyId != null && productId == null) {
+            purchasesMedicines = purchasingRepository.sumTotalByTypeAndDateAndThirdParty(constants.productTypes.SpecialControl, thirdPartyId, start, end);
+            purchasesMedicinesSp = purchasingRepository.sumTotalByTypeAndDateAndThirdParty(constants.productTypes.PublicHealth, thirdPartyId, start, end);
+            purchasesRecipes = purchasingRepository.sumTotalByTypeAndDateAndThirdParty(constants.productTypes.Recipe, thirdPartyId, start, end);
+        } else if (thirdPartyId == null && productId != null) {
+            purchasesMedicines = purchasingRepository.sumTotalByTypeAndDateAndProduct(constants.productTypes.SpecialControl, productId, start, end);
+            purchasesMedicinesSp = purchasingRepository.sumTotalByTypeAndDateAndProduct(constants.productTypes.PublicHealth, productId, start, end);
+            purchasesRecipes = BigDecimal.ZERO;
+        } else {
+            purchasesMedicines = purchasingRepository.sumTotalByTypeAndDateAndThirdPartyAndProduct(constants.productTypes.SpecialControl, thirdPartyId, productId, start, end);
+            purchasesMedicinesSp = purchasingRepository.sumTotalByTypeAndDateAndThirdPartyAndProduct(constants.productTypes.PublicHealth, thirdPartyId, productId, start, end);
+            purchasesRecipes = BigDecimal.ZERO;
+        }
+
+        // Cotizaciones
+        BigDecimal quotesMedicines;
+        BigDecimal quotesMedicinesSp;
+        BigDecimal quotesRecipes;
+        if (thirdPartyId == null && productId == null) {
+            quotesMedicines = orderRepository.sumTotalByIsSoldAndTypeAndDate(false, constants.productTypes.SpecialControl, start, end);
+            quotesMedicinesSp = orderRepository.sumTotalByIsSoldAndTypeAndDate(false, constants.productTypes.PublicHealth, start, end);
+            quotesRecipes = orderRepository.sumTotalByIsSoldAndTypeAndDate(false, constants.productTypes.Recipe, start, end);
+        } else if (thirdPartyId != null && productId == null) {
+            quotesMedicines = orderRepository.sumTotalByIsSoldAndTypeAndDateAndThirdParty(false, constants.productTypes.SpecialControl, thirdPartyId, start, end);
+            quotesMedicinesSp = orderRepository.sumTotalByIsSoldAndTypeAndDateAndThirdParty(false, constants.productTypes.PublicHealth, thirdPartyId, start, end);
+            quotesRecipes = orderRepository.sumTotalByIsSoldAndTypeAndDateAndThirdParty(false, constants.productTypes.Recipe, thirdPartyId, start, end);
+        } else if (thirdPartyId == null && productId != null) {
+            quotesMedicines = orderRepository.sumTotalByIsSoldAndTypeAndDateAndProduct(false, constants.productTypes.SpecialControl, productId, start, end);
+            quotesMedicinesSp = orderRepository.sumTotalByIsSoldAndTypeAndDateAndProduct(false, constants.productTypes.PublicHealth, productId, start, end);
+            quotesRecipes = BigDecimal.ZERO;
+        } else {
+            quotesMedicines = orderRepository.sumTotalByIsSoldAndTypeAndDateAndThirdPartyAndProduct(false, constants.productTypes.SpecialControl, thirdPartyId, productId, start, end);
+            quotesMedicinesSp = orderRepository.sumTotalByIsSoldAndTypeAndDateAndThirdPartyAndProduct(false, constants.productTypes.PublicHealth, thirdPartyId, productId, start, end);
+            quotesRecipes = BigDecimal.ZERO;
+        }
+
+        // Ventas
+        BigDecimal salesMedicines;
+        BigDecimal salesMedicinesSp;
+        BigDecimal salesRecipes;
+        if (thirdPartyId == null && productId == null) {
+            salesMedicines = orderRepository.sumTotalSalesByTypeAndDate(constants.productTypes.SpecialControl, start, end);
+            salesMedicinesSp = orderRepository.sumTotalSalesByTypeAndDate(constants.productTypes.PublicHealth, start, end);
+            salesRecipes = orderRepository.sumTotalSalesByTypeAndDate(constants.productTypes.Recipe, start, end);
+        } else if (thirdPartyId != null && productId == null) {
+            salesMedicines = orderRepository.sumTotalSalesByTypeAndDateAndThirdParty(constants.productTypes.SpecialControl, thirdPartyId, start, end);
+            salesMedicinesSp = orderRepository.sumTotalSalesByTypeAndDateAndThirdParty(constants.productTypes.PublicHealth, thirdPartyId, start, end);
+            salesRecipes = orderRepository.sumTotalSalesByTypeAndDateAndThirdParty(constants.productTypes.Recipe, thirdPartyId, start, end);
+        } else if (thirdPartyId == null && productId != null) {
+            salesMedicines = orderRepository.sumTotalSalesByTypeAndDateAndProduct(constants.productTypes.SpecialControl, productId, start, end);
+            salesMedicinesSp = orderRepository.sumTotalSalesByTypeAndDateAndProduct(constants.productTypes.PublicHealth, productId, start, end);
+            salesRecipes = BigDecimal.ZERO;
+        } else {
+            salesMedicines = orderRepository.sumTotalSalesByTypeAndDateAndThirdPartyAndProduct(constants.productTypes.SpecialControl, thirdPartyId, productId, start, end);
+            salesMedicinesSp = orderRepository.sumTotalSalesByTypeAndDateAndThirdPartyAndProduct(constants.productTypes.PublicHealth, thirdPartyId, productId, start, end);
+            salesRecipes = BigDecimal.ZERO;
+        }
+
         CashSessionSummaryDTO summaries = CashSessionSummaryDTO.builder()
             .initialAmount(BigDecimal.ZERO)
             .totalIncome(rangeSalesTotal)
@@ -289,17 +398,17 @@ public class DashboardServiceImpl implements DashboardService {
             .netBalance(rangeSalesTotal.subtract(rangePurchasesTotal))
             .netCashBalance(rangeSalesTotal)
             // Compras
-            .purchasesMedicines(purchasingRepository.sumTotalByTypeAndDate(constants.productTypes.SpecialControl, start, end))
-            .purchasesMedicinesSp(purchasingRepository.sumTotalByTypeAndDate(constants.productTypes.PublicHealth, start, end))
-            .purchasesRecipes(purchasingRepository.sumTotalByTypeAndDate(constants.productTypes.Recipe, start, end))
+            .purchasesMedicines(purchasesMedicines)
+            .purchasesMedicinesSp(purchasesMedicinesSp)
+            .purchasesRecipes(purchasesRecipes)
             // Cotizaciones
-            .quotesMedicines(orderRepository.sumTotalByIsSoldAndTypeAndDate(false, constants.productTypes.SpecialControl, start, end))
-            .quotesMedicinesSp(orderRepository.sumTotalByIsSoldAndTypeAndDate(false, constants.productTypes.PublicHealth, start, end))
-            .quotesRecipes(orderRepository.sumTotalByIsSoldAndTypeAndDate(false, constants.productTypes.Recipe, start, end))
+            .quotesMedicines(quotesMedicines)
+            .quotesMedicinesSp(quotesMedicinesSp)
+            .quotesRecipes(quotesRecipes)
             // Ventas
-            .salesMedicines(orderRepository.sumTotalSalesByTypeAndDate(constants.productTypes.SpecialControl, start, end))
-            .salesMedicinesSp(orderRepository.sumTotalSalesByTypeAndDate(constants.productTypes.PublicHealth, start, end))
-            .salesRecipes(orderRepository.sumTotalSalesByTypeAndDate(constants.productTypes.Recipe, start, end))
+            .salesMedicines(salesMedicines)
+            .salesMedicinesSp(salesMedicinesSp)
+            .salesRecipes(salesRecipes)
             .build();
 
         // 7. Return complete DashboardResponseDTO

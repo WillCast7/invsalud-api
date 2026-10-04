@@ -36,11 +36,38 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
     @Query("SELECT COALESCE(SUM(o.total), 0) FROM OrderEntity o WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.soldAt BETWEEN :start AND :end")
     BigDecimal sumSalesTotalByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("SELECT COALESCE(SUM(o.total), 0) FROM OrderEntity o WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.thirdParty.id = :thirdPartyId AND o.soldAt BETWEEN :start AND :end")
+    BigDecimal sumSalesTotalByDateAndThirdParty(@Param("thirdPartyId") Long thirdPartyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM OrderEntity o JOIN o.items item WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND item.inventory.product.id = :productId AND o.soldAt BETWEEN :start AND :end")
+    BigDecimal sumSalesTotalByDateAndProduct(@Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM OrderEntity o JOIN o.items item WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.thirdParty.id = :thirdPartyId AND item.inventory.product.id = :productId AND o.soldAt BETWEEN :start AND :end")
+    BigDecimal sumSalesTotalByDateAndThirdPartyAndProduct(@Param("thirdPartyId") Long thirdPartyId, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     @Query("SELECT COALESCE(SUM(o.total), 0) FROM OrderEntity o WHERE o.isSold = :isSold AND o.isActive = true AND o.type = :type AND o.createdAt BETWEEN :start AND :end")
     BigDecimal sumTotalByIsSoldAndTypeAndDate(@Param("isSold") boolean isSold, @Param("type") String type, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("SELECT COALESCE(SUM(o.total), 0) FROM OrderEntity o WHERE o.isSold = :isSold AND o.isActive = true AND o.type = :type AND o.thirdParty.id = :thirdPartyId AND o.createdAt BETWEEN :start AND :end")
+    BigDecimal sumTotalByIsSoldAndTypeAndDateAndThirdParty(@Param("isSold") boolean isSold, @Param("type") String type, @Param("thirdPartyId") Long thirdPartyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM OrderEntity o JOIN o.items item WHERE o.isSold = :isSold AND o.isActive = true AND o.type = :type AND item.inventory.product.id = :productId AND o.createdAt BETWEEN :start AND :end")
+    BigDecimal sumTotalByIsSoldAndTypeAndDateAndProduct(@Param("isSold") boolean isSold, @Param("type") String type, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM OrderEntity o JOIN o.items item WHERE o.isSold = :isSold AND o.isActive = true AND o.type = :type AND o.thirdParty.id = :thirdPartyId AND item.inventory.product.id = :productId AND o.createdAt BETWEEN :start AND :end")
+    BigDecimal sumTotalByIsSoldAndTypeAndDateAndThirdPartyAndProduct(@Param("isSold") boolean isSold, @Param("type") String type, @Param("thirdPartyId") Long thirdPartyId, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     @Query("SELECT COALESCE(SUM(o.total), 0) FROM OrderEntity o WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.type = :type AND o.soldAt BETWEEN :start AND :end")
     BigDecimal sumTotalSalesByTypeAndDate(@Param("type") String type, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(o.total), 0) FROM OrderEntity o WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.type = :type AND o.thirdParty.id = :thirdPartyId AND o.soldAt BETWEEN :start AND :end")
+    BigDecimal sumTotalSalesByTypeAndDateAndThirdParty(@Param("type") String type, @Param("thirdPartyId") Long thirdPartyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM OrderEntity o JOIN o.items item WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.type = :type AND item.inventory.product.id = :productId AND o.soldAt BETWEEN :start AND :end")
+    BigDecimal sumTotalSalesByTypeAndDateAndProduct(@Param("type") String type, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM OrderEntity o JOIN o.items item WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.type = :type AND o.thirdParty.id = :thirdPartyId AND item.inventory.product.id = :productId AND o.soldAt BETWEEN :start AND :end")
+    BigDecimal sumTotalSalesByTypeAndDateAndThirdPartyAndProduct(@Param("type") String type, @Param("thirdPartyId") Long thirdPartyId, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("SELECT o FROM OrderEntity o WHERE o.isSold = true AND o.status = 'SOLD' AND o.isActive = true AND o.soldAt BETWEEN :start AND :end")
     List<OrderEntity> findSalesByDateRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);

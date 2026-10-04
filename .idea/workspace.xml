@@ -5,52 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="662083bc-8782-41fe-b4f7-68c6bca59ceb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DocumentTemplateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DocumentTemplateController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DownloadReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/DownloadReportController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/PurchasingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/controller/PurchasingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/AuthResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/OrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/OrderDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/PurchasingDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/PurchasingDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/PurchasingRecipeDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/PurchasingRecipeDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/ResolutionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/ResolutionDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/UserDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/request/PasswordRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/request/PasswordRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/tables/OrderTableDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/tables/OrderTableDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/tables/PurchasingTableDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/tables/PurchasingTableDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/tables/ResolutionTableDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/dto/tables/ResolutionTableDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/OrderMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/PurchasingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/PurchasingMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/PurchasingRecipeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/PurchasingRecipeMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/ResolutionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/mapper/inventory/ResolutionMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/UserEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/entity/UserEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/repository/DocumentTemplateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/aurea/repository/DocumentTemplateRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/OrderEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/OrderEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/PurchasingEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/PurchasingEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/PurchasingRecipeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/PurchasingRecipeEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/ResolutionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/entity/ResolutionEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/ThirdPartyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/ThirdPartyRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/ResolutionSpecs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/specs/ResolutionSpecs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DownloadReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/DownloadReportService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/DocumentTemplateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/DocumentTemplateService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/OrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PurchasingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/Inventory/PurchasingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserDetailServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/download/DownloadReportServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/download/DownloadReportServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/DocumentTemplateServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/DocumentTemplateServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/OrderServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/ProductServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/PurchasingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/ResolutionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/inventory/ResolutionServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/util/constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/util/constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/OrderRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PurchasingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/model/inventory/repository/PurchasingRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/DashboardServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/aurealab/service/impl/DashboardServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,28 +49,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Api local.executor": "Run",
-    "Maven.api [clean].executor": "Run",
-    "Maven.api [compile].executor": "Run",
-    "Maven.api [deploy].executor": "Run",
-    "Maven.api [validate].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.ApiApplication.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/israe/Desktop/projects/inventario/invsalud-api",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Api local.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.api [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.api [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.api [deploy].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.api [validate].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ApiApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/israe/Desktop/projects/inventario/invsalud-api&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\israe\Desktop\projects\inventario\api\src\main\java\com\aurealab\service" />

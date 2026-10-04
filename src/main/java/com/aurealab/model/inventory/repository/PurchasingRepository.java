@@ -33,11 +33,32 @@ public interface PurchasingRepository extends JpaRepository<PurchasingEntity, Lo
     @Query("SELECT COALESCE(SUM(p.total), 0) FROM PurchasingEntity p WHERE p.isActive = true AND p.createdAt BETWEEN :start AND :end")
     BigDecimal sumPurchasesTotalByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("SELECT COALESCE(SUM(p.total), 0) FROM PurchasingEntity p WHERE p.isActive = true AND p.thirdParty.id = :thirdPartyId AND p.createdAt BETWEEN :start AND :end")
+    BigDecimal sumPurchasesTotalByDateAndThirdParty(@Param("thirdPartyId") Long thirdPartyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM PurchasingEntity p JOIN p.items item WHERE p.isActive = true AND item.product.id = :productId AND p.createdAt BETWEEN :start AND :end")
+    BigDecimal sumPurchasesTotalByDateAndProduct(@Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM PurchasingEntity p JOIN p.items item WHERE p.isActive = true AND p.thirdParty.id = :thirdPartyId AND item.product.id = :productId AND p.createdAt BETWEEN :start AND :end")
+    BigDecimal sumPurchasesTotalByDateAndThirdPartyAndProduct(@Param("thirdPartyId") Long thirdPartyId, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     @Query("SELECT COALESCE(SUM(p.total), 0) FROM PurchasingEntity p WHERE p.isActive = true AND p.type = :type AND p.createdAt BETWEEN :start AND :end")
     BigDecimal sumTotalByTypeAndDate(@Param("type") String type, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("SELECT COALESCE(SUM(p.total), 0) FROM PurchasingEntity p WHERE p.isActive = true AND p.type = :type AND p.thirdParty.id = :thirdPartyId AND p.createdAt BETWEEN :start AND :end")
+    BigDecimal sumTotalByTypeAndDateAndThirdParty(@Param("type") String type, @Param("thirdPartyId") Long thirdPartyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM PurchasingEntity p JOIN p.items item WHERE p.isActive = true AND p.type = :type AND item.product.id = :productId AND p.createdAt BETWEEN :start AND :end")
+    BigDecimal sumTotalByTypeAndDateAndProduct(@Param("type") String type, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(item.priceTotal), 0) FROM PurchasingEntity p JOIN p.items item WHERE p.isActive = true AND p.type = :type AND p.thirdParty.id = :thirdPartyId AND item.product.id = :productId AND p.createdAt BETWEEN :start AND :end")
+    BigDecimal sumTotalByTypeAndDateAndThirdPartyAndProduct(@Param("type") String type, @Param("thirdPartyId") Long thirdPartyId, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     @Query("SELECT p FROM PurchasingEntity p WHERE p.isActive = true AND p.thirdParty.id = :thirdPartyId AND p.createdAt BETWEEN :start AND :end")
     List<PurchasingEntity> findPurchasesByThirdPartyAndDateRange(@Param("thirdPartyId") Long thirdPartyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT DISTINCT p FROM PurchasingEntity p JOIN p.items item WHERE p.isActive = true AND item.product.id = :productId AND p.createdAt BETWEEN :start AND :end")
+    List<PurchasingEntity> findPurchasesByProductAndDateRange(@Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("SELECT DISTINCT p FROM PurchasingEntity p JOIN p.items item WHERE p.isActive = true AND p.thirdParty.id = :thirdPartyId AND item.product.id = :productId AND p.createdAt BETWEEN :start AND :end")
     List<PurchasingEntity> findPurchasesByThirdPartyAndProductAndDateRange(@Param("thirdPartyId") Long thirdPartyId, @Param("productId") Long productId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
