@@ -3,7 +3,14 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.xssf.usermodel.*;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import com.aurealab.dto.CashRegister.CashSessionDTO;
@@ -524,6 +531,9 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                     BigDecimal priceTotal = item != null && item.getPriceTotal() != null ? item.getPriceTotal() : order.getTotal();
                     BigDecimal subtotalVal = order.getSubtotal() != null ? order.getSubtotal() : order.getTotal();
                     BigDecimal priceIvaVal = order.getPriceIva() != null ? order.getPriceIva() : BigDecimal.ZERO;
+                    String startSerial = (item != null && item.getStartSerialSold() != null) ? String.valueOf(item.getStartSerialSold()) : "";
+                    String endSerial = (item != null && item.getEndSerialSold() != null) ? String.valueOf(item.getEndSerialSold()) : "";
+                    String serialRange = (!startSerial.isEmpty() && !endSerial.isEmpty()) ? (startSerial + " - " + endSerial) : (!startSerial.isEmpty() ? startSerial : "");
 
                     String rowHtml = trContent;
                     rowHtml = replaceVar(rowHtml, "item.units", String.valueOf(units));
@@ -535,6 +545,13 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                     rowHtml = replaceCurrencyVar(rowHtml, "order.priceIva", formatCurrency(priceIvaVal));
                     rowHtml = replaceCurrencyVar(rowHtml, "order.total", formatCurrency(order.getTotal()));
                     rowHtml = replaceCurrencyVar(rowHtml, "orderTotal", formatCurrency(order.getTotal()));
+                    rowHtml = replaceVar(rowHtml, "item.startSerialSold", startSerial);
+                    rowHtml = replaceVar(rowHtml, "item.startSerial", startSerial);
+                    rowHtml = replaceVar(rowHtml, "item.endSerialSold", endSerial);
+                    rowHtml = replaceVar(rowHtml, "item.finalSerial", endSerial);
+                    rowHtml = replaceVar(rowHtml, "item.endSerial", endSerial);
+                    rowHtml = replaceVar(rowHtml, "item.serials", serialRange);
+                    rowHtml = replaceVar(rowHtml, "item.serialRange", serialRange);
 
                     tableRows.append(rowHtml).append("\n");
                 } else {
@@ -640,6 +657,10 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                         String productCode = "REC-001";
                         String productName = "Recetario de Control Especial";
 
+                        String startSerialP = String.valueOf(purchase.getPurchasingRecipe().getStartSerial());
+                        String finalSerialP = String.valueOf(purchase.getPurchasingRecipe().getFinalSerial());
+                        String serialsRangeP = startSerialP + " - " + finalSerialP;
+
                         rowHtml = rowHtml.replace("{{ item.product.code }}", productCode)
                                 .replace("{{ item.inventory.product.code }}", productCode)
                                 .replace("{{ item.product.name }}", productName)
@@ -647,8 +668,14 @@ public class DownloadReportServiceImpl implements DownloadReportService {
                                 .replace("{{ item.units }}", String.valueOf(purchase.getPurchasingRecipe().getUnits()))
                                 .replace("{{ item.priceUnit }}", formatCurrency(purchase.getPurchasingRecipe().getPriceUnit()))
                                 .replace("{{ item.priceTotal }}", formatCurrency(purchase.getPurchasingRecipe().getPriceTotal()))
-                                .replace("{{ purchasingRecipe.startSerial }}", String.valueOf(purchase.getPurchasingRecipe().getStartSerial()))
-                                .replace("{{ purchasingRecipe.finalSerial }}", String.valueOf(purchase.getPurchasingRecipe().getFinalSerial()))
+                                .replace("{{ purchasingRecipe.startSerial }}", startSerialP)
+                                .replace("{{ purchasingRecipe.finalSerial }}", finalSerialP)
+                                .replace("{{ purchasingRecipe.serials }}", serialsRangeP)
+                                .replace("{{ purchasingRecipe.serialRange }}", serialsRangeP)
+                                .replace("{{ item.startSerial }}", startSerialP)
+                                .replace("{{ item.finalSerial }}", finalSerialP)
+                                .replace("{{ item.serials }}", serialsRangeP)
+                                .replace("{{ item.serialRange }}", serialsRangeP)
                                 .replace("{{ purchasingRecipe.units }}", String.valueOf(purchase.getPurchasingRecipe().getUnits()))
                                 .replace("{{ purchasingRecipe.priceUnit }}", formatCurrency(purchase.getPurchasingRecipe().getPriceUnit()))
                                 .replace("{{ purchasingRecipe.priceTotal }}", formatCurrency(purchase.getPurchasingRecipe().getPriceTotal()));
@@ -1684,109 +1711,925 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 3. Generate CSV content
-        StringBuilder csv = new StringBuilder();
-        csv.append("\uFEFF"); // UTF-8 BOM so Excel opens it with correct encoding
+        // 3. Generate Excel content
+        if ("purchasing".equalsIgnoreCase(type)) {
+            try {
+                byte[] excelBytes = generatePurchasingExcelReport(pageResult, category, startDate, endDate, documentNumber, product, batch);
+                ByteArrayInputStream bis = new ByteArrayInputStream(excelBytes);
 
-        // Título del reporte
-        String typeLabel = "Reporte de ";
-        if ("order".equalsIgnoreCase(type)) {
-            typeLabel += "Cotizaciones";
-        } else if ("purchasing".equalsIgnoreCase(type)) {
-            typeLabel += "Ingresos";
-        } else if ("sold".equalsIgnoreCase(type)) {
-            typeLabel += "Salidas";
-        } else if ("inventory".equalsIgnoreCase(type)) {
-            typeLabel += "Inventario";
-        } else {
-            typeLabel += "General";
-        }
-        csv.append("\"").append(typeLabel.toUpperCase()).append("\"\n\n");
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "attachment; filename=reporte_ingresos.xlsx");
 
-        // Sección de filtros
-        csv.append("\"Filtros Seleccionados:\"\n");
-        if (category != null && !category.trim().isEmpty()) {
-            String catLabel = category;
-            if ("recipe".equalsIgnoreCase(category)) {
-                catLabel = "Recetarios";
-            } else if ("special".equalsIgnoreCase(category)) {
-                catLabel = "Medicamentos";
-            } else if ("public".equalsIgnoreCase(category)) {
-                catLabel = "Medicamentos de Salud Pública";
-            }
-            csv.append("\"Categoría:\";\"").append(catLabel).append("\"\n");
-        }
-        if (startDate != null && !startDate.trim().isEmpty()) {
-            csv.append("\"Fecha Inicio:\";\"").append(startDate).append("\"\n");
-        }
-        if (endDate != null && !endDate.trim().isEmpty()) {
-            csv.append("\"Fecha Fin:\";\"").append(endDate).append("\"\n");
-        }
-        if (documentNumber != null && !documentNumber.trim().isEmpty()) {
-            csv.append("\"Tercero (Documento):\";\"").append(documentNumber).append("\"\n");
-        }
-        if (product != null && !product.trim().isEmpty()) {
-            csv.append("\"Medicamento / Producto:\";\"").append(product).append("\"\n");
-        }
-        if (batch != null && !batch.trim().isEmpty()) {
-            csv.append("\"Lote:\";\"").append(batch).append("\"\n");
-        }
-        if (status != null && !status.trim().isEmpty()) {
-            String statLabel = status;
-            if ("vigente".equalsIgnoreCase(status)) {
-                statLabel = "Vigente";
-            } else if ("vencido".equalsIgnoreCase(status)) {
-                statLabel = "Vencido";
-            } else if ("retirado".equalsIgnoreCase(status)) {
-                statLabel = "Retirado";
-            }
-            csv.append("\"Estado:\";\"").append(statLabel).append("\"\n");
-        }
-        if (units != null && !units.trim().isEmpty()) {
-            String unitLabel = units;
-            if ("available".equalsIgnoreCase(units)) {
-                unitLabel = "Con unidades disponibles";
-            } else if ("unavailable".equalsIgnoreCase(units)) {
-                unitLabel = "Sin unidades disponibles";
-            } else if ("some_but_not_available".equalsIgnoreCase(units)) {
-                unitLabel = "Con unidades pero sin disponibles";
-            } else if ("all".equalsIgnoreCase(units)) {
-                unitLabel = "Todo";
-            }
-            csv.append("\"Unidades:\";\"").append(unitLabel).append("\"\n");
-        }
-        csv.append("\n"); // Línea en blanco antes de la tabla
-
-        // CSV Header
-        csv.append("ID;Producto;Presentación;Forma Farmacéutica;Lote;P. Compra;P. Venta;Unid. Totales;Unid. Disp.;Fecha Venc.;Estado\n");
-
-        if (pageResult != null && pageResult.getContent() != null) {
-            for (PrescriptionInventoryTableDTO item : pageResult.getContent()) {
-                csv.append(escapeCsv(item.id())).append(";")
-                   .append(escapeCsv(item.product())).append(";")
-                   .append(escapeCsv(item.presentation())).append(";")
-                   .append(escapeCsv(item.pharmaceuticalForm())).append(";")
-                   .append(escapeCsv(item.batch())).append(";")
-                   .append(escapeCsv(item.purchasePrice())).append(";")
-                   .append(escapeCsv(item.salePrice())).append(";")
-                   .append(escapeCsv(item.totalUnits())).append(";")
-                   .append(escapeCsv(item.availableUnits())).append(";")
-                   .append(escapeCsv(item.expirationDate())).append(";")
-                   .append(escapeCsv(item.isActive() ? "Activo" : "Inactivo")).append("\n");
+                return ResponseEntity
+                        .ok()
+                        .headers(headers)
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(new InputStreamResource(bis));
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new DownloadException("Error al generar el reporte de ingresos en Excel: " + e.getMessage(), e);
             }
         }
 
-        byte[] csvBytes = csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        ByteArrayInputStream bis = new ByteArrayInputStream(csvBytes);
+        if ("order".equalsIgnoreCase(type) || "sold".equalsIgnoreCase(type)) {
+            try {
+                byte[] excelBytes = generateOrderOrSaleExcelReport(pageResult, type, category, startDate, endDate, documentNumber, product, batch);
+                ByteArrayInputStream bis = new ByteArrayInputStream(excelBytes);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=reporte_" + (type != null ? type : "inventario") + ".csv");
+                String filename = "sold".equalsIgnoreCase(type) ? "reporte_salidas.xlsx" : "reporte_cotizaciones.xlsx";
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "attachment; filename=" + filename);
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .body(new InputStreamResource(bis));
+                return ResponseEntity
+                        .ok()
+                        .headers(headers)
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(new InputStreamResource(bis));
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new DownloadException("Error al generar el reporte en Excel: " + e.getMessage(), e);
+            }
+        }
+
+        if ("inventory".equalsIgnoreCase(type) || type == null || type.trim().isEmpty()) {
+            try {
+                byte[] excelBytes = generateInventoryExcelReport(pageResult, status, units, product, batch, documentNumber);
+                ByteArrayInputStream bis = new ByteArrayInputStream(excelBytes);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "attachment; filename=reporte_inventario.xlsx");
+
+                return ResponseEntity
+                        .ok()
+                        .headers(headers)
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(new InputStreamResource(bis));
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new DownloadException("Error al generar el reporte de inventario en Excel: " + e.getMessage(), e);
+            }
+        }
+
+        // Generic Excel report for other types until personalized
+        try {
+            byte[] excelBytes = generateGenericExcelReport(pageResult, type, category, startDate, endDate, documentNumber, product, batch);
+            ByteArrayInputStream bis = new ByteArrayInputStream(excelBytes);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=reporte_" + type + ".xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new InputStreamResource(bis));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DownloadException("Error al generar el reporte en Excel: " + e.getMessage(), e);
+        }
+    }
+
+    private byte[] generatePurchasingExcelReport(
+            Page<PrescriptionInventoryTableDTO> pageResult,
+            String category, String startDate, String endDate,
+            String documentNumber, String product, String batch) throws Exception {
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Ingresos");
+            sheet.setDisplayGridlines(true);
+
+            // Fonts & Styles
+            XSSFFont titleFont = workbook.createFont();
+            titleFont.setFontName("Calibri");
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 14);
+            titleFont.setColor(new XSSFColor(new java.awt.Color(56, 87, 35), null));
+
+            XSSFCellStyle titleStyle = workbook.createCellStyle();
+            titleStyle.setFont(titleFont);
+
+            XSSFFont sectionFont = workbook.createFont();
+            sectionFont.setFontName("Calibri");
+            sectionFont.setBold(true);
+            sectionFont.setFontHeightInPoints((short) 10);
+
+            XSSFCellStyle sectionStyle = workbook.createCellStyle();
+            sectionStyle.setFont(sectionFont);
+
+            XSSFFont labelFont = workbook.createFont();
+            labelFont.setFontName("Calibri");
+            labelFont.setBold(true);
+            labelFont.setFontHeightInPoints((short) 9);
+            labelFont.setColor(new XSSFColor(new java.awt.Color(89, 89, 89), null));
+
+            XSSFCellStyle labelStyle = workbook.createCellStyle();
+            labelStyle.setFont(labelFont);
+
+            XSSFFont valueFont = workbook.createFont();
+            valueFont.setFontName("Calibri");
+            valueFont.setFontHeightInPoints((short) 9);
+
+            XSSFCellStyle valueStyle = workbook.createCellStyle();
+            valueStyle.setFont(valueFont);
+
+            // Header Style (Verde #70AD47)
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Calibri");
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 10);
+            headerFont.setColor(new XSSFColor(new java.awt.Color(255, 255, 255), null));
+
+            XSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(112, 173, 71), null)); // #70AD47
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(headerStyle);
+
+            // Data Styles
+            DataFormat dataFormat = workbook.createDataFormat();
+
+            XSSFCellStyle textLeftStyle = workbook.createCellStyle();
+            textLeftStyle.setFont(valueFont);
+            textLeftStyle.setAlignment(HorizontalAlignment.LEFT);
+            textLeftStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textLeftStyle);
+
+            XSSFCellStyle textCenterStyle = workbook.createCellStyle();
+            textCenterStyle.setFont(valueFont);
+            textCenterStyle.setAlignment(HorizontalAlignment.CENTER);
+            textCenterStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textCenterStyle);
+
+            XSSFCellStyle numberStyle = workbook.createCellStyle();
+            numberStyle.setFont(valueFont);
+            numberStyle.setDataFormat(dataFormat.getFormat("#,##0"));
+            numberStyle.setAlignment(HorizontalAlignment.RIGHT);
+            numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(numberStyle);
+
+            XSSFCellStyle currencyStyle = workbook.createCellStyle();
+            currencyStyle.setFont(valueFont);
+            currencyStyle.setDataFormat(dataFormat.getFormat("$ #,##0"));
+            currencyStyle.setAlignment(HorizontalAlignment.RIGHT);
+            currencyStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(currencyStyle);
+
+            XSSFCellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setFont(valueFont);
+            dateStyle.setAlignment(HorizontalAlignment.CENTER);
+            dateStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(dateStyle);
+
+            int rowIndex = 0;
+
+            // 1. Título
+            Row titleRow = sheet.createRow(rowIndex++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("REPORTE DE INGRESOS (COMPRAS)");
+            titleCell.setCellStyle(titleStyle);
+            rowIndex++; // Espacio en blanco
+
+            // 2. Filtros Seleccionados
+            Row filterTitleRow = sheet.createRow(rowIndex++);
+            Cell filterTitleCell = filterTitleRow.createCell(0);
+            filterTitleCell.setCellValue("Filtros Seleccionados:");
+            filterTitleCell.setCellStyle(sectionStyle);
+
+            if (category != null && !category.trim().isEmpty()) {
+                String catLabel = switch (category.toLowerCase()) {
+                    case "special" -> "Medicamentos";
+                    case "public" -> "Medicamentos de Salud Pública";
+                    case "recipe" -> "Recetarios";
+                    default -> category;
+                };
+                addFilterRow(sheet, rowIndex++, "Categoría:", catLabel, labelStyle, valueStyle);
+            }
+
+            if (startDate != null && !startDate.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Fecha Inicio:", startDate, labelStyle, valueStyle);
+            }
+
+            if (endDate != null && !endDate.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Fecha Fin:", endDate, labelStyle, valueStyle);
+            }
+
+            if (documentNumber != null && !documentNumber.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Proveedor / Tercero (Doc):", documentNumber, labelStyle, valueStyle);
+            }
+
+            if (product != null && !product.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Medicamento / Producto:", product, labelStyle, valueStyle);
+            }
+
+            if (batch != null && !batch.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Lote Asignado:", batch, labelStyle, valueStyle);
+            }
+
+            String genDate = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            addFilterRow(sheet, rowIndex++, "Fecha de Generación:", genDate, labelStyle, valueStyle);
+
+            rowIndex++; // Espacio antes de la tabla
+
+            // 3. Encabezados de la tabla
+            String[] headers = {
+                "ORDEN DE COMPRA",
+                "LOTE",
+                "MEDICAMENTO",
+                "FECHA VENCIMIENTO",
+                "CANTIDAD",
+                "PROVEEDOR",
+                "FECHA COMPRA",
+                "PRECIO COMPRA",
+                "PRECIO VENTA"
+            };
+
+            Row headerRow = sheet.createRow(rowIndex++);
+            headerRow.setHeightInPoints(24);
+
+            for (int col = 0; col < headers.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(headers[col]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // 4. Datos
+            if (pageResult != null && pageResult.getContent() != null) {
+                java.time.format.DateTimeFormatter dateFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                for (PrescriptionInventoryTableDTO item : pageResult.getContent()) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.setHeightInPoints(19);
+
+                    // 0: ORDEN DE COMPRA
+                    Cell c0 = row.createCell(0);
+                    c0.setCellValue(item.code() != null ? item.code() : "");
+                    c0.setCellStyle(textCenterStyle);
+
+                    // 1: LOTE
+                    Cell c1 = row.createCell(1);
+                    c1.setCellValue(item.batch() != null ? item.batch() : "");
+                    c1.setCellStyle(textCenterStyle);
+
+                    // 2: MEDICAMENTO
+                    Cell c2 = row.createCell(2);
+                    c2.setCellValue(item.product() != null ? item.product() : "");
+                    c2.setCellStyle(textLeftStyle);
+
+                    // 3: FECHA VENCIMIENTO
+                    Cell c3 = row.createCell(3);
+                    if (item.expirationDate() != null) {
+                        c3.setCellValue(item.expirationDate().format(dateFormatter));
+                    } else {
+                        c3.setCellValue("");
+                    }
+                    c3.setCellStyle(dateStyle);
+
+                    // 4: CANTIDAD
+                    Cell c4 = row.createCell(4);
+                    c4.setCellValue(item.totalUnits() != null ? item.totalUnits() : 0);
+                    c4.setCellStyle(numberStyle);
+
+                    // 5: PROVEEDOR
+                    Cell c5 = row.createCell(5);
+                    c5.setCellValue(item.client() != null ? item.client() : "");
+                    c5.setCellStyle(textLeftStyle);
+
+                    // 6: FECHA COMPRA
+                    Cell c6 = row.createCell(6);
+                    if (item.date() != null) {
+                        c6.setCellValue(item.date().format(dateFormatter));
+                    } else {
+                        c6.setCellValue("");
+                    }
+                    c6.setCellStyle(dateStyle);
+
+                    // 7: PRECIO COMPRA
+                    Cell c7 = row.createCell(7);
+                    double purchasePrice = item.purchasePrice() != null ? item.purchasePrice().doubleValue() : 0.0;
+                    c7.setCellValue(purchasePrice);
+                    c7.setCellStyle(currencyStyle);
+
+                    // 8: PRECIO VENTA
+                    Cell c8 = row.createCell(8);
+                    double sellPrice = item.salePrice() != null ? item.salePrice().doubleValue() : 0.0;
+                    c8.setCellValue(sellPrice);
+                    c8.setCellStyle(currencyStyle);
+                }
+            }
+
+            // Auto-size columns with padding
+            for (int col = 0; col < headers.length; col++) {
+                sheet.autoSizeColumn(col);
+                int currentWidth = sheet.getColumnWidth(col);
+                sheet.setColumnWidth(col, Math.max(currentWidth + 1200, 3600));
+            }
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private byte[] generateOrderOrSaleExcelReport(
+            Page<PrescriptionInventoryTableDTO> pageResult,
+            String type, String category, String startDate, String endDate,
+            String documentNumber, String product, String batch) throws Exception {
+
+        boolean isSold = "sold".equalsIgnoreCase(type);
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            String sheetName = isSold ? "Ventas" : "Cotizaciones";
+            XSSFSheet sheet = workbook.createSheet(sheetName);
+            sheet.setDisplayGridlines(true);
+
+            // Fonts & Styles
+            XSSFFont titleFont = workbook.createFont();
+            titleFont.setFontName("Calibri");
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 14);
+            titleFont.setColor(new XSSFColor(new java.awt.Color(56, 87, 35), null));
+
+            XSSFCellStyle titleStyle = workbook.createCellStyle();
+            titleStyle.setFont(titleFont);
+
+            XSSFFont sectionFont = workbook.createFont();
+            sectionFont.setFontName("Calibri");
+            sectionFont.setBold(true);
+            sectionFont.setFontHeightInPoints((short) 10);
+
+            XSSFCellStyle sectionStyle = workbook.createCellStyle();
+            sectionStyle.setFont(sectionFont);
+
+            XSSFFont labelFont = workbook.createFont();
+            labelFont.setFontName("Calibri");
+            labelFont.setBold(true);
+            labelFont.setFontHeightInPoints((short) 9);
+            labelFont.setColor(new XSSFColor(new java.awt.Color(89, 89, 89), null));
+
+            XSSFCellStyle labelStyle = workbook.createCellStyle();
+            labelStyle.setFont(labelFont);
+
+            XSSFFont valueFont = workbook.createFont();
+            valueFont.setFontName("Calibri");
+            valueFont.setFontHeightInPoints((short) 9);
+
+            XSSFCellStyle valueStyle = workbook.createCellStyle();
+            valueStyle.setFont(valueFont);
+
+            // Header Style (Verde #70AD47)
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Calibri");
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 10);
+            headerFont.setColor(new XSSFColor(new java.awt.Color(255, 255, 255), null));
+
+            XSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(112, 173, 71), null)); // #70AD47
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(headerStyle);
+
+            // Data Styles
+            DataFormat dataFormat = workbook.createDataFormat();
+
+            XSSFCellStyle textLeftStyle = workbook.createCellStyle();
+            textLeftStyle.setFont(valueFont);
+            textLeftStyle.setAlignment(HorizontalAlignment.LEFT);
+            textLeftStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textLeftStyle);
+
+            XSSFCellStyle textCenterStyle = workbook.createCellStyle();
+            textCenterStyle.setFont(valueFont);
+            textCenterStyle.setAlignment(HorizontalAlignment.CENTER);
+            textCenterStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textCenterStyle);
+
+            XSSFCellStyle numberStyle = workbook.createCellStyle();
+            numberStyle.setFont(valueFont);
+            numberStyle.setDataFormat(dataFormat.getFormat("#,##0"));
+            numberStyle.setAlignment(HorizontalAlignment.RIGHT);
+            numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(numberStyle);
+
+            XSSFCellStyle currencyStyle = workbook.createCellStyle();
+            currencyStyle.setFont(valueFont);
+            currencyStyle.setDataFormat(dataFormat.getFormat("$ #,##0"));
+            currencyStyle.setAlignment(HorizontalAlignment.RIGHT);
+            currencyStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(currencyStyle);
+
+            XSSFCellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setFont(valueFont);
+            dateStyle.setAlignment(HorizontalAlignment.CENTER);
+            dateStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(dateStyle);
+
+            int rowIndex = 0;
+
+            // 1. Título
+            Row titleRow = sheet.createRow(rowIndex++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue(isSold ? "REPORTE DE VENTAS (SALIDAS)" : "REPORTE DE COTIZACIONES");
+            titleCell.setCellStyle(titleStyle);
+            rowIndex++; // Espacio en blanco
+
+            // 2. Filtros Seleccionados
+            Row filterTitleRow = sheet.createRow(rowIndex++);
+            Cell filterTitleCell = filterTitleRow.createCell(0);
+            filterTitleCell.setCellValue("Filtros Seleccionados:");
+            filterTitleCell.setCellStyle(sectionStyle);
+
+            if (category != null && !category.trim().isEmpty()) {
+                String catLabel = switch (category.toLowerCase()) {
+                    case "special" -> "Medicamentos";
+                    case "public" -> "Medicamentos de Salud Pública";
+                    case "recipe" -> "Recetarios";
+                    default -> category;
+                };
+                addFilterRow(sheet, rowIndex++, "Categoría:", catLabel, labelStyle, valueStyle);
+            }
+
+            if (startDate != null && !startDate.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Fecha Inicio:", startDate, labelStyle, valueStyle);
+            }
+
+            if (endDate != null && !endDate.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Fecha Fin:", endDate, labelStyle, valueStyle);
+            }
+
+            if (documentNumber != null && !documentNumber.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Tercero / Cliente (Doc):", documentNumber, labelStyle, valueStyle);
+            }
+
+            if (product != null && !product.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Medicamento / Producto:", product, labelStyle, valueStyle);
+            }
+
+            if (batch != null && !batch.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Lote Asignado:", batch, labelStyle, valueStyle);
+            }
+
+            String genDate = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            addFilterRow(sheet, rowIndex++, "Fecha de Generación:", genDate, labelStyle, valueStyle);
+
+            rowIndex++; // Espacio antes de la tabla
+
+            // 3. Encabezados de la tabla
+            String col0Header = isSold ? "ORDEN DE SALIDA" : "COTIZACION";
+            String col6Header = isSold ? "FECHA VENTA" : "FECHA COTIZACION";
+
+            String[] headers = {
+                col0Header,
+                "LOTE",
+                "MEDICAMENTO",
+                "FECHA VENCIMIENTO",
+                "CANTIDAD",
+                "CLIENTE",
+                col6Header,
+                "PRECIO"
+            };
+
+            Row headerRow = sheet.createRow(rowIndex++);
+            headerRow.setHeightInPoints(24);
+
+            for (int col = 0; col < headers.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(headers[col]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // 4. Datos
+            if (pageResult != null && pageResult.getContent() != null) {
+                java.time.format.DateTimeFormatter dateFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                for (PrescriptionInventoryTableDTO item : pageResult.getContent()) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.setHeightInPoints(19);
+
+                    // 0: ORDEN DE SALIDA / COTIZACION
+                    Cell c0 = row.createCell(0);
+                    c0.setCellValue(item.code() != null ? item.code() : "");
+                    c0.setCellStyle(textCenterStyle);
+
+                    // 1: LOTE
+                    Cell c1 = row.createCell(1);
+                    c1.setCellValue(item.batch() != null ? item.batch() : "");
+                    c1.setCellStyle(textCenterStyle);
+
+                    // 2: MEDICAMENTO
+                    Cell c2 = row.createCell(2);
+                    c2.setCellValue(item.product() != null ? item.product() : "");
+                    c2.setCellStyle(textLeftStyle);
+
+                    // 3: FECHA VENCIMIENTO
+                    Cell c3 = row.createCell(3);
+                    if (item.expirationDate() != null) {
+                        c3.setCellValue(item.expirationDate().format(dateFormatter));
+                    } else {
+                        c3.setCellValue("");
+                    }
+                    c3.setCellStyle(dateStyle);
+
+                    // 4: CANTIDAD
+                    Cell c4 = row.createCell(4);
+                    c4.setCellValue(item.totalUnits() != null ? item.totalUnits() : 0);
+                    c4.setCellStyle(numberStyle);
+
+                    // 5: CLIENTE
+                    Cell c5 = row.createCell(5);
+                    c5.setCellValue(item.client() != null ? item.client() : "");
+                    c5.setCellStyle(textLeftStyle);
+
+                    // 6: FECHA VENTA / COTIZACION
+                    Cell c6 = row.createCell(6);
+                    if (item.date() != null) {
+                        c6.setCellValue(item.date().format(dateFormatter));
+                    } else {
+                        c6.setCellValue("");
+                    }
+                    c6.setCellStyle(dateStyle);
+
+                    // 7: PRECIO
+                    Cell c7 = row.createCell(7);
+                    double priceVal = item.totalPrice() != null ? item.totalPrice().doubleValue()
+                            : (item.salePrice() != null ? item.salePrice().doubleValue() : 0.0);
+                    c7.setCellValue(priceVal);
+                    c7.setCellStyle(currencyStyle);
+                }
+            }
+
+            // Auto-size columns with padding
+            for (int col = 0; col < headers.length; col++) {
+                sheet.autoSizeColumn(col);
+                int currentWidth = sheet.getColumnWidth(col);
+                sheet.setColumnWidth(col, Math.max(currentWidth + 1200, 3600));
+            }
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private byte[] generateInventoryExcelReport(
+            Page<PrescriptionInventoryTableDTO> pageResult,
+            String status, String units, String product, String batch, String documentNumber) throws Exception {
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Inventario");
+            sheet.setDisplayGridlines(true);
+
+            // Font & Styles
+            XSSFFont titleFont = workbook.createFont();
+            titleFont.setFontName("Calibri");
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 14);
+            titleFont.setColor(new XSSFColor(new java.awt.Color(56, 87, 35), null));
+
+            XSSFCellStyle titleStyle = workbook.createCellStyle();
+            titleStyle.setFont(titleFont);
+
+            XSSFFont sectionFont = workbook.createFont();
+            sectionFont.setFontName("Calibri");
+            sectionFont.setBold(true);
+            sectionFont.setFontHeightInPoints((short) 10);
+
+            XSSFCellStyle sectionStyle = workbook.createCellStyle();
+            sectionStyle.setFont(sectionFont);
+
+            XSSFFont labelFont = workbook.createFont();
+            labelFont.setFontName("Calibri");
+            labelFont.setBold(true);
+            labelFont.setFontHeightInPoints((short) 9);
+            labelFont.setColor(new XSSFColor(new java.awt.Color(89, 89, 89), null));
+
+            XSSFCellStyle labelStyle = workbook.createCellStyle();
+            labelStyle.setFont(labelFont);
+
+            XSSFFont valueFont = workbook.createFont();
+            valueFont.setFontName("Calibri");
+            valueFont.setFontHeightInPoints((short) 9);
+
+            XSSFCellStyle valueStyle = workbook.createCellStyle();
+            valueStyle.setFont(valueFont);
+
+            // Header Style (Verde #70AD47)
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Calibri");
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 10);
+            headerFont.setColor(new XSSFColor(new java.awt.Color(255, 255, 255), null));
+
+            XSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(112, 173, 71), null)); // #70AD47
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(headerStyle);
+
+            // Data Styles
+            DataFormat dataFormat = workbook.createDataFormat();
+
+            XSSFCellStyle textLeftStyle = workbook.createCellStyle();
+            textLeftStyle.setFont(valueFont);
+            textLeftStyle.setAlignment(HorizontalAlignment.LEFT);
+            textLeftStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textLeftStyle);
+
+            XSSFCellStyle textCenterStyle = workbook.createCellStyle();
+            textCenterStyle.setFont(valueFont);
+            textCenterStyle.setAlignment(HorizontalAlignment.CENTER);
+            textCenterStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textCenterStyle);
+
+            XSSFCellStyle numberStyle = workbook.createCellStyle();
+            numberStyle.setFont(valueFont);
+            numberStyle.setDataFormat(dataFormat.getFormat("#,##0"));
+            numberStyle.setAlignment(HorizontalAlignment.RIGHT);
+            numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(numberStyle);
+
+            XSSFCellStyle currencyStyle = workbook.createCellStyle();
+            currencyStyle.setFont(valueFont);
+            currencyStyle.setDataFormat(dataFormat.getFormat("$ #,##0"));
+            currencyStyle.setAlignment(HorizontalAlignment.RIGHT);
+            currencyStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(currencyStyle);
+
+            XSSFCellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setFont(valueFont);
+            dateStyle.setAlignment(HorizontalAlignment.CENTER);
+            dateStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(dateStyle);
+
+            int rowIndex = 0;
+
+            // 1. Título
+            Row titleRow = sheet.createRow(rowIndex++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("REPORTE DE INVENTARIO");
+            titleCell.setCellStyle(titleStyle);
+            rowIndex++; // Espacio en blanco
+
+            // 2. Filtros Seleccionados
+            Row filterTitleRow = sheet.createRow(rowIndex++);
+            Cell filterTitleCell = filterTitleRow.createCell(0);
+            filterTitleCell.setCellValue("Filtros Seleccionados:");
+            filterTitleCell.setCellStyle(sectionStyle);
+
+            if (status != null && !status.trim().isEmpty()) {
+                String statLabel = switch (status.toLowerCase()) {
+                    case "vigente" -> "Vigente";
+                    case "vencido" -> "Vencido";
+                    case "retirado" -> "Retirado";
+                    default -> status;
+                };
+                addFilterRow(sheet, rowIndex++, "Estado del Medicamento:", statLabel, labelStyle, valueStyle);
+            }
+
+            if (units != null && !units.trim().isEmpty() && !"all".equalsIgnoreCase(units)) {
+                String unitLabel = switch (units.toLowerCase()) {
+                    case "available" -> "Con unidades disponibles";
+                    case "unavailable" -> "Sin unidades disponibles";
+                    case "some_but_not_available" -> "Con unidades pero sin disponibles";
+                    default -> units;
+                };
+                addFilterRow(sheet, rowIndex++, "Unidades:", unitLabel, labelStyle, valueStyle);
+            }
+
+            if (product != null && !product.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Medicamento / Producto:", product, labelStyle, valueStyle);
+            }
+
+            if (batch != null && !batch.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Lote Asignado:", batch, labelStyle, valueStyle);
+            }
+
+            if (documentNumber != null && !documentNumber.trim().isEmpty()) {
+                addFilterRow(sheet, rowIndex++, "Tercero (Ingreso):", documentNumber, labelStyle, valueStyle);
+            }
+
+            String genDate = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            addFilterRow(sheet, rowIndex++, "Fecha de Generación:", genDate, labelStyle, valueStyle);
+
+            rowIndex++; // Espacio antes de la tabla
+
+            // 3. Encabezados de la tabla
+            String[] headers = {
+                "LOTE",
+                "MEDICAMENTOS",
+                "PRESENTACION",
+                "FORMA",
+                "UNIDADES FISICAS",
+                "UNIDADES DISPONIBLES",
+                "PRECIO COMPRA",
+                "PRECIO VENTA",
+                "FECHA DE VENCIMIENTO"
+            };
+
+            Row headerRow = sheet.createRow(rowIndex++);
+            headerRow.setHeightInPoints(24);
+
+            for (int col = 0; col < headers.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(headers[col]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // 4. Datos
+            if (pageResult != null && pageResult.getContent() != null) {
+                java.time.format.DateTimeFormatter dateFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                for (PrescriptionInventoryTableDTO item : pageResult.getContent()) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.setHeightInPoints(19);
+
+                    // 0: LOTE
+                    Cell c0 = row.createCell(0);
+                    c0.setCellValue(item.batch() != null ? item.batch() : "");
+                    c0.setCellStyle(textCenterStyle);
+
+                    // 1: MEDICAMENTOS
+                    Cell c1 = row.createCell(1);
+                    c1.setCellValue(item.product() != null ? item.product() : "");
+                    c1.setCellStyle(textLeftStyle);
+
+                    // 2: PRESENTACION
+                    Cell c2 = row.createCell(2);
+                    c2.setCellValue(item.presentation() != null ? item.presentation() : "");
+                    c2.setCellStyle(textLeftStyle);
+
+                    // 3: FORMA
+                    Cell c3 = row.createCell(3);
+                    c3.setCellValue(item.pharmaceuticalForm() != null ? item.pharmaceuticalForm() : "");
+                    c3.setCellStyle(textCenterStyle);
+
+                    // 4: UNIDADES FISICAS
+                    Cell c4 = row.createCell(4);
+                    c4.setCellValue(item.totalUnits() != null ? item.totalUnits() : 0);
+                    c4.setCellStyle(numberStyle);
+
+                    // 5: UNIDADES DISPONIBLES
+                    Cell c5 = row.createCell(5);
+                    c5.setCellValue(item.availableUnits() != null ? item.availableUnits() : 0);
+                    c5.setCellStyle(numberStyle);
+
+                    // 6: PRECIO COMPRA
+                    Cell c6 = row.createCell(6);
+                    c6.setCellValue(item.purchasePrice() != null ? item.purchasePrice().doubleValue() : 0.0);
+                    c6.setCellStyle(currencyStyle);
+
+                    // 7: PRECIO VENTA
+                    Cell c7 = row.createCell(7);
+                    c7.setCellValue(item.salePrice() != null ? item.salePrice().doubleValue() : 0.0);
+                    c7.setCellStyle(currencyStyle);
+
+                    // 8: FECHA DE VENCIMIENTO
+                    Cell c8 = row.createCell(8);
+                    if (item.expirationDate() != null) {
+                        c8.setCellValue(item.expirationDate().format(dateFormatter));
+                    } else {
+                        c8.setCellValue("");
+                    }
+                    c8.setCellStyle(dateStyle);
+                }
+            }
+
+            // Auto-size columns with padding
+            for (int col = 0; col < headers.length; col++) {
+                sheet.autoSizeColumn(col);
+                int currentWidth = sheet.getColumnWidth(col);
+                sheet.setColumnWidth(col, Math.max(currentWidth + 1200, 3600));
+            }
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private byte[] generateGenericExcelReport(
+            Page<PrescriptionInventoryTableDTO> pageResult,
+            String type, String category, String startDate, String endDate,
+            String documentNumber, String product, String batch) throws Exception {
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Reporte");
+            sheet.setDisplayGridlines(true);
+
+            XSSFFont titleFont = workbook.createFont();
+            titleFont.setFontName("Calibri");
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 14);
+
+            XSSFCellStyle titleStyle = workbook.createCellStyle();
+            titleStyle.setFont(titleFont);
+
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Calibri");
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 10);
+            headerFont.setColor(new XSSFColor(new java.awt.Color(255, 255, 255), null));
+
+            XSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(112, 173, 71), null));
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(headerStyle);
+
+            XSSFFont valueFont = workbook.createFont();
+            valueFont.setFontName("Calibri");
+            valueFont.setFontHeightInPoints((short) 9);
+
+            XSSFCellStyle textLeftStyle = workbook.createCellStyle();
+            textLeftStyle.setFont(valueFont);
+            textLeftStyle.setAlignment(HorizontalAlignment.LEFT);
+            textLeftStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            setExcelBorder(textLeftStyle);
+
+            int rowIndex = 0;
+
+            String typeLabel = switch (type != null ? type.toLowerCase() : "") {
+                case "order" -> "COTIZACIONES";
+                case "purchasing" -> "INGRESOS";
+                case "sold" -> "SALIDAS";
+                default -> "GENERAL";
+            };
+
+            Row titleRow = sheet.createRow(rowIndex++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("REPORTE DE " + typeLabel);
+            titleCell.setCellStyle(titleStyle);
+            rowIndex++;
+
+            String[] headers = { "ID", "PRODUCTO", "PRESENTACION", "FORMA", "LOTE", "P. COMPRA", "P. VENTA", "UNID. TOTALES", "UNID. DISP.", "FECHA VENC.", "ESTADO" };
+            Row headerRow = sheet.createRow(rowIndex++);
+            headerRow.setHeightInPoints(22);
+
+            for (int col = 0; col < headers.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(headers[col]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            if (pageResult != null && pageResult.getContent() != null) {
+                for (PrescriptionInventoryTableDTO item : pageResult.getContent()) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.createCell(0).setCellValue(item.id() != null ? String.valueOf(item.id()) : "");
+                    row.createCell(1).setCellValue(item.product() != null ? item.product() : "");
+                    row.createCell(2).setCellValue(item.presentation() != null ? item.presentation() : "");
+                    row.createCell(3).setCellValue(item.pharmaceuticalForm() != null ? item.pharmaceuticalForm() : "");
+                    row.createCell(4).setCellValue(item.batch() != null ? item.batch() : "");
+                    row.createCell(5).setCellValue(item.purchasePrice() != null ? String.valueOf(item.purchasePrice()) : "0");
+                    row.createCell(6).setCellValue(item.salePrice() != null ? String.valueOf(item.salePrice()) : "0");
+                    row.createCell(7).setCellValue(item.totalUnits() != null ? item.totalUnits() : 0);
+                    row.createCell(8).setCellValue(item.availableUnits() != null ? item.availableUnits() : 0);
+                    row.createCell(9).setCellValue(item.expirationDate() != null ? item.expirationDate().toString() : "");
+                    row.createCell(10).setCellValue(item.isActive() ? "Activo" : "Inactivo");
+
+                    for (int c = 0; c < headers.length; c++) {
+                        row.getCell(c).setCellStyle(textLeftStyle);
+                    }
+                }
+            }
+
+            for (int col = 0; col < headers.length; col++) {
+                sheet.autoSizeColumn(col);
+            }
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private void addFilterRow(XSSFSheet sheet, int rowIndex, String label, String value, XSSFCellStyle labelStyle, XSSFCellStyle valueStyle) {
+        Row row = sheet.createRow(rowIndex);
+        Cell cellLabel = row.createCell(0);
+        cellLabel.setCellValue(label);
+        cellLabel.setCellStyle(labelStyle);
+
+        Cell cellVal = row.createCell(1);
+        cellVal.setCellValue(value != null ? value : "");
+        cellVal.setCellStyle(valueStyle);
+    }
+
+    private void setExcelBorder(XSSFCellStyle style) {
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
     }
 
     @Override

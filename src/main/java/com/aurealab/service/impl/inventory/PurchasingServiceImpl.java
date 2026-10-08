@@ -27,6 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.aurealab.util.JwtUtils;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -253,10 +255,39 @@ public class PurchasingServiceImpl implements PurchasingService {
     }
 
     private PrescriptionInventoryTableDTO mapPurchasingItemToTableDto(PurchasingEntity purchasing, PurchasingItemEntity item) {
+        String client = "";
+        if (purchasing.getThirdParty() != null) {
+            String name = purchasing.getThirdParty().getFullName() != null ? purchasing.getThirdParty().getFullName() : "";
+            String docType = purchasing.getThirdParty().getDocumentType() != null ? purchasing.getThirdParty().getDocumentType() : "ID";
+            String docNum = purchasing.getThirdParty().getDocumentNumber() != null ? purchasing.getThirdParty().getDocumentNumber() : "";
+            if (!docNum.isEmpty()) {
+                client = name + "    " + docType + ": " + docNum;
+            } else {
+                client = name;
+            }
+        }
+
+        String prodName = item.getProduct() != null && item.getProduct().getName() != null ? item.getProduct().getName() : "";
+        String concentration = item.getProduct() != null && item.getProduct().getConcentration() != null ? item.getProduct().getConcentration() : "";
+        String presentation = item.getProduct() != null && item.getProduct().getPresentation() != null ? item.getProduct().getPresentation() : "";
+
+        StringBuilder medBuilder = new StringBuilder();
+        medBuilder.append(prodName);
+        if (!concentration.trim().isEmpty() && !prodName.toLowerCase().contains(concentration.toLowerCase())) {
+            medBuilder.append(" x ").append(concentration);
+        }
+        if (!presentation.trim().isEmpty()) {
+            medBuilder.append("   ").append(presentation);
+        }
+
+        LocalDate purchaseDate = purchasing.getCreatedAt() != null ? purchasing.getCreatedAt().toLocalDate() : null;
+
         return PrescriptionInventoryTableDTO.builder()
                 .id(item.getId())
-                .product(item.getProduct() != null ? item.getProduct().getName() : "N/A")
-                .presentation(item.getProduct() != null ? item.getProduct().getPresentation() : "N/A")
+                .code(purchasing.getPurchasedCode())
+                .client(client)
+                .product(medBuilder.toString())
+                .presentation(presentation)
                 .pharmaceuticalForm(item.getProduct() != null ? item.getProduct().getPharmaceuticalForm() : "N/A")
                 .batch(item.getBatch() != null ? item.getBatch().getCode() : "N/A")
                 .purchasePrice(item.getPriceUnit())
@@ -264,6 +295,7 @@ public class PurchasingServiceImpl implements PurchasingService {
                 .totalUnits((long) item.getUnits())
                 .availableUnits(item.getInventory() != null ? (long) item.getInventory().getAvailableUnits() : 0L)
                 .expirationDate(item.getExpirationDate())
+                .date(purchaseDate)
                 .isActive(purchasing.getIsActive() != null ? purchasing.getIsActive() : true)
                 .build();
     }

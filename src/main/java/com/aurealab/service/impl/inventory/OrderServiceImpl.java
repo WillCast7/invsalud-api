@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -403,32 +404,71 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private PrescriptionInventoryTableDTO mapOrderItemToTableDto(OrderEntity order, OrderItemEntity item) {
+        String code = order.isSold() ? order.getSoldCode() : order.getOrderCode();
+        String client = "";
+        if (order.getThirdParty() != null) {
+            String name = order.getThirdParty().getFullName() != null ? order.getThirdParty().getFullName() : "";
+            String docType = order.getThirdParty().getDocumentType() != null ? order.getThirdParty().getDocumentType() : "ID";
+            String docNum = order.getThirdParty().getDocumentNumber() != null ? order.getThirdParty().getDocumentNumber() : "";
+            if (!docNum.isEmpty()) {
+                client = name + "    " + docType + ": " + docNum;
+            } else {
+                client = name;
+            }
+        }
+        LocalDateTime orderDateTime = (order.isSold() && order.getSoldAt() != null) ? order.getSoldAt() : order.getCreatedAt();
+        LocalDate orderDate = orderDateTime != null ? orderDateTime.toLocalDate() : null;
+        BigDecimal priceTotal = item.getPriceTotal() != null ? item.getPriceTotal()
+                : (item.getPriceUnit() != null && item.getUnits() != null ? item.getPriceUnit().multiply(BigDecimal.valueOf(item.getUnits())) : BigDecimal.ZERO);
+
         if (item.getInventory() != null) {
+            ProductEntity prod = item.getInventory().getProduct();
+            String prodName = prod != null && prod.getName() != null ? prod.getName() : "";
+            String concentration = prod != null && prod.getConcentration() != null ? prod.getConcentration() : "";
+            String presentation = prod != null && prod.getPresentation() != null ? prod.getPresentation() : "";
+
+            StringBuilder medBuilder = new StringBuilder();
+            medBuilder.append(prodName);
+            if (!concentration.trim().isEmpty() && !prodName.toLowerCase().contains(concentration.toLowerCase())) {
+                medBuilder.append(" x ").append(concentration);
+            }
+            if (!presentation.trim().isEmpty()) {
+                medBuilder.append("   ").append(presentation);
+            }
+
             return PrescriptionInventoryTableDTO.builder()
                     .id(item.getId())
-                    .product(item.getInventory().getProduct().getName())
-                    .presentation(item.getInventory().getProduct().getPresentation())
-                    .pharmaceuticalForm(item.getInventory().getProduct().getPharmaceuticalForm())
-                    .batch(item.getInventory().getBatch().getCode())
+                    .code(code)
+                    .client(client)
+                    .product(medBuilder.toString())
+                    .presentation(presentation)
+                    .pharmaceuticalForm(prod != null ? prod.getPharmaceuticalForm() : "")
+                    .batch(item.getInventory().getBatch() != null ? item.getInventory().getBatch().getCode() : "")
                     .purchasePrice(item.getInventory().getPurchasePrice())
                     .salePrice(item.getPriceUnit())
+                    .totalPrice(priceTotal)
                     .totalUnits(item.getUnits())
                     .availableUnits((long) item.getInventory().getAvailableUnits())
                     .expirationDate(item.getInventory().getExpirationDate())
+                    .date(orderDate)
                     .isActive(order.isActive())
                     .build();
         } else {
             return PrescriptionInventoryTableDTO.builder()
                     .id(item.getId())
+                    .code(code)
+                    .client(client)
                     .product("Recetarios")
                     .presentation("N/A")
                     .pharmaceuticalForm("N/A")
                     .batch("N/A")
                     .purchasePrice(BigDecimal.ZERO)
                     .salePrice(item.getPriceUnit())
+                    .totalPrice(priceTotal)
                     .totalUnits(item.getUnits())
                     .availableUnits(0L)
                     .expirationDate(null)
+                    .date(orderDate)
                     .isActive(order.isActive())
                     .build();
         }

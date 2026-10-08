@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,28 @@ public class PurchasingRecipeServiceImpl implements PurchasingRecipeService {
             serialRange = "Seriales: " + recipe.getStartSerial() + " - " + recipe.getFinalSerial();
         }
 
+        String client = "";
+        String code = "";
+        LocalDate purchaseDate = null;
+        if (recipe.getPurchasing() != null) {
+            code = recipe.getPurchasing().getPurchasedCode() != null ? recipe.getPurchasing().getPurchasedCode() : "";
+            purchaseDate = recipe.getPurchasing().getCreatedAt() != null ? recipe.getPurchasing().getCreatedAt().toLocalDate() : null;
+            if (recipe.getPurchasing().getThirdParty() != null) {
+                String name = recipe.getPurchasing().getThirdParty().getFullName() != null ? recipe.getPurchasing().getThirdParty().getFullName() : "";
+                String docType = recipe.getPurchasing().getThirdParty().getDocumentType() != null ? recipe.getPurchasing().getThirdParty().getDocumentType() : "ID";
+                String docNum = recipe.getPurchasing().getThirdParty().getDocumentNumber() != null ? recipe.getPurchasing().getThirdParty().getDocumentNumber() : "";
+                if (!docNum.isEmpty()) {
+                    client = name + "    " + docType + ": " + docNum;
+                } else {
+                    client = name;
+                }
+            }
+        }
+
         return PrescriptionInventoryTableDTO.builder()
                 .id(recipe.getId())
+                .code(code)
+                .client(client)
                 .product("Recetarios")
                 .presentation("N/A")
                 .pharmaceuticalForm("N/A")
@@ -63,6 +84,7 @@ public class PurchasingRecipeServiceImpl implements PurchasingRecipeService {
                 .totalUnits((long) recipe.getUnits())
                 .availableUnits((long) recipe.getUnits())
                 .expirationDate(null)
+                .date(purchaseDate)
                 .isActive(recipe.getPurchasing() != null && recipe.getPurchasing().getIsActive() != null ? recipe.getPurchasing().getIsActive() : true)
                 .build();
     }
