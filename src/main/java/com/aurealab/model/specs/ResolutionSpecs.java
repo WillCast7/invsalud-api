@@ -3,6 +3,7 @@ package com.aurealab.model.specs;
 import com.aurealab.model.inventory.entity.ResolutionEntity;
 import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -12,9 +13,12 @@ public class ResolutionSpecs {
             if (searchTerm == null || searchTerm.trim().isEmpty()) {
                 return cb.conjunction();
             }
+            if (query != null) {
+                query.distinct(true);
+            }
             String pattern = "%" + searchTerm.toLowerCase() + "%";
 
-            Join<ThirdPartyEntity, ResolutionEntity> thirdPartyJoin = root.join("thirdParty");
+            Join<ResolutionEntity, ThirdPartyEntity> thirdPartyJoin = root.join("thirdParties", JoinType.LEFT);
 
             Predicate documentNumberPredicate = cb.like(cb.lower(thirdPartyJoin.get("documentNumber")), pattern);
             Predicate fullNamePredicate = cb.like(cb.lower(thirdPartyJoin.get("fullName")), pattern);

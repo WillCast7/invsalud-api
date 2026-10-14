@@ -7,6 +7,7 @@ import com.aurealab.model.inventory.entity.ResolutionEntity;
 import com.aurealab.model.inventory.repository.PrescriptionInventoryRepository;
 import com.aurealab.model.inventory.repository.ResolutionRepository;
 import com.aurealab.model.notification.repository.NotificationRepository;
+import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -109,8 +112,12 @@ public class ExpirationAlertService {
             if (exp == null) continue;
 
             if (exp.isEqual(today.plusMonths(3)) || (includeRange && exp.isAfter(today) && !exp.isAfter(today.plusMonths(3)))) {
-                String thirdPartyName = (resolution.getThirdParty() != null && resolution.getThirdParty().getFullName() != null)
-                        ? resolution.getThirdParty().getFullName() : "N/A";
+                String thirdPartyName = (resolution.getThirdParties() != null && !resolution.getThirdParties().isEmpty())
+                        ? resolution.getThirdParties().stream()
+                                .map(ThirdPartyEntity::getFullName)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.joining(", "))
+                        : "N/A";
                 String title = "⚠️ Resolución Próxima a Vencer (3 Meses): Nº " + resolution.getCode();
                 String message = String.format(
                         "La resolución Nº %s del tercero %s vencerá el %s.",

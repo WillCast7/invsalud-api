@@ -26,12 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aurealab.model.inventory.entity.ProductEntity;
 import com.aurealab.model.inventory.entity.ResolutionAllowedProductEntity;
+import com.aurealab.model.inventory.entity.ThirdPartyEntity;
 import com.aurealab.model.inventory.repository.ThirdPartyRepository;
 import com.aurealab.service.Inventory.DocumentSequenceService;
 import com.aurealab.util.JwtUtils;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ResolutionServiceImpl implements ResolutionService {
@@ -82,10 +84,17 @@ public class ResolutionServiceImpl implements ResolutionService {
     @Transactional
     public ResponseEntity<APIResponseDTO<ResolutionDTO>> saveResolution(ResolutionDTO resolutionDTO) {
         ResolutionEntity entity = ResolutionMapper.toEntity(resolutionDTO);
-        if (resolutionDTO.thirdParty() != null && resolutionDTO.thirdParty().id() != null) {
-            entity.setThirdParty(thirdPartyRepository.findById(resolutionDTO.thirdParty().id())
-                    .orElseThrow(() -> new RuntimeException("Tercero no encontrado")));
+        Set<ThirdPartyEntity> managedThirdParties = new HashSet<>();
+        if (resolutionDTO.thirdParties() != null && !resolutionDTO.thirdParties().isEmpty()) {
+            for (com.aurealab.dto.CashRegister.ThirdPartyDTO tpDto : resolutionDTO.thirdParties()) {
+                if (tpDto != null && tpDto.id() != null) {
+                    thirdPartyRepository.findById(tpDto.id()).ifPresent(managedThirdParties::add);
+                }
+            }
+        } else if (resolutionDTO.thirdParty() != null && resolutionDTO.thirdParty().id() != null) {
+            thirdPartyRepository.findById(resolutionDTO.thirdParty().id()).ifPresent(managedThirdParties::add);
         }
+        entity.setThirdParties(managedThirdParties);
         if (entity.getCode() == null || entity.getCode().trim().isEmpty()) {
             entity.setCode(documentSequenceService.getNextInvoiceNumber(constants.configParam.resolutionPrefix));
         }
@@ -108,8 +117,18 @@ public class ResolutionServiceImpl implements ResolutionService {
         ResolutionEntity existing = resolutionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(constants.messages.noData));
 
-        if (resolutionDTO.thirdParty() != null && resolutionDTO.thirdParty().id() != null) {
-            existing.setThirdParty(thirdPartyRepository.findById(resolutionDTO.thirdParty().id()).orElse(existing.getThirdParty()));
+        if (resolutionDTO.thirdParties() != null) {
+            Set<ThirdPartyEntity> managedThirdParties = new HashSet<>();
+            for (com.aurealab.dto.CashRegister.ThirdPartyDTO tpDto : resolutionDTO.thirdParties()) {
+                if (tpDto != null && tpDto.id() != null) {
+                    thirdPartyRepository.findById(tpDto.id()).ifPresent(managedThirdParties::add);
+                }
+            }
+            existing.setThirdParties(managedThirdParties);
+        } else if (resolutionDTO.thirdParty() != null && resolutionDTO.thirdParty().id() != null) {
+            Set<ThirdPartyEntity> managedThirdParties = new HashSet<>();
+            thirdPartyRepository.findById(resolutionDTO.thirdParty().id()).ifPresent(managedThirdParties::add);
+            existing.setThirdParties(managedThirdParties);
         }
         if (resolutionDTO.startDate() != null) {
             existing.setStartDate(resolutionDTO.startDate());

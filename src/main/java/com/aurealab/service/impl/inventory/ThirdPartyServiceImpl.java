@@ -105,16 +105,22 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
 
     @Transactional
     public ThirdPartyDTO saveThirdParty(ThirdPartyDTO thirdParty){
+        Set<ResolutionEntity> oldResolutionsToRemove = new HashSet<>();
         if (thirdParty.id() != null) {
             thirdPartyRepository.findById(thirdParty.id()).ifPresent(existing -> {
                 if (existing.getResolutions() != null) {
-                    for (com.aurealab.model.inventory.entity.ResolutionEntity res : existing.getResolutions()) {
-                        if (res.getAllowedProduct() != null) {
-                            res.getAllowedProduct().clear();
+                    Set<Long> incomingResIds = new HashSet<>();
+                    if (thirdParty.resolutions() != null) {
+                        for (com.aurealab.dto.ResolutionDTO r : thirdParty.resolutions()) {
+                            if (r.id() != null) incomingResIds.add(r.id());
+                        }
+                    }
+                    for (ResolutionEntity oldRes : existing.getResolutions()) {
+                        if (!incomingResIds.contains(oldRes.getId())) {
+                            oldResolutionsToRemove.add(oldRes);
                         }
                     }
                 }
-                thirdPartyRepository.saveAndFlush(existing);
             });
         }
         ThirdPartyEntity thirdPartyEntity = ThirdPartyMapper.toEntity(thirdParty);
@@ -135,6 +141,9 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
                         if (res.getCreatedAt() == null) {
                             res.setCreatedAt(existingRes.getCreatedAt());
                         }
+                        if (existingRes.getThirdParties() != null) {
+                            res.getThirdParties().addAll(existingRes.getThirdParties());
+                        }
                     });
                 }
                 // Si es nueva o no tiene código, se genera automáticamente usando el prefijo RES
@@ -151,11 +160,28 @@ public class ThirdPartyServiceImpl implements ThirdPartyService {
             }
         }
 
-        return ThirdPartyMapper.toDto(
-                thirdPartyRepository.save(
-                        thirdPartyEntity
-                )
-        );
+        ThirdPartyEntity savedThirdParty = thirdPartyRepository.save(thirdPartyEntity);
+
+        // Remover relación de resoluciones que ya no están asociadas
+        for (ResolutionEntity oldRes : oldResolutionsToRemove) {
+            if (oldRes.getThirdParties() != null) {
+                oldRes.getThirdParties().removeIf(tp -> tp.getId().equals(savedThirdParty.getId()));
+                resolutionRepository.save(oldRes);
+            }
+        }
+
+        // Persistir resoluciones asociadas en el lado propietario (ResolutionEntity)
+        if (thirdPartyEntity.getResolutions() != null) {
+            for (ResolutionEntity res : thirdPartyEntity.getResolutions()) {
+                if (res.getThirdParties() == null) {
+                    res.setThirdParties(new HashSet<>());
+                }
+                res.getThirdParties().add(savedThirdParty);
+                resolutionRepository.save(res);
+            }
+        }
+
+        return ThirdPartyMapper.toDto(savedThirdParty);
     }
 
     @Transactional

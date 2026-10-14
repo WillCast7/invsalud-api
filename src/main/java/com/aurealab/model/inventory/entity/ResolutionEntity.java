@@ -24,10 +24,14 @@ public class ResolutionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "thirdparty_id", nullable = false)
+    @ManyToMany
+    @JoinTable(
+            name = "resolution_third_parties",
+            joinColumns = @JoinColumn(name = "resolution_id"),
+            inverseJoinColumns = @JoinColumn(name = "third_party_id")
+    )
     @JsonIgnore
-    private ThirdPartyEntity thirdParty;
+    private Set<ThirdPartyEntity> thirdParties = new HashSet<>();
 
     @Column(nullable = false)
     private String code;

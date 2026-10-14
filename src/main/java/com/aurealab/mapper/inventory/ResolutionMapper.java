@@ -24,9 +24,15 @@ public class ResolutionMapper {
             entity.getAllowedProduct().forEach(item -> products.add(ProductMapper.toDto(item.getProduct())));
         }
 
+        Set<com.aurealab.dto.CashRegister.ThirdPartyDTO> thirdParties = new HashSet<>();
+        if (entity.getThirdParties() != null) {
+            entity.getThirdParties().forEach(tp -> thirdParties.add(ThirdPartyMapper.toDtoList(tp)));
+        }
+
         return new ResolutionDTO(
                 entity.getId(),
-                ThirdPartyMapper.toDtoList(entity.getThirdParty()),
+                thirdParties,
+                null,
                 entity.getCode(),
                 entity.getStartDate(),
                 entity.getExpirationDate(),
@@ -43,9 +49,17 @@ public class ResolutionMapper {
     public static ResolutionTableDTO toTableDto(ResolutionEntity entity) {
         if (entity == null) return null;
 
+        String thirdPartyFormatted = null;
+        if (entity.getThirdParties() != null && !entity.getThirdParties().isEmpty()) {
+            thirdPartyFormatted = entity.getThirdParties().stream()
+                    .map(tp -> tp.getFullName() != null ? tp.getFullName() : "")
+                    .filter(name -> !name.isEmpty())
+                    .collect(java.util.stream.Collectors.joining(", "));
+        }
+
         return new ResolutionTableDTO(
                 entity.getId(),
-                entity.getThirdParty() != null ? entity.getThirdParty().getFullName() : null,
+                thirdPartyFormatted,
                 entity.getCode(),
                 entity.getNumberResolution(),
                 entity.getStartDate(),
@@ -64,7 +78,15 @@ public class ResolutionMapper {
 
         ResolutionEntity entity = new ResolutionEntity();
         entity.setId(dto.id());
-        entity.setThirdParty(ThirdPartyMapper.toEntity(dto.thirdParty()));
+        
+        Set<com.aurealab.model.inventory.entity.ThirdPartyEntity> thirdParties = new HashSet<>();
+        if (dto.thirdParties() != null) {
+            dto.thirdParties().forEach(tpDto -> thirdParties.add(ThirdPartyMapper.toEntity(tpDto)));
+        } else if (dto.thirdParty() != null) {
+            thirdParties.add(ThirdPartyMapper.toEntity(dto.thirdParty()));
+        }
+        entity.setThirdParties(thirdParties);
+
         entity.setCode(dto.code());
         entity.setStartDate(dto.startDate());
         entity.setExpirationDate(dto.expirationDate());

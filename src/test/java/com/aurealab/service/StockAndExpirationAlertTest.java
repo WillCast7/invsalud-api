@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -162,7 +163,7 @@ public class StockAndExpirationAlertTest {
         ResolutionEntity resolution = new ResolutionEntity();
         resolution.setId(50L);
         resolution.setCode("RES-2024-001");
-        resolution.setThirdParty(thirdParty);
+        resolution.setThirdParties(Set.of(thirdParty));
         resolution.setExpirationDate(today.plusMonths(3));
 
         when(prescriptionInventoryRepository.findAllActiveStock()).thenReturn(List.of());

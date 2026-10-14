@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface ResolutionRepository extends JpaRepository<ResolutionEntity, Long> {
 
-    @EntityGraph(attributePaths = {"thirdParty"})
+    @EntityGraph(attributePaths = {"thirdParties"})
     Page<ResolutionEntity> findAll(Specification<ResolutionEntity> spec, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"thirdParty"})
+    @EntityGraph(attributePaths = {"thirdParties"})
     List<ResolutionEntity> findByIsActiveTrue();
 }

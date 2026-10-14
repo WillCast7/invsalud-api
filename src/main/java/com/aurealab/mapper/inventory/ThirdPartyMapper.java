@@ -95,7 +95,10 @@ public class ThirdPartyMapper {
         if (dto.resolutions() != null) {
             dto.resolutions().forEach(tpResolutionDTO -> {
                 ResolutionEntity resEntity = ResolutionMapper.toEntity(tpResolutionDTO);
-                resEntity.setThirdParty(entity);
+                if (resEntity.getThirdParties() == null) {
+                    resEntity.setThirdParties(new HashSet<>());
+                }
+                resEntity.getThirdParties().add(entity);
                 resolutions.add(resEntity);
             });
         }

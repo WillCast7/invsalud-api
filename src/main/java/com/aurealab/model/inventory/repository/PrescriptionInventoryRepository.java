@@ -32,7 +32,8 @@ public interface PrescriptionInventoryRepository extends JpaRepository<Prescript
             "JOIN pis.batch b " +
             "JOIN ResolutionAllowedProductEntity rap ON rap.product = p " +
             "JOIN rap.resolution r " +
-            "WHERE r.thirdParty.id = :thirdPartyId " +
+            "JOIN r.thirdParties tp " +
+            "WHERE tp.id = :thirdPartyId " +
             "AND pis.expirationDate >= :minExpirationDate " +
             "AND (r.expirationDate IS NULL OR r.expirationDate >= :minExpirationDate) " +
             "AND pis.isDrawal = false")
