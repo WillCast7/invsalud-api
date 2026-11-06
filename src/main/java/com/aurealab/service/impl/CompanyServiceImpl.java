@@ -5,10 +5,13 @@ import com.aurealab.mapper.CompanyMapper;
 import com.aurealab.model.aurea.entity.CompanyEntity;
 import com.aurealab.model.aurea.entity.MenuItemEntity;
 import com.aurealab.model.aurea.repository.CompanyRepository;
+import com.aurealab.model.inventory.entity.RecipeInventoryEntity;
 import com.aurealab.service.CompanyService;
+import com.aurealab.service.Inventory.RecipeInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Service
@@ -17,8 +20,19 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     CompanyRepository companyRepository;
 
+    @Autowired
+    RecipeInventoryService recipeInventoryService;
+
     public CompanyDTO getCompany(){
-        return CompanyMapper.toDto(getCompanyEntity());
+        BigDecimal price = BigDecimal.ZERO;
+        try {
+            RecipeInventoryEntity recipeInventory = recipeInventoryService.findByIdEntity();
+            if (recipeInventory != null && recipeInventory.getPrice() != null) {
+                price = recipeInventory.getPrice();
+            }
+        } catch (Exception ignored) {
+        }
+        return CompanyMapper.toDto(getCompanyEntity(), price);
     }
 
     public CompanyEntity getCompanyEntity() {
@@ -57,8 +71,21 @@ public class CompanyServiceImpl implements CompanyService {
         entity.setDaysLimitResolution(dto.daysLimitResolution());
         entity.setUpdatedAt(java.time.LocalDateTime.now());
 
+        BigDecimal price = null;
+        try {
+            RecipeInventoryEntity recipeInventory = recipeInventoryService.findByIdEntity();
+            if (dto.price() != null) {
+                recipeInventory.setPrice(dto.price());
+                recipeInventory = recipeInventoryService.save(recipeInventory);
+            }
+            if (recipeInventory != null) {
+                price = recipeInventory.getPrice();
+            }
+        } catch (Exception ignored) {
+        }
+
         CompanyEntity saved = companyRepository.save(entity);
-        return CompanyMapper.toDto(saved);
+        return CompanyMapper.toDto(saved, price);
     }
 
 }

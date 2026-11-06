@@ -9,6 +9,7 @@ public record RecipeInventoryDTO(
     Long id,
     BigDecimal priceUnit,
     int total,
-    int units
+    int units,
+    int avaliableUnits
 ) {
 }

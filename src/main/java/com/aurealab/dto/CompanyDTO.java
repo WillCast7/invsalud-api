@@ -2,6 +2,7 @@ package com.aurealab.dto;
 
 import jakarta.persistence.Column;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -29,5 +30,6 @@ public record CompanyDTO(
     int iva,
     Boolean useIva,
     String footer,
-    int daysLimitResolution
+    int daysLimitResolution,
+    BigDecimal price
 ) {}

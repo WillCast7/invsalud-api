@@ -18,7 +18,7 @@ public class RecipeInventoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal price;
+        private BigDecimal price;
 
     @Column(name = "total_units")
     private int totalUnits;

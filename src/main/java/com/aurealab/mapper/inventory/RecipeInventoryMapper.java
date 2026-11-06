@@ -16,7 +16,8 @@ public class RecipeInventoryMapper {
                 entity.getId(),
                 entity.getPrice(),
                 entity.getAvaliableUnits(),
-                entity.getTotalUnits()
+                entity.getTotalUnits(),
+                entity.getAvaliableUnits()
         );
     }
 

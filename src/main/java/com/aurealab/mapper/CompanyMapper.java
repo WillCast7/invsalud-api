@@ -4,6 +4,7 @@ package com.aurealab.mapper;
 import com.aurealab.dto.CompanyDTO;
 import com.aurealab.model.aurea.entity.CompanyEntity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class CompanyMapper {
@@ -38,12 +39,17 @@ public class CompanyMapper {
                 0,
                 false,
                 null,
-                0
+                0,
+                null
         );
     }
 
     /* ===================== Entity -> DTO ===================== */
     public static CompanyDTO toDto(CompanyEntity entity) {
+        return toDto(entity, null);
+    }
+
+    public static CompanyDTO toDto(CompanyEntity entity, BigDecimal price) {
         if (entity == null) return null;
 
         return new CompanyDTO(
@@ -70,7 +76,8 @@ public class CompanyMapper {
                 entity.getIva(),
                 entity.getUseIva(),
                 entity.getFooter(),
-                entity.getDaysLimitResolution()
+                entity.getDaysLimitResolution(),
+                price
         );
     }
 

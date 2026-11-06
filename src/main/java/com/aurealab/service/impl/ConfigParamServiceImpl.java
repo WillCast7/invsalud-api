@@ -59,6 +59,26 @@ public class ConfigParamServiceImpl implements ConfigParamService {
 
     }
 
+    public Set<ConfigParamDTO> getActiveConfigParamsByParent(String parent){
+        try{
+            if(parent == null){
+                log.error("El parametro no deberia estar vacio");
+                return null;
+            }
+
+            Set<ConfigParamsEntity> configParamsEntitySet = configParamsRepository.findByParentAndIsActiveTrue(parent);
+            Set<ConfigParamDTO> configParamDTOSet = new HashSet<>();
+            configParamsEntitySet.forEach(configParamEntity->configParamDTOSet.add(ConfigParamsMapper.toDto(configParamEntity)));
+
+            return configParamDTOSet;
+
+        }catch (Exception e){
+            log.error("Error leyendo los parametros de configuracion de " + parent, e);
+            throw new BaseException(constants.errors.findError, constants.descriptions.configParams, e) {};
+        }
+
+    }
+
     public ResponseEntity<APIResponseDTO<String>> getConfigParams(int page, int size, String searchValue){
         try{
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
@@ -91,6 +111,15 @@ public class ConfigParamServiceImpl implements ConfigParamService {
         return ResponseEntity.ok(
                 APIResponseDTO.success(
                         getConfigParamsByParent(parent),
+                        constants.success.findedSuccess
+                )
+        );
+    }
+
+    public ResponseEntity<APIResponseDTO<Set<ConfigParamDTO>>> searchActiveParamsByParent(String parent){
+        return ResponseEntity.ok(
+                APIResponseDTO.success(
+                        getActiveConfigParamsByParent(parent),
                         constants.success.findedSuccess
                 )
         );

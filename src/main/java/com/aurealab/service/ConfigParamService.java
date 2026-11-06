@@ -11,6 +11,7 @@ import java.util.Set;
 public interface ConfigParamService {
     public Set<ConfigParamDTO> findParamsByParent(String parent);
     public ResponseEntity<APIResponseDTO<Set<ConfigParamDTO>>> searchParamsByParent(String parent);
+    public ResponseEntity<APIResponseDTO<Set<ConfigParamDTO>>> searchActiveParamsByParent(String parent);
     public ResponseEntity<APIResponseDTO<ThirdPartyWithParamsResponseDTO>> getCreatingCustomerParams();
     public ResponseEntity<APIResponseDTO<UserWithParamsResponseDTO>> getCreatingUserParams();
     public ThirdPartyWithParamsResponseDTO findCreatingThirdPartyParams();

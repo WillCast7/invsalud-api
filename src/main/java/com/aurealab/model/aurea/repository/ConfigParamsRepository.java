@@ -11,5 +11,7 @@ import java.util.Set;
 public interface ConfigParamsRepository extends JpaRepository<ConfigParamsEntity, Long> {
     Set<ConfigParamsEntity> findByParent(String name);
 
+    Set<ConfigParamsEntity> findByParentAndIsActiveTrue(String parent);
+
     Page<ConfigParamsEntity> findAll(Specification<ConfigParamsEntity> spec, Pageable pageable);
 }

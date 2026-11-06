@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.util.Set;
 
-
 @Builder
 public record RoleDTO(
     Long id,

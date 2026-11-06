@@ -37,6 +37,11 @@ public class ConfigParamsController {
         return configParamService.searchParamsByParent(parent);
     }
 
+    @GetMapping(produces = "application/json", value = "/active/parent/{parent}")
+    public ResponseEntity<APIResponseDTO<Set<ConfigParamDTO>>> findParamsByParentActive(@PathVariable String parent) {
+        return configParamService.searchActiveParamsByParent(parent);
+    }
+
     @GetMapping(produces = "application/json")
     public ResponseEntity<APIResponseDTO<String>> getAllConfigParams(@RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "10") int size,
